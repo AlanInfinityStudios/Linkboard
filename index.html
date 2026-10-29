@@ -486,9 +486,9 @@ function startBoard(levelIdx) {
     flip(new Map(), new Set(B.board.filter(x => x != null)));
     toast("Welcome back. Carrying on where you left off.");
   } else {
-    // Opening deal: two complete word groups plus a random mix, so there is always something to find.
+    // Opening deal: the minimum number of complete word groups plus a random mix.
     const wordGroups = shuffle(groups.filter(g => g.memberTiles.every(t => tiles[t].symbolOf == null)));
-    const deal = [...wordGroups[0].memberTiles, ...(wordGroups[1] ? wordGroups[1].memberTiles : [])];
+    const deal = wordGroups.slice(0, MIN_ANSWERS[level.difficulty] ?? 2).flatMap(g => g.memberTiles);
     B.pool = shuffle(B.pool.filter(t => !deal.includes(t)));
     while (deal.length < SIZE && B.pool.length) deal.push(B.pool.pop());
     shuffle(deal).forEach((id, i) => B.board[i] = id);
@@ -542,32 +542,39 @@ function gravity() {
     for (let r = P - 1, k = 0; r >= 0; r--, k++) B.board[r * COLS + c] = col[k] ?? null;
   }
 }
-// Drop hidden words in from the top, always leaving at least one group that can be completed.
+// How many answers the board always keeps available, by difficulty.
+const MIN_ANSWERS = { Easy: 3, Medium: 3, Hard: 2 };
+const minAnswers = () => MIN_ANSWERS[B.level.difficulty] ?? 2;
+
+// Drop hidden words in from the top, keeping a minimum number of complete answers on the board.
 function refill() {
-  const onBoard = new Set(B.board.filter(x => x != null));
-  const open = B.groups.filter(g => !B.solved.has(g.id));
-  const completable = open.some(g => g.memberTiles.every(t => onBoard.has(t)));
-  let room = playable().filter(i => B.board[i] == null).length;
-  const incoming = [];
-  if (!completable) {
+  const incoming = [], keep = new Set();
+  for (let guard = 0; guard < 12; guard++) {
+    const on = new Set([...B.board.filter(x => x != null), ...incoming]);
+    const open = B.groups.filter(g => !B.solved.has(g.id));
+    const complete = open.filter(g => g.memberTiles.every(t => on.has(t)));
+    complete.forEach(g => keep.add(g.id));
+    if (complete.length >= minAnswers()) break;
     const inPool = new Set(B.pool);
-    const ready = open.filter(g => g.memberTiles.every(t => onBoard.has(t) || inPool.has(t)));
-    const missingOf = g => g.memberTiles.filter(t => !onBoard.has(t)).length;
-    ready.sort((a, b) => missingOf(a) - missingOf(b));
+    const missingOf = g => g.memberTiles.filter(t => !on.has(t)).length;
+    const ready = open.filter(g => !keep.has(g.id) && g.memberTiles.every(t => on.has(t) || inPool.has(t)))
+      .sort((x, y) => missingOf(x) - missingOf(y));
     const g = ready[0];
-    if (g) {
-      const missing = g.memberTiles.filter(t => !onBoard.has(t));
-      while (missing.length > room) {
-        const others = playable().filter(i => B.board[i] != null && T(B.board[i]).parent !== g.id);
-        // Prefer sending back plain words; only move a picture back if there is nothing else.
-        let cands = others.filter(i => T(B.board[i]).symbolOf == null && !B.hintTiles.includes(B.board[i]));
-        if (!cands.length) cands = others;
-        if (!cands.length) break;
-        const i = pick(cands); B.pool.push(B.board[i]); B.board[i] = null; room++;
-      }
-      incoming.push(...missing);
-      B.pool = B.pool.filter(t => !missing.includes(t));
+    if (!g) break;
+    keep.add(g.id);
+    const missing = g.memberTiles.filter(t => !on.has(t));
+    let room = playable().filter(i => B.board[i] == null).length - incoming.length;
+    // Not enough room? Quietly send some unrelated tiles back to the hidden stack.
+    while (missing.length > room) {
+      const others = playable().filter(i => B.board[i] != null && !keep.has(T(B.board[i]).parent));
+      let cands = others.filter(i => T(B.board[i]).symbolOf == null && !B.hintTiles.includes(B.board[i]));
+      if (!cands.length) cands = others;
+      if (!cands.length) break;
+      const i = pick(cands); B.pool.push(B.board[i]); B.board[i] = null; room++;
     }
+    if (missing.length > room) break;
+    incoming.push(...missing);
+    B.pool = B.pool.filter(t => !missing.includes(t));
   }
   gravity();
   shuffle(B.pool);

@@ -2,7 +2,7 @@
 
 An ad-free word connection game, built to play on an iPad.
 
-**Play it:** https://alaninfinitystudios.github.io/linkboard/
+**Play it:** https://alaninfinitystudios.github.io/Linkboard/
 
 ## Modes
 

@@ -6,7 +6,7 @@ An ad-free word connection game, built to play on an iPad.
 
 ## Modes
 
-- **Board**: a 5 by 7 grid of word and picture tiles. Drag a tile onto another to swap them (or tap one, then the other). Five tiles from the same group in one row lock into a category, clear away, and hidden tiles drop in from the stack. Includes a timer, hints, clock freezes and shuffle.
+- **Board**: a 5 by 7 grid of words. Drag a tile onto another to swap them (or tap one, then the other). Put five connected tiles in one row and they shrink into a single picture tile, and hidden words drop in from the stack. The pictures connect too: five of them in a row complete a top group, which stays on the board as a full-colour row. Some levels are timed (with clock freezes), others are relaxed and untimed.
 - **Wall**: inspired by Only Connect. Sixteen clues, four groups of four, three minutes. Once two groups are found you have three lives. Afterwards, reveal the connections and score yourself out of 10.
 
 ## Install on iPad
@@ -17,7 +17,7 @@ Open the link above in Safari, tap the Share button, then **Add to Home Screen**
 
 All puzzles live in [`puzzles.js`](puzzles.js).
 
-- Board levels need groups of exactly 5 tiles. Write a picture tile as `"emoji|Name"`, for example `"🐔|Hen"`.
+- Board levels: every group has exactly 5 tiles. A tile is a word, or a smaller group written `sub("Cow", "🐄", [five words])` that shrinks into that picture when found. Top-level groups stay on the board, so keep to 5 or fewer per level. Use `time: 14 * 60` for a countdown or `time: null` for relaxed play.
 - Walls need exactly 4 groups of 4. Add the new wall to `tools/check_walls.py` too, with its red herrings, and run `python3 tools/check_walls.py` to make sure there is only one way to solve it.
 
 ## Files

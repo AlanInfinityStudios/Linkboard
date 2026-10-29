@@ -1,127 +1,148 @@
 /* =====================================================================
-   PUZZLES. Add your own here.
-   Board levels: each group has a category name and exactly 5 tiles.
-   Picture tiles are written as "emoji|Name", e.g. "🐔|Hen".
-   Walls: exactly 4 groups of 4. Good walls have red herrings: words that
-   look as if they belong in more than one group, but only one way works.
+   LINKBOARD PUZZLES. Add your own here.
+
+   BOARD LEVELS
+   Every group has a name and exactly 5 tiles. A tile is either:
+     - a word, e.g. "Milk"
+     - a smaller group, written { name, pic, tiles: [...] }. When the player
+       finds it, its five tiles shrink into one picture tile (pic), and that
+       picture becomes one of the five tiles of the group above it.
+   The groups at the top level never shrink. When found, they stay on the
+   board as a full-colour row. Keep it to 5 top-level groups or fewer so
+   there is still room to play.
+   Set time (in seconds) for a countdown, or time: null for relaxed play.
+
+   WALLS
+   Exactly 4 groups of 4. Good walls have red herrings: clues that seem to
+   fit more than one group, but only one way works. Add new walls to
+   tools/check_walls.py as well to prove there is only one solution.
    ===================================================================== */
+const sub = (name, pic, tiles) => ({ name, pic, tiles });
+
 const BOARD_LEVELS = [
-  { name: "Level 1", difficulty: "Easy", time: 8 * 60, groups: [
-    { name: "Fruit", tiles: ["Apple", "Banana", "Mango", "Cherry", "🍓|Strawberry"] },
-    { name: "Planets", tiles: ["Mars", "Venus", "Saturn", "Jupiter", "Neptune"] },
-    { name: "Dog breeds", tiles: ["Beagle", "Poodle", "Boxer", "Pug", "Dalmatian"] },
-    { name: "Weather", tiles: ["Rain", "Snow", "☀️|Sun", "Fog", "Thunder"] },
-    { name: "Instruments", tiles: ["Guitar", "🎻|Violin", "Drums", "Piano", "Trumpet"] },
-    { name: "Kitchen utensils", tiles: ["Whisk", "Ladle", "Spatula", "Colander", "Tongs"] },
-    { name: "Colours", tiles: ["Scarlet", "Turquoise", "Magenta", "Ochre", "Lilac"] },
-    { name: "Sports", tiles: ["Tennis", "⚽|Football", "Cricket", "Rugby", "Golf"] },
-    { name: "Farm animals", tiles: ["🐄|Cow", "Pig", "Sheep", "Goat", "🐔|Hen"] },
+  { name: "Down on the farm", difficulty: "Easy", time: null, groups: [
+    { name: "On the farm", tiles: [
+      sub("Cow", "🐄", ["Milk", "Dairy", "Udder", "Moo", "Calf"]),
+      sub("Pig", "🐖", ["Trough", "Wallow", "Oink", "Piglet", "Bacon"]),
+      sub("Sheep", "🐑", ["Wool", "Flock", "Lamb", "Shorn", "Baa"]),
+      sub("Hen", "🐔", ["Egg", "Cluck", "Coop", "Chick", "Feathers"]),
+      "Tractor",
+    ]},
+    { name: "Sports", tiles: [
+      sub("Football", "⚽", ["Goal", "Penalty", "Offside", "Striker", "Referee"]),
+      sub("Tennis", "🎾", ["Racket", "Deuce", "Love", "Wimbledon", "Serve"]),
+      sub("Cricket", "🏏", ["Wicket", "Bowler", "Innings", "Stumps", "Umpire"]),
+      sub("Golf", "⛳", ["Caddie", "Birdie", "Tee", "Fairway", "Bunker"]),
+      "Rugby",
+    ]},
   ]},
-  { name: "Picture pack", difficulty: "Easy", time: 8 * 60, groups: [
-    { name: "At the zoo", tiles: ["🦁|Lion", "🐘|Elephant", "🦒|Giraffe", "🐒|Monkey", "🦓|Zebra"] },
-    { name: "Under the sea", tiles: ["🐙|Octopus", "🐬|Dolphin", "🦈|Shark", "🐳|Whale", "🦀|Crab"] },
-    { name: "Fruit", tiles: ["🍎|Apple", "🍌|Banana", "🍇|Grapes", "🍍|Pineapple", "🍉|Watermelon"] },
-    { name: "Getting about", tiles: ["🚗|Car", "🚲|Bicycle", "🚀|Rocket", "🚁|Helicopter", "⛵|Sailing boat"] },
-    { name: "Weather", tiles: ["🌈|Rainbow", "⛄|Snowman", "⚡|Lightning", "🌪️|Tornado", "☁️|Cloud"] },
-    { name: "Ball games", tiles: ["⚽|Football", "🏀|Basketball", "🎾|Tennis", "🏉|Rugby", "🎱|Pool"] },
-    { name: "Fast food", tiles: ["🍕|Pizza", "🍔|Burger", "🌭|Hot dog", "🍟|Chips", "🌮|Taco"] },
-    { name: "Music", tiles: ["🎸|Guitar", "🎹|Piano", "🥁|Drum", "🎺|Trumpet", "🎷|Saxophone"] },
-    { name: "Christmas", tiles: ["Tinsel", "Reindeer", "Cracker", "Stocking", "🎄|Christmas tree"] },
-    { name: "Halloween", tiles: ["Pumpkin", "Witch", "Ghost", "Bat", "🕷️|Spider"] },
+  { name: "Home and away", difficulty: "Easy", time: null, groups: [
+    { name: "Around the house", tiles: [
+      sub("Bathroom", "🛁", ["Towel", "Sink", "Shower", "Plunger", "Bath mat"]),
+      sub("Bedroom", "🛏️", ["Pillow", "Duvet", "Wardrobe", "Alarm clock", "Slippers"]),
+      sub("Kitchen", "🍳", ["Kettle", "Toaster", "Fridge", "Oven", "Whisk"]),
+      sub("Garden", "🌳", ["Shed", "Lawn", "Hose", "Patio", "Wheelbarrow"]),
+      "Loft",
+    ]},
+    { name: "Weather", tiles: [
+      sub("Sun", "☀️", ["Sun cream", "Heatwave", "Tan", "Shades", "Sunburn"]),
+      sub("Rain", "🌧️", ["Puddle", "Umbrella", "Drizzle", "Wellies", "Downpour"]),
+      sub("Snow", "❄️", ["Sledge", "Snowball", "Blizzard", "Igloo", "Snowflake"]),
+      sub("Wind", "🌬️", ["Gust", "Gale", "Breeze", "Kite", "Windmill"]),
+      "Fog",
+    ]},
   ]},
-  { name: "Level 2", difficulty: "Medium", time: 12 * 60, groups: [
-    { name: "___ball", tiles: ["Foot", "Snow", "Meat", "Eye", "Hand"] },
-    { name: "Cheeses", tiles: ["Cheddar", "Brie", "Stilton", "Gouda", "Feta"] },
-    { name: "Card games", tiles: ["Snap", "Poker", "Rummy", "Bridge", "Patience"] },
-    { name: "London bridges", tiles: ["Tower", "Millennium", "Westminster", "Albert", "Waterloo"] },
-    { name: "Gemstones", tiles: ["Ruby", "Emerald", "Sapphire", "Opal", "💎|Diamond"] },
-    { name: "Jobs", tiles: ["👩‍🍳|Chef", "👨‍🚒|Firefighter", "👩‍⚕️|Doctor", "👮|Police officer", "👩‍🌾|Farmer"] },
-    { name: "Hats", tiles: ["Bowler", "Beret", "Fedora", "Trilby", "Stetson"] },
-    { name: "Bathroom", tiles: ["Sink", "Bath", "🪥|Toothbrush", "Sponge", "Towel"] },
-    { name: "Shakespeare plays", tiles: ["Hamlet", "Macbeth", "Othello", "The Tempest", "King Lear"] },
-    { name: "Garden birds", tiles: ["Robin", "Wren", "Magpie", "Blackbird", "Starling"] },
-    { name: "Pasta", tiles: ["Penne", "Fusilli", "Orzo", "Rigatoni", "Linguine"] },
-    { name: "Shades of blue", tiles: ["Navy", "Cobalt", "Azure", "Sky", "Teal"] },
+  { name: "Out and about", difficulty: "Medium", time: 14 * 60, groups: [
+    { name: "Transport", tiles: [
+      sub("Train", "🚂", ["Platform", "Ticket", "Carriage", "Signal", "Guard"]),
+      sub("Plane", "✈️", ["Runway", "Cockpit", "Boarding pass", "Pilot", "Departures"]),
+      sub("Bus", "🚌", ["Double decker", "Bus stop", "Fare", "Route", "Conductor"]),
+      sub("Ferry", "⛴️", ["Port", "Deck", "Crossing", "Ramp", "Seasick"]),
+      "Bicycle",
+    ]},
+    { name: "At the seaside", tiles: [
+      sub("Beach", "🏖️", ["Sand", "Pebbles", "Deckchair", "Windbreak", "Lilo"]),
+      sub("Ice cream", "🍦", ["Cone", "Ninety-nine", "Flake", "Sprinkles", "Wafer"]),
+      sub("Rock pool", "🦀", ["Crab", "Starfish", "Limpet", "Seaweed", "Shrimp"]),
+      sub("Pier", "🎡", ["Arcade", "Fairground", "Candyfloss", "Slot machine", "Big wheel"]),
+      "Lighthouse",
+    ]},
+    { name: "Music", tiles: [
+      sub("Guitar", "🎸", ["Strings", "Frets", "Plectrum", "Amp", "Capo"]),
+      sub("Drums", "🥁", ["Snare", "Cymbal", "Sticks", "Hi-hat", "Kick"]),
+      sub("Piano", "🎹", ["Keys", "Pedal", "Grand", "Upright", "Scales"]),
+      sub("Violin", "🎻", ["Bow", "Chin rest", "Fiddle", "Rosin", "Orchestra"]),
+      "Choir",
+    ]},
   ]},
-  { name: "Level 3", difficulty: "Medium", time: 12 * 60, groups: [
-    { name: "Breakfast", tiles: ["Toast", "Porridge", "Bacon", "Cereal", "🍳|Fried egg"] },
-    { name: "At the seaside", tiles: ["Pier", "Deckchair", "Sandcastle", "Rock pool", "🦀|Crab"] },
-    { name: "Tools", tiles: ["Hammer", "Spanner", "Chisel", "Pliers", "Screwdriver"] },
-    { name: "Trees", tiles: ["Oak", "Ash", "Birch", "Willow", "Sycamore"] },
-    { name: "Board games", tiles: ["Monopoly", "Cluedo", "Scrabble", "Risk", "Chess"] },
-    { name: "Joints", tiles: ["Elbow", "Ankle", "Knee", "Wrist", "Shoulder"] },
-    { name: "Vegetables", tiles: ["Carrot", "Parsnip", "Leek", "Turnip", "🥦|Broccoli"] },
-    { name: "Transport", tiles: ["🚂|Train", "Tram", "Ferry", "Bus", "Taxi"] },
-    { name: "Capital cities", tiles: ["Paris", "Madrid", "Oslo", "Lisbon", "Vienna"] },
-    { name: "British rivers", tiles: ["Thames", "Severn", "Tyne", "Mersey", "Trent"] },
-    { name: "Puddings", tiles: ["Trifle", "Crumble", "Pavlova", "Cheesecake", "Eton mess"] },
-    { name: "Insects", tiles: ["Ant", "Beetle", "Moth", "Wasp", "🐝|Bee"] },
-    { name: "Fabrics", tiles: ["Denim", "Silk", "Velvet", "Tweed", "Linen"] },
-  ]},
-  { name: "Things with...", difficulty: "Hard", time: 14 * 60, groups: [
-    { name: "Things with keys", tiles: ["Piano", "Map", "Keyboard", "Lock", "Typewriter"] },
-    { name: "Things with shells", tiles: ["Snail", "Tortoise", "Egg", "Walnut", "Oyster"] },
-    { name: "Things with wings", tiles: ["Plane", "Angel", "Butterfly", "Bat", "Dragon"] },
-    { name: "Things with teeth", tiles: ["Comb", "Saw", "Zip", "Cog", "Shark"] },
-    { name: "Things with needles", tiles: ["Pine", "Hedgehog", "Compass", "Syringe", "Record player"] },
-    { name: "Things with stripes", tiles: ["Zebra", "Tiger", "Barcode", "Humbug", "Candy cane"] },
-    { name: "Things with spots", tiles: ["Leopard", "Ladybird", "Dalmatian", "Domino", "Dice"] },
-    { name: "Things with scales", tiles: ["Fish", "Snake", "Crocodile", "Pangolin", "Lizard"] },
-    { name: "Things with tails", tiles: ["Kite", "Comet", "Coin", "Tadpole", "Monkey"] },
-    { name: "Things with eyes", tiles: ["Needle", "Potato", "Hurricane", "Peacock", "Spider"] },
-    { name: "Things that bark", tiles: ["Dog", "Seal", "Fox", "Sea lion", "Deer"] },
-    { name: "Things with crowns", tiles: ["King", "Queen", "Tooth", "Pineapple", "Tree"] },
-    { name: "Things with pages", tiles: ["Book", "Diary", "Atlas", "Magazine", "Calendar"] },
+  { name: "Food and drink", difficulty: "Medium", time: null, groups: [
+    { name: "Breakfast", tiles: [
+      sub("Fry-up", "🍳", ["Bacon", "Sausage", "Beans", "Black pudding", "Hash brown"]),
+      sub("Cereal", "🥣", ["Cornflakes", "Muesli", "Granola", "Bran", "Porridge"]),
+      sub("Toast", "🍞", ["Butter", "Marmalade", "Toaster", "Crust", "Soldiers"]),
+      sub("Tea", "☕", ["Teabag", "Kettle", "Teapot", "Biscuit", "Cuppa"]),
+      "Orange juice",
+    ]},
+    { name: "Italian food", tiles: [
+      sub("Pizza", "🍕", ["Margherita", "Pepperoni", "Dough", "Mozzarella", "Calzone"]),
+      sub("Pasta", "🍝", ["Spaghetti", "Penne", "Lasagne", "Ravioli", "Fusilli"]),
+      sub("Wine", "🍷", ["Chianti", "Prosecco", "Cork", "Vineyard", "Corkscrew"]),
+      sub("Cheese", "🧀", ["Parmesan", "Gorgonzola", "Ricotta", "Mascarpone", "Pecorino"]),
+      "Tiramisu",
+    ]},
+    { name: "Puddings", tiles: [
+      sub("Cake", "🍰", ["Sponge", "Icing", "Candles", "Slice", "Bake Off"]),
+      sub("Chocolate", "🍫", ["Cocoa", "Truffle", "Praline", "Dark", "Easter egg"]),
+      sub("Strawberries", "🍓", ["Cream", "Punnet", "Pick your own", "Jam", "Summer"]),
+      sub("Apple", "🍎", ["Crumble", "Pie", "Cox", "Core", "Orchard"]),
+      "Trifle",
+    ]},
   ]},
   { name: "Wordplay", difficulty: "Hard", time: 15 * 60, groups: [
-    { name: "___cake", tiles: ["Cup", "Pan", "Fish", "Rock", "Fruit"] },
-    { name: "___house", tiles: ["Green", "Light", "Ware", "Tree", "Club"] },
-    { name: "Fire___", tiles: ["Work", "Place", "Man", "Fly", "Arm"] },
-    { name: "Sun___", tiles: ["Flower", "Day", "Burn", "Glasses", "Dial"] },
-    { name: "Rain___", tiles: ["Bow", "Coat", "Drop", "Forest", "Fall"] },
-    { name: "___man", tiles: ["Snow", "Post", "Milk", "Bat", "Super"] },
-    { name: "Hidden animals", tiles: ["Scatter", "Dogma", "Pirate", "Pigment", "Cowboy"] },
-    { name: "Big ___", tiles: ["Ben", "Bang", "Apple", "Brother", "Top"] },
-    { name: "Black___", tiles: ["Board", "Bird", "Pool", "Smith", "Mail"] },
-    { name: "Foot___", tiles: ["Print", "Path", "Note", "Ball", "Step"] },
-    { name: "Head___", tiles: ["Line", "Phone", "Ache", "Master", "Lamp"] },
-    { name: "Palindromes", tiles: ["Level", "Radar", "Kayak", "Civic", "Rotor"] },
-    { name: "Hidden body parts", tiles: ["Fearless", "Hipster", "Elegant", "Chinese", "Charmed"] },
-    { name: "Hidden numbers", tiles: ["Often", "Weight", "Canine", "Lonely", "Bitten"] },
+    { name: "In the sky", tiles: [
+      sub("Sun___", "☀️", ["Flower", "Day", "Burn", "Glasses", "Dial"]),
+      sub("Moon___", "🌙", ["Beam", "Walk", "Shine", "Stone", "Lit"]),
+      sub("Star___", "⭐", ["Fish", "Gazer", "Dust", "Struck", "Light"]),
+      sub("Cloud___", "☁️", ["Burst", "Nine", "Cover", "Less", "Computing"]),
+      "Kite",
+    ]},
+    { name: "Body parts", tiles: [
+      sub("Hand___", "✋", ["Bag", "Shake", "Cuff", "Writing", "Book"]),
+      sub("Foot___", "🦶", ["Ball", "Print", "Path", "Note", "Step"]),
+      sub("Eye___", "👁️", ["Brow", "Lash", "Lid", "Sight", "Witness"]),
+      sub("Ear___", "👂", ["Ring", "Wig", "Mark", "Drum", "Shot"]),
+      "Knee",
+    ]},
+    { name: "Colours", tiles: [
+      sub("Black___", "⚫", ["Board", "Bird", "Pool", "Smith", "Mail"]),
+      sub("White___", "⚪", ["Wash", "Hall", "Water", "Collar", "Bait"]),
+      sub("Green___", "🟢", ["House", "Grocer", "Finch", "Belt", "Wich"]),
+      sub("Red___", "🔴", ["Head", "Wood", "Neck", "Brick", "Carpet"]),
+      "Blue",
+    ]},
   ]},
   { name: "Great British", difficulty: "Hard", time: 15 * 60, groups: [
-    { name: "Football grounds", tiles: ["Anfield", "Old Trafford", "Wembley", "Hampden", "Villa Park"] },
-    { name: "Soaps", tiles: ["EastEnders", "Coronation Street", "Emmerdale", "Hollyoaks", "Neighbours"] },
-    { name: "Monopoly squares", tiles: ["Mayfair", "Park Lane", "Old Kent Road", "Whitechapel", "Pall Mall"] },
-    { name: "Kings of England", tiles: ["Henry", "Edward", "William", "George", "Richard"] },
-    { name: "Scottish cities", tiles: ["Glasgow", "Aberdeen", "Dundee", "Inverness", "Stirling"] },
-    { name: "Seaside resorts", tiles: ["Blackpool", "Brighton", "Skegness", "Scarborough", "Margate"] },
-    { name: "Biscuits", tiles: ["Digestive", "Hobnob", "Custard cream", "Bourbon", "Jammie Dodger"] },
-    { name: "Chocolate bars", tiles: ["Twix", "Wispa", "Crunchie", "Boost", "Double Decker"] },
-    { name: "Mr Men", tiles: ["Tickle", "Greedy", "Bump", "Happy", "Messy"] },
-    { name: "Doctor Who villains", tiles: ["Daleks", "Cybermen", "Weeping Angels", "The Master", "Sontarans"] },
-    { name: "Composers", tiles: ["Elgar", "Holst", "Handel", "Mozart", "Bach"] },
-    { name: "Painters", tiles: ["Turner", "Constable", "Hockney", "Monet", "Picasso"] },
-    { name: "Cocktails", tiles: ["Mojito", "Martini", "Daiquiri", "Negroni", "Margarita"] },
-    { name: "Chess pieces", tiles: ["Queen", "Bishop", "Knight", "Rook", "Pawn"] },
-    { name: "Dances", tiles: ["Waltz", "Tango", "Foxtrot", "Rumba", "Charleston"] },
-  ]},
-  { name: "Brain box", difficulty: "Expert", time: 15 * 60, groups: [
-    { name: "Greek letters", tiles: ["Alpha", "Beta", "Delta", "Sigma", "Omega"] },
-    { name: "NATO alphabet", tiles: ["Bravo", "Charlie", "Tango", "Victor", "Zulu"] },
-    { name: "Elements", tiles: ["Neon", "Argon", "Iron", "Copper", "Zinc"] },
-    { name: "Bones", tiles: ["Femur", "Tibia", "Ulna", "Radius", "Patella"] },
-    { name: "Parts of a circle", tiles: ["Tangent", "Chord", "Arc", "Sector", "Diameter"] },
-    { name: "Constellations", tiles: ["Orion", "Pegasus", "Cassiopeia", "Draco", "Lyra"] },
-    { name: "Greek gods", tiles: ["Zeus", "Apollo", "Hermes", "Athena", "Poseidon"] },
-    { name: "Famous ships", tiles: ["Titanic", "Victory", "Mary Rose", "Cutty Sark", "Endeavour"] },
-    { name: "Clouds", tiles: ["Cirrus", "Cumulus", "Stratus", "Nimbus", "Altocumulus"] },
-    { name: "Currencies", tiles: ["Yen", "Rupee", "Peso", "Franc", "Krona"] },
-    { name: "Mountains", tiles: ["Everest", "Kilimanjaro", "Ben Nevis", "Snowdon", "K2"] },
-    { name: "Languages", tiles: ["Welsh", "Gaelic", "Basque", "Swahili", "Urdu"] },
-    { name: "Shakespeare characters", tiles: ["Puck", "Portia", "Falstaff", "Iago", "Ophelia"] },
-    { name: "Moons", tiles: ["Titan", "Europa", "Io", "Triton", "Phobos"] },
-    { name: "Norse gods", tiles: ["Thor", "Odin", "Loki", "Freya", "Baldur"] },
+    { name: "Christmas", tiles: [
+      sub("Christmas tree", "🎄", ["Tinsel", "Baubles", "Fairy lights", "Pine needles", "Star"]),
+      sub("Santa", "🎅", ["Sleigh", "Reindeer", "Chimney", "Grotto", "Ho ho ho"]),
+      sub("Christmas dinner", "🦃", ["Turkey", "Sprouts", "Stuffing", "Gravy", "Pigs in blankets"]),
+      sub("Presents", "🎁", ["Wrapping paper", "Stocking", "Bow", "Gift tag", "Sellotape"]),
+      "Crackers",
+    ]},
+    { name: "Down the pub", tiles: [
+      sub("Beer", "🍺", ["Pint", "Ale", "Lager", "Bitter", "Stout"]),
+      sub("Darts", "🎯", ["Bullseye", "Oche", "One hundred and eighty", "Double top", "Flights"]),
+      sub("Pub quiz", "❓", ["Quizmaster", "Picture round", "Answer sheet", "Tie-breaker", "Team name"]),
+      sub("Pool", "🎱", ["Cue", "Chalk", "Pocket", "Rack", "Break"]),
+      "Crisps",
+    ]},
+    { name: "Royalty", tiles: [
+      sub("Crown", "👑", ["Jewels", "Sceptre", "Orb", "Tiara", "Throne"]),
+      sub("Castle", "🏰", ["Moat", "Drawbridge", "Turret", "Keep", "Battlements"]),
+      sub("Royal guard", "💂", ["Bearskin", "Sentry", "Changing", "Red tunic", "March"]),
+      sub("Royal Ascot", "🏇", ["Racing", "Hats", "Royal box", "Enclosure", "Horses"]),
+      "Palace",
+    ]},
   ]},
 ];
 

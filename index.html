@@ -51,7 +51,7 @@ body {
 }
 /* subtle felt grain */
 body::after {
-  content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .5; z-index: 0;
+  content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 0;
   background-image: radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px);
   background-size: 4px 4px;
 }
@@ -146,7 +146,7 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--gold); outl
   background: var(--tray); border-radius: 2.4cqw; padding: 1.6%;
   box-shadow: inset 0 0.4cqw 1.6cqw rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06);
   display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(7, 1fr); gap: 2.2% 1.6%;
-  container-type: inline-size; touch-action: none; position: relative;
+  container-type: inline-size; touch-action: none; position: relative; overflow: hidden;
 }
 .slot { position: relative; z-index: 1; border-radius: 1.6cqw; min-width: 0; min-height: 0; }
 .slot.empty { background: rgba(0,0,0,.18); box-shadow: inset 0 0.3cqw 0.8cqw rgba(0,0,0,.25); }
@@ -154,8 +154,8 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--gold); outl
 .tile {
   position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--ink);
   background: linear-gradient(180deg, #FFFDF7 0%, var(--tile) 55%);
-  border-radius: 1.6cqw; box-shadow: 0 0.55cqw 0 var(--tile-edge), 0 0.9cqw 1.2cqw rgba(0,0,0,.18);
-  font-weight: 600; font-size: 2.25cqw; letter-spacing: .05em; text-transform: uppercase; line-height: 1.1;
+  border-radius: 1.6cqw; box-shadow: 0 0.35cqw 0 var(--tile-edge), 0 1cqw 2cqw rgba(0,0,0,.22);
+  font-weight: 600; font-size: 2.25cqw; letter-spacing: .03em; text-transform: uppercase; line-height: 1.1;
   padding: 0 .4em; cursor: grab; transition: transform .14s, box-shadow .14s, background .3s, color .3s;
   overflow: hidden; overflow-wrap: normal;
 }
@@ -410,10 +410,10 @@ let B = null;
 function buildLevel(level) {
   const groups = [], tiles = [];
   function addGroup(spec, parent) {
-    const g = { id: groups.length, name: spec.name, pic: spec.pic || null, parent, memberTiles: [], subs: [] };
+    const g = { id: groups.length, name: spec.name, pic: spec.pic || null, parent, memberTiles: [] };
     groups.push(g);
     spec.tiles.forEach(t => {
-      if (typeof t === "object") { const s = addGroup(t, g.id); g.subs.push(s.id); g.memberTiles.push(s); }
+      if (typeof t === "object") g.memberTiles.push(addGroup(t, g.id));
       else { const tile = { id: tiles.length, ...parseTile(t), parent: g.id, symbolOf: null }; tiles.push(tile); g.memberTiles.push(tile.id); }
     });
     return g;
@@ -435,10 +435,10 @@ function startBoard(levelIdx) {
   const level = BOARD_LEVELS[levelIdx];
   const { groups, tiles } = buildLevel(level);
   B = {
-    levelIdx, level, groups, tiles, board: new Array(SIZE).fill(null), locked: new Map(), solved: new Set(),
+    levelIdx, level, groups, tiles, board: new Array(SIZE).fill(null), lockedList: [], solved: new Set(),
     pool: tiles.filter(t => t.symbolOf == null).map(t => t.id),
     timed: !!level.time, timeLeft: level.time || 0, elapsed: 0, frozenUntil: 0,
-    hints: 3, freezes: level.time ? 2 : 0, busy: false, sel: null, completing: null, hint: null, anim: {}, over: false,
+    hints: 3, freezes: level.time ? 2 : 0, busy: false, sel: null, completing: null, hint: null, born: null, over: false,
   };
   // Opening deal: two complete word groups plus a random mix, so there is always something to find.
   const wordGroups = shuffle(groups.filter(g => g.memberTiles.every(t => tiles[t].symbolOf == null)));
@@ -448,62 +448,109 @@ function startBoard(levelIdx) {
   shuffle(deal).forEach((id, i) => B.board[i] = id);
   breakCompleteRows();
   renderBoardScreen();
+  const fresh = new Set(B.board.filter(x => x != null));
+  flip(new Map(), fresh);
   startTicking(boardTick);
 }
 
 const T = id => B.tiles[id];
 const rowOf = i => Math.floor(i / COLS);
-const isLocked = i => B.locked.has(rowOf(i)) || (B.completing && B.completing.some(c => c.row === rowOf(i)));
+// Finished top groups sit in a stack at the bottom of the board; everything above is playable.
+const playRows = () => ROWS - B.lockedList.length;
+const lockedGroupAt = r => r >= playRows() ? B.lockedList[r - playRows()] : null;
+const isLocked = i => rowOf(i) >= playRows() || (B.completing && B.completing.some(c => c.row === rowOf(i)));
 function rowIds(r) { return B.board.slice(r * COLS, r * COLS + COLS); }
 function rowComplete(r) {
-  if (B.locked.has(r)) return null;
+  if (r >= playRows()) return null;
   const ids = rowIds(r);
   if (ids.some(x => x == null)) return null;
   const p = T(ids[0]).parent;
   return ids.every(x => T(x).parent === p) && !B.solved.has(p) ? p : null;
 }
-const playable = () => B.board.map((_, i) => i).filter(i => !B.locked.has(rowOf(i)));
+const playable = () => B.board.map((_, i) => i).filter(i => rowOf(i) < playRows());
 // Make sure no row is solved by luck after a deal or refill.
 function breakCompleteRows() {
   for (let guard = 0; guard < 100; guard++) {
     const r = [...Array(ROWS).keys()].find(r => rowComplete(r) != null);
     if (r == null) return;
     const a = r * COLS + Math.floor(Math.random() * COLS);
-    const others = playable().filter(i => rowOf(i) !== r && (B.board[i] == null || T(B.board[i]).parent !== T(B.board[a]).parent));
+    const others = playable().filter(i => rowOf(i) !== r && B.board[i] != null && T(B.board[i]).parent !== T(B.board[a]).parent);
     if (!others.length) return;
     const b = pick(others);
     [B.board[a], B.board[b]] = [B.board[b], B.board[a]];
   }
 }
-// Fill empty slots from the hidden stack, always leaving at least one group that can be completed.
+// Tiles fall down each column to fill gaps, leaving any spaces at the top.
+function gravity() {
+  const P = playRows();
+  for (let c = 0; c < COLS; c++) {
+    const col = [];
+    for (let r = P - 1; r >= 0; r--) if (B.board[r * COLS + c] != null) col.push(B.board[r * COLS + c]);
+    for (let r = P - 1, k = 0; r >= 0; r--, k++) B.board[r * COLS + c] = col[k] ?? null;
+  }
+}
+// Drop hidden words in from the top, always leaving at least one group that can be completed.
 function refill() {
   const onBoard = new Set(B.board.filter(x => x != null));
   const open = B.groups.filter(g => !B.solved.has(g.id));
   const completable = open.some(g => g.memberTiles.every(t => onBoard.has(t)));
-  let empties = playable().filter(i => B.board[i] == null);
+  let room = playable().filter(i => B.board[i] == null).length;
   const incoming = [];
   if (!completable) {
     const inPool = new Set(B.pool);
     const ready = open.filter(g => g.memberTiles.every(t => onBoard.has(t) || inPool.has(t)));
-    ready.sort((a, b) => a.memberTiles.filter(t => !onBoard.has(t)).length - b.memberTiles.filter(t => !onBoard.has(t)).length);
+    const missingOf = g => g.memberTiles.filter(t => !onBoard.has(t)).length;
+    ready.sort((a, b) => missingOf(a) - missingOf(b));
     const g = ready[0];
     if (g) {
       const missing = g.memberTiles.filter(t => !onBoard.has(t));
       // Not enough room? Quietly send some unrelated words back to the stack.
-      while (missing.length > empties.length) {
+      while (missing.length > room) {
         const cands = playable().filter(i => B.board[i] != null && T(B.board[i]).symbolOf == null && T(B.board[i]).parent !== g.id);
         if (!cands.length) break;
-        const i = pick(cands); B.pool.push(B.board[i]); B.board[i] = null; empties.push(i);
+        const i = pick(cands); B.pool.push(B.board[i]); B.board[i] = null; room++;
       }
       incoming.push(...missing);
       B.pool = B.pool.filter(t => !missing.includes(t));
     }
   }
+  gravity();
   shuffle(B.pool);
+  const empties = playable().filter(i => B.board[i] == null);
   while (incoming.length < empties.length && B.pool.length) incoming.push(B.pool.pop());
-  shuffle(empties);
-  incoming.forEach((id, k) => { B.board[empties[k]] = id; B.anim[id] = "drop"; });
+  shuffle(incoming);
+  // Fill the lowest gaps first so new words stack neatly from the top.
+  empties.sort((a, b) => b - a).forEach((slot, k) => { if (k < incoming.length) B.board[slot] = incoming[k]; });
+  gravity();
   breakCompleteRows();
+  return new Set(incoming);
+}
+
+/* Smooth movement: remember where tiles were, re-render, then animate each from old to new spot. */
+function tileRects() {
+  const m = new Map();
+  document.querySelectorAll("#board .tile").forEach(el => m.set(+el.dataset.id, el.getBoundingClientRect()));
+  return m;
+}
+function flip(before, fresh = new Set(), skip = null) {
+  if (reduceMotion) return;
+  const board = $("#board"); if (!board) return;
+  const top = board.getBoundingClientRect().top;
+  board.querySelectorAll(".tile").forEach(el => {
+    const id = +el.dataset.id, a = el.getBoundingClientRect(), b = before.get(id);
+    if (id === skip) return;
+    if (b) {
+      const dx = b.left - a.left, dy = b.top - a.top;
+      if (Math.abs(dx) + Math.abs(dy) < 1) return;
+      el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "translate(0, 0)" }],
+        { duration: 280 + Math.min(Math.hypot(dx, dy), 600) * .45, easing: "cubic-bezier(.3, 1.25, .5, 1)" });
+    } else if (fresh.has(id)) {
+      const c = +el.dataset.i % COLS, r = rowOf(+el.dataset.i);
+      const dy = -(a.bottom - top) - 8;
+      el.animate([{ transform: `translateY(${dy}px)`, opacity: 0 }, { opacity: 1, offset: .25 }, { transform: "translateY(0)", opacity: 1 }],
+        { duration: 420 + (a.bottom - top) * .35, delay: c * 45 + (ROWS - r) * 25, easing: "cubic-bezier(.3, 1.2, .5, 1)", fill: "backwards" });
+    }
+  });
 }
 
 function boardTick(dt, now) {
@@ -549,12 +596,12 @@ function renderBoardScreen() {
   if (B.timed) $("#freezeBtn").onclick = useFreeze;
   $("#shuffleBtn").onclick = () => {
     if (B.busy || B.over) return;
+    const before = tileRects();
     const slots = playable().filter(i => B.board[i] != null);
     const ids = shuffle(slots.map(i => B.board[i]));
     slots.forEach((s, k) => B.board[s] = ids[k]);
-    breakCompleteRows(); B.sel = null; B.anim = {};
-    ids.forEach(id => B.anim[id] = "drop");
-    renderBoard();
+    breakCompleteRows(); B.sel = null;
+    renderBoard(); flip(before);
   };
   bindDrag($("#board"));
   renderBoard();
@@ -563,7 +610,8 @@ function renderBoardScreen() {
 function renderBoard() {
   const el = $("#board"); if (!el) return;
   let html = "";
-  const bandRows = new Map(B.locked);
+  const bandRows = new Map();
+  for (let r = playRows(); r < ROWS; r++) bandRows.set(r, lockedGroupAt(r));
   (B.completing || []).forEach(c => bandRows.set(c.row, c.group));
   bandRows.forEach((gid, row) => {
     const g = B.groups[gid];
@@ -580,62 +628,82 @@ function renderBoard() {
     if (B.sel === i) cls.push("sel");
     if (bandRows.has(r)) { cls.push("grouped"); style = `--c:${B.groups[bandRows.get(r)].colour}`; }
     if (B.hint != null && t.parent === B.hint && !bandRows.has(r)) cls.push("hinted");
-    if (B.anim[id]) cls.push(B.anim[id]);
+    if (B.born === id) cls.push("born");
     if (B.completing && B.completing.some(cc => cc.row === r)) cls.push("flash");
-    html += `<div class="slot" data-i="${i}" style="${pos}"><div class="tile ${cls.join(" ")}" style="${style}" data-i="${i}" tabindex="0" aria-label="${esc(t.label)}">${tileFace(t)}</div></div>`;
+    html += `<div class="slot" data-i="${i}" style="${pos}"><div class="tile ${cls.join(" ")}" style="${style}" data-i="${i}" data-id="${id}" tabindex="0" aria-label="${esc(t.label)}">${tileFace(t)}</div></div>`;
   }
   el.innerHTML = html;
-  B.anim = {};
+  B.born = null;
   $("#count").textContent = `${B.solved.size}/${B.groups.length}`;
   $("#hintN").textContent = B.hints; $("#hintBtn").disabled = !B.hints;
   if (B.timed) { $("#freezeN").textContent = B.freezes; $("#freezeBtn").disabled = !B.freezes; }
 }
 
-function swapSlots(a, b) {
+function swapSlots(a, b, dragged = false) {
   if (a === b || B.busy || B.over || isLocked(a) || isLocked(b)) return;
+  const before = tileRects();
+  const movedId = B.board[a];
   [B.board[a], B.board[b]] = [B.board[b], B.board[a]];
   B.sel = null;
   const done = [];
-  for (let r = 0; r < ROWS; r++) { const g = rowComplete(r); if (g != null) done.push({ row: r, group: g }); }
-  if (!done.length) return renderBoard();
-  B.busy = true; B.completing = done;
-  if (done.some(d => d.group === B.hint)) B.hint = null;
+  for (let r = 0; r < playRows(); r++) { const g = rowComplete(r); if (g != null) done.push({ row: r, group: g }); }
+  if (done.length) { B.busy = true; B.completing = done; if (done.some(d => d.group === B.hint)) B.hint = null; }
   renderBoard();
+  flip(before, new Set(), dragged ? movedId : null);
+  if (!done.length) return;
   const cur = B;
-  setTimeout(() => { if (B === cur) resolveRows(done); }, 1000);
+  setTimeout(() => { if (B === cur) resolveRows(done); }, 900);
 }
 
 function resolveRows(done) {
   const subs = done.filter(d => B.groups[d.group].parent != null);
-  // Sub-groups: tiles slide together and shrink into the group's picture.
+  // Found sub-groups: the five tiles slide together and shrink into the group's picture.
   subs.forEach(d => {
     for (let c = 0; c < COLS; c++) {
       const tile = $(`#board .tile[data-i="${d.row * COLS + c}"]`);
-      if (tile) { tile.style.setProperty("--dx", `${(2 - c) * 106}%`); tile.classList.add("squish"); }
+      if (!tile) continue;
+      tile.classList.remove("flash");
+      tile.animate([
+        { transform: "translateX(0) scale(1)", opacity: 1 },
+        { transform: `translateX(${(2 - c) * 104}%) scale(.9)`, opacity: 1, offset: .55 },
+        { transform: `translateX(${(2 - c) * 104}%) scale(.15)`, opacity: 0 },
+      ], { duration: reduceMotion ? 1 : 650, easing: "cubic-bezier(.5, 0, .3, 1)", fill: "forwards" });
     }
   });
   const cur = B;
   setTimeout(() => {
     if (B !== cur) return;
-    done.forEach(d => {
+    const before = tileRects();
+    // Finished top groups move down into the stack at the bottom of the board.
+    const tops = done.filter(d => B.groups[d.group].parent == null).sort((a, b) => a.row - b.row);
+    subs.forEach(d => {
       const g = B.groups[d.group];
       B.solved.add(g.id);
-      if (g.parent == null) { B.locked.set(d.row, g.id); return; }
       for (let c = 0; c < COLS; c++) B.board[d.row * COLS + c] = null;
       B.board[d.row * COLS + 2] = g.symbolTile;
-      B.anim[g.symbolTile] = "born";
+      B.born = g.symbolTile;
       toast(`${g.pic} ${g.name}`);
     });
+    if (tops.length) {
+      const P = playRows();
+      const rows = [...Array(ROWS).keys()].map(rowIds);
+      const topRows = new Set(tops.map(d => d.row));
+      const keep = rows.slice(0, P).filter((_, r) => !topRows.has(r));
+      const newLocked = tops.map(d => rows[d.row]);
+      tops.forEach(d => B.solved.add(d.group));
+      B.lockedList = [...tops.map(d => d.group), ...B.lockedList];
+      // Rows above slide down, the new coloured rows join the stack, and gaps open at the top.
+      const gap = (P - keep.length - newLocked.length) * COLS;
+      B.board = [...Array(gap).fill(null), ...keep.flat(), ...newLocked.flat(), ...rows.slice(P).flat()];
+      toast(`${B.groups[tops[0].group].name} complete!`);
+    }
     B.completing = null;
-    if (B.solved.size === B.groups.length) { B.busy = false; renderBoard(); return setTimeout(() => { if (B === cur) endBoard(true); }, 500); }
-    const born = { ...B.anim };
-    refill();
-    B.anim = { ...B.anim, ...born };
+    if (B.solved.size === B.groups.length) { B.busy = false; renderBoard(); flip(before); return setTimeout(() => { if (B === cur) endBoard(true); }, 700); }
+    const fresh = refill();
     B.busy = false;
     renderBoard();
-    const top = done.find(d => B.groups[d.group].parent == null);
-    if (top) toast(`${B.groups[top.group].name} complete!`);
-  }, subs.length ? 400 : 0);
+    flip(before, fresh);
+  }, subs.length && !reduceMotion ? 650 : 0);
 }
 
 function useHint() {
@@ -724,7 +792,7 @@ function bindDrag(board) {
     if (d.moved) {
       d.tile.classList.remove("lifted");
       board.querySelectorAll(".slot.target").forEach(s => s.classList.remove("target"));
-      if (e.type === "pointerup" && d.target != null && d.target !== d.i && !isLocked(d.target)) swapSlots(d.i, d.target);
+      if (e.type === "pointerup" && d.target != null && d.target !== d.i && !isLocked(d.target)) swapSlots(d.i, d.target, true);
       return;
     }
     if (e.type !== "pointerup") return;

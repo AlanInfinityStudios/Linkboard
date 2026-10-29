@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linkboard</title>
+<meta name="description" content="An ad-free word connection game with a Board mode and an Only Connect style Wall mode.">
+<meta name="theme-color" content="#E6ECF1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111821" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Linkboard">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Rubik:wght@500;600;700&display=swap">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html { height: 100%; }
+body { margin: 0; font-size: 14px; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* Layout: one-screen app. Header bar, then a stage that scales the board to fit both width and height. */
+:root {
+  --bg: #E6ECF1;
+  --panel: #D3DDE6;
+  --tile: #FBFDFF;
+  --tile-edge: #AEBDCB;
+  --ink: #1D2838;
+  --muted: #5B6A7D;
+  --accent: #3346D3;
+  --accent-ink: #FFFFFF;
+  --good: #2B8A3E;
+  --bad: #C92A2A;
+  --freeze: #1C7ED6;
+  --scrim: rgba(18, 26, 38, .55);
+  --font-display: "Lilita One", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font-body: "Rubik", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111821; --panel: #1A2431; --tile: #263243; --tile-edge: #0A0F16;
+    --ink: #E8EEF5; --muted: #93A2B5; --accent: #7C8CFF; --accent-ink: #0E1430;
+    --good: #51CF66; --bad: #FF6B6B; --freeze: #4DABF7; --scrim: rgba(0,0,0,.65);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111821; --panel: #1A2431; --tile: #263243; --tile-edge: #0A0F16;
+  --ink: #E8EEF5; --muted: #93A2B5; --accent: #7C8CFF; --accent-ink: #0E1430;
+  --good: #51CF66; --bad: #FF6B6B; --freeze: #4DABF7; --scrim: rgba(0,0,0,.65);
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body);
+  -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, .tile:focus-visible, .wtile:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.app {
+  height: 100%; max-width: 980px; margin: 0 auto; display: flex; flex-direction: column;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px;
+  box-sizing: border-box;
+}
+.screen { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+
+/* ---------- Home ---------- */
+.home { overflow-y: auto; gap: 22px; padding-bottom: 24px; }
+.brand { display: flex; align-items: center; gap: 12px; padding-top: 8px; }
+.brand-mark { display: grid; grid-template-columns: repeat(3, 10px); gap: 3px; }
+.brand-mark i { width: 10px; height: 10px; border-radius: 3px; background: var(--tile-edge); }
+.brand-mark i:nth-child(4), .brand-mark i:nth-child(5), .brand-mark i:nth-child(6) { background: var(--accent); }
+.brand h1 { font-family: var(--font-display); font-weight: 400; font-size: 2.4rem; margin: 0; letter-spacing: .5px; }
+.tagline { color: var(--muted); margin: -12px 0 0; font-size: 1rem; }
+.modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.mode { background: var(--panel); border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.mode h2 { font-family: var(--font-display); font-weight: 400; font-size: 1.6rem; margin: 0; }
+.mode p { margin: 0; color: var(--muted); line-height: 1.45; font-size: .95rem; max-width: 46ch; }
+.levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 8px; }
+.level-btn {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 6px;
+  background: var(--tile); border: 0; border-radius: 12px; padding: 12px 14px;
+  box-shadow: 0 3px 0 var(--tile-edge); text-align: left;
+}
+.level-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--tile-edge); }
+.level-btn b { font-weight: 700; display: block; }
+.level-btn small { color: var(--muted); font-size: .8rem; }
+.level-btn .best { font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; text-align: left; }
+.level-btn .best.done { color: var(--good); font-weight: 600; }
+.pill { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; background: var(--accent); color: var(--accent-ink); vertical-align: 2px; margin-left: 6px; }
+
+/* ---------- Game header ---------- */
+.bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.icon-btn { width: 44px; height: 44px; border: 0; border-radius: 12px; background: var(--panel); display: grid; place-items: center; }
+.icon-btn svg { width: 22px; height: 22px; stroke: var(--ink); fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.title-block { text-align: center; }
+.title-block .lvl { font-family: var(--font-display); font-size: 1.35rem; line-height: 1; }
+.title-block .pill { margin: 4px 0 0; }
+.timer {
+  justify-self: end; display: flex; align-items: center; gap: 8px; background: var(--panel);
+  padding: 8px 14px; border-radius: 99px; font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums;
+  transition: background .3s, color .3s;
+}
+.timer svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.timer.frozen { background: var(--freeze); color: #fff; }
+.timer.low { color: var(--bad); }
+.sub { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 36px; }
+.hint-text { color: var(--muted); font-size: .95rem; }
+.counter { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; background: var(--panel); border-radius: 99px; padding: 6px 14px 6px 10px; }
+.stack { position: relative; width: 22px; height: 18px; }
+.stack i { position: absolute; left: 0; width: 22px; height: 8px; border-radius: 3px; }
+.stack i:nth-child(1) { top: 10px; background: #2B8A3E; }
+.stack i:nth-child(2) { top: 5px; background: #7048E8; }
+.stack i:nth-child(3) { top: 0; background: #E8590C; }
+
+/* ---------- Board ---------- */
+.stage { flex: 1; min-height: 0; container-type: size; display: grid; place-items: center; }
+.board {
+  width: min(100cqw, 152cqh); aspect-ratio: 1.52; box-sizing: border-box;
+  background: var(--panel); border-radius: 2.2cqw; padding: 1.6%;
+  display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(7, 1fr); gap: 2% 1.6%;
+  container-type: inline-size; touch-action: none; position: relative;
+}
+.slot { position: relative; z-index: 1; border-radius: 1.6cqw; min-width: 0; min-height: 0; }
+.slot.empty { background: color-mix(in srgb, var(--tile-edge) 22%, transparent); }
+.slot.target { outline: 3px dashed var(--accent); outline-offset: 1px; }
+.tile {
+  position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+  background: var(--tile); border-radius: 1.6cqw; box-shadow: 0 0.5cqw 0 var(--tile-edge);
+  font-weight: 700; font-size: 2.3cqw; letter-spacing: .06em; text-transform: uppercase; line-height: 1.15;
+  padding: 0 .4em; cursor: grab; transition: transform .12s, box-shadow .12s, background .25s, color .25s;
+  overflow: hidden; overflow-wrap: anywhere;
+}
+.tile .pic { font-size: 4.6cqw; line-height: 1; letter-spacing: 0; }
+.tile.sel { transform: translateY(-0.5cqw); box-shadow: 0 1cqw 0 var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--tile)); }
+.tile.lifted { opacity: .25; }
+.tile.grouped { background: var(--c); color: #fff; box-shadow: 0 0.5cqw 0 color-mix(in srgb, var(--c) 60%, #000); }
+.tile.hinted { animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0.5cqw 0 var(--tile-edge), 0 0 0 0.6cqw color-mix(in srgb, #F2B705 70%, transparent); } }
+.tile.drop { animation: drop .45s cubic-bezier(.2,.9,.3,1.2) both; }
+@keyframes drop { from { transform: translateY(-120%); opacity: 0; } }
+.tile.slide { animation: slide .35s ease-out both; }
+@keyframes slide { from { transform: translateY(-115%); } }
+.band {
+  z-index: 0; grid-column: 1 / -1; margin: -1.1cqw -1cqw; border-radius: 2cqw; background: var(--c);
+  opacity: .9; position: relative; animation: bandIn .3s ease-out both;
+}
+.band span {
+  position: absolute; top: -0.2cqw; left: 0; right: 0; text-align: center; color: #fff;
+  font-size: 1.5cqw; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; line-height: 1.1;
+}
+@keyframes bandIn { from { transform: scaleX(.9); opacity: 0; } }
+.ghost {
+  position: fixed; z-index: 50; pointer-events: none; display: grid; place-items: center; text-align: center;
+  background: var(--tile); border-radius: 12px; box-shadow: 0 10px 24px rgba(0,0,0,.25), 0 4px 0 var(--accent);
+  font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink); padding: 0 .4em;
+  transform: translate(-50%, -50%) scale(1.06); line-height: 1.15;
+}
+.ghost .pic { line-height: 1; letter-spacing: 0; }
+
+.tools { display: flex; justify-content: center; gap: 18px; padding-top: 4px; }
+.tool { position: relative; width: 64px; height: 64px; border: 0; border-radius: 50%; background: var(--tile); box-shadow: 0 4px 0 var(--tile-edge); display: grid; place-items: center; font-size: 28px; }
+.tool:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--tile-edge); }
+.tool:disabled { opacity: .4; cursor: default; }
+.tool .n { position: absolute; bottom: -6px; right: -6px; min-width: 24px; height: 24px; border-radius: 12px; background: var(--accent); color: var(--accent-ink); font-size: .8rem; font-weight: 700; display: grid; place-items: center; padding: 0 6px; box-sizing: border-box; }
+.tool-label { display: block; text-align: center; font-size: .72rem; color: var(--muted); margin-top: 10px; font-weight: 600; }
+.tool-wrap { display: flex; flex-direction: column; align-items: center; }
+
+/* ---------- Wall ---------- */
+.wall-stage { flex: 1; min-height: 0; container-type: size; display: grid; place-items: center; }
+.wall {
+  width: min(100cqw, 128cqh); aspect-ratio: 1.6; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);
+  gap: 1.6%; container-type: inline-size;
+}
+.wtile {
+  border: 0; border-radius: 1.4cqw; background: var(--tile); box-shadow: 0 0.5cqw 0 var(--tile-edge);
+  font-weight: 600; font-size: 3cqw; line-height: 1.15; padding: 0 .4em; min-width: 0; overflow-wrap: anywhere;
+  transition: background .2s, color .2s, transform .12s;
+}
+.wtile.sel { background: color-mix(in srgb, var(--accent) 22%, var(--tile)); box-shadow: 0 0.5cqw 0 var(--accent); transform: translateY(-0.3cqw); }
+.wtile.found { background: var(--c); color: #fff; box-shadow: 0 0.5cqw 0 color-mix(in srgb, var(--c) 60%, #000); cursor: default; animation: pop .35s ease-out; }
+.wtile.revealed { opacity: .82; }
+@keyframes pop { 40% { transform: scale(1.06); } }
+.wall.shake { animation: shake .45s; }
+@keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+.lives { display: flex; gap: 6px; align-items: center; font-weight: 600; color: var(--muted); font-size: .95rem; }
+.lives .heart { width: 22px; height: 22px; }
+.lives .heart path { fill: var(--bad); }
+.lives .heart.gone path { fill: var(--tile-edge); }
+
+/* ---------- Overlays ---------- */
+.overlay { position: fixed; inset: 0; z-index: 60; background: var(--scrim); display: grid; place-items: center; padding: 16px; animation: fade .2s; }
+@keyframes fade { from { opacity: 0; } }
+.sheet {
+  background: var(--bg); color: var(--ink); border-radius: 20px; padding: 22px; width: min(560px, 100%);
+  max-height: calc(100% - 32px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+}
+.sheet h2 { font-family: var(--font-display); font-weight: 400; font-size: 2rem; margin: 0; text-wrap: balance; }
+.sheet p { margin: 0; color: var(--muted); line-height: 1.45; }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.stat { background: var(--panel); border-radius: 12px; padding: 10px 14px; min-width: 90px; }
+.stat b { display: block; font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+.stat span { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { border: 0; border-radius: 12px; padding: 12px 18px; font-weight: 700; background: var(--panel); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.conn { display: grid; grid-template-columns: 10px 1fr auto; gap: 4px 12px; align-items: center; background: var(--panel); border-radius: 12px; padding: 10px 12px; }
+.conn .sw { grid-row: 1 / span 2; width: 10px; align-self: stretch; border-radius: 5px; background: var(--c); }
+.conn .name, .conn .words { grid-column: 2; min-width: 0; }
+.conn .ctl { grid-column: 3; grid-row: 1 / span 2; }
+.conn .words { font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.conn .name { font-weight: 700; }
+.conn .name.hidden { color: var(--muted); font-weight: 500; font-style: italic; }
+.conn .ctl { grid-row: 1 / span 2; display: flex; gap: 6px; }
+.chip { border: 0; border-radius: 99px; padding: 8px 12px; font-size: .8rem; font-weight: 700; background: var(--tile); box-shadow: 0 2px 0 var(--tile-edge); }
+.chip.on { background: var(--good); color: #fff; box-shadow: none; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 99px; font-weight: 600; z-index: 70;
+  animation: fade .2s; max-width: calc(100% - 48px); text-align: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+@media (max-width: 600px) {
+  .board { width: min(100cqw, 80cqh); aspect-ratio: .8; gap: 1.4% 1.8%; }
+  .tile { font-size: 2.75cqw; letter-spacing: 0; padding: 0 .15em; overflow-wrap: normal; }
+  .tile .pic { font-size: 6.5cqw; }
+  .band span { font-size: 2.4cqw; top: -0.6cqw; }
+  .wall { width: min(100cqw, 100cqh); aspect-ratio: 1; }
+  .wtile { font-size: 4.2cqw; }
+}
+@media (max-width: 520px) {
+  .tool { width: 54px; height: 54px; font-size: 24px; }
+  .hint-text { font-size: .85rem; }
+  .timer { font-size: 1rem; padding: 7px 11px; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script src="puzzles.js"></script>
+<script>const GROUP_COLOURS = ["#E8590C", "#3B5BDB", "#2B8A3E", "#C2255C", "#B7790A", "#0C8599", "#7048E8", "#5C7C1A", "#9C36B5", "#1C7ED6", "#A0522D", "#495057"];
+const WALL_COLOURS = ["#1E4D8C", "#2F7D4F", "#16807F", "#8C2F3C"];
+const COLS = 5, ROWS = 7, SIZE = COLS * ROWS;
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const app = $("#app");
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fmt = s => { s = Math.max(0, Math.ceil(s)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function parseTile(raw) {
+  const i = raw.indexOf("|");
+  return i > 0 ? { pic: raw.slice(0, i), label: raw.slice(i + 1) } : { pic: null, label: raw };
+}
+function tileFace(t) { return t.pic ? `<span class="pic" role="img" aria-label="${esc(t.label)}">${t.pic}</span>` : esc(t.label); }
+let toastTimer;
+function toast(msg) {
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.remove(), 2600);
+}
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem("linkboard-v1")) || {}; } catch { return {}; } },
+  set(k, v) { try { const d = store.get(); d[k] = v; localStorage.setItem("linkboard-v1", JSON.stringify(d)); } catch {} },
+};
+const ICONS = {
+  back: `<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>`,
+  clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>`,
+  heart: `<svg class="heart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>`,
+};
+
+/* ---------- timer (shared) ---------- */
+let tickHandle = null, lastTick = 0, onTick = null;
+function startTicking(fn) {
+  stopTicking(); onTick = fn; lastTick = performance.now();
+  tickHandle = setInterval(() => { const now = performance.now(); const dt = (now - lastTick) / 1000; lastTick = now; if (!document.hidden) onTick(dt, now); }, 200);
+}
+function stopTicking() { clearInterval(tickHandle); tickHandle = null; }
+
+/* =====================================================================
+   HOME
+   ===================================================================== */
+function showHome() {
+  stopTicking(); B = null; W = null;
+  const best = store.get();
+  app.innerHTML = `
+  <div class="screen home">
+    <div class="brand"><div class="brand-mark">${"<i></i>".repeat(9)}</div><h1>Linkboard</h1></div>
+    <p class="tagline">Find the connections. No adverts, no coins, just puzzles.</p>
+    <div class="modes">
+      <section class="mode">
+        <h2>Board</h2>
+        <p>Drag word tiles into rows. Five tiles that belong together in one row lock into a category, then clear away and hidden tiles drop in from the stack.</p>
+        <div class="levels">${BOARD_LEVELS.map((l, i) => {
+          const b = best["board-" + i];
+          return `<button class="level-btn" data-board="${i}"><span><b>${esc(l.name)}<span class="pill">${esc(l.difficulty)}</span></b><small>${l.groups.length} groups · ${l.time / 60} min</small></span>
+            <span class="best ${b ? "done" : ""}">${b ? "Best: " + fmt(b) + " left" : "Not solved yet"}</span></button>`;
+        }).join("")}</div>
+      </section>
+      <section class="mode">
+        <h2>Wall</h2>
+        <p>Sixteen clues, four groups of four. You have three minutes. Once you've found two groups, you only get three more wrong guesses.</p>
+        <div class="levels">${WALLS.map((w, i) => {
+          const b = best["wall-" + i];
+          return `<button class="level-btn" data-wall="${i}"><span><b>${esc(w.name)}</b><small>16 clues · 3 min</small></span>
+            <span class="best ${b != null ? "done" : ""}">${b != null ? "Best: " + b + " / 10 pts" : "Not played yet"}</span></button>`;
+        }).join("")}</div>
+      </section>
+    </div>
+  </div>`;
+  app.querySelectorAll("[data-board]").forEach(b => b.onclick = () => startBoard(+b.dataset.board));
+  app.querySelectorAll("[data-wall]").forEach(b => b.onclick = () => startWall(+b.dataset.wall));
+}
+
+/* =====================================================================
+   BOARD MODE
+   ===================================================================== */
+let B = null;
+
+function startBoard(levelIdx) {
+  const level = BOARD_LEVELS[levelIdx];
+  const tiles = [];
+  level.groups.forEach((g, gi) => g.tiles.forEach(raw => tiles.push({ id: tiles.length, group: gi, ...parseTile(raw) })));
+  B = {
+    levelIdx, level, tiles, board: new Array(SIZE).fill(null), pool: [], solved: new Set(),
+    timeLeft: level.time, frozenUntil: 0, hints: 3, freezes: 2, busy: false, sel: null,
+    completing: null, hint: null, anim: {}, over: false,
+  };
+  // Opening deal: two complete groups plus a random mix, so there is always something to find.
+  const byGroup = level.groups.map((_, gi) => tiles.filter(t => t.group === gi).map(t => t.id));
+  const order = shuffle(level.groups.map((_, i) => i));
+  const onBoard = [...byGroup[order[0]], ...byGroup[order[1]]];
+  const rest = shuffle(order.slice(2).flatMap(g => byGroup[g]));
+  while (onBoard.length < SIZE && rest.length) onBoard.push(rest.pop());
+  B.pool = rest;
+  shuffle(onBoard).forEach((id, i) => B.board[i] = id);
+  breakCompleteRows();
+  renderBoardScreen();
+  startTicking(boardTick);
+}
+
+const groupOf = id => B.tiles[id].group;
+function rowIds(r) { return B.board.slice(r * COLS, r * COLS + COLS); }
+function rowComplete(r) {
+  const ids = rowIds(r);
+  if (ids.some(x => x == null)) return null;
+  const g = groupOf(ids[0]);
+  return ids.every(x => groupOf(x) === g) && !B.solved.has(g) ? g : null;
+}
+// Make sure no row is already solved by luck (after a deal or shuffle).
+function breakCompleteRows() {
+  for (let guard = 0; guard < 100; guard++) {
+    const r = [...Array(ROWS).keys()].find(r => rowComplete(r) != null);
+    if (r == null) return;
+    const a = r * COLS + Math.floor(Math.random() * COLS);
+    const others = B.board.map((id, i) => i).filter(i => Math.floor(i / COLS) !== r && B.board[i] != null && groupOf(B.board[i]) !== groupOf(B.board[a]));
+    if (!others.length) return;
+    const b = others[Math.floor(Math.random() * others.length)];
+    [B.board[a], B.board[b]] = [B.board[b], B.board[a]];
+  }
+}
+// Draw five tiles from the hidden stack, making sure at least one full group is on the board afterwards.
+function drawFive(currentIds) {
+  const picked = [];
+  const counts = {};
+  currentIds.forEach(id => { const g = groupOf(id); counts[g] = (counts[g] || 0) + 1; });
+  const hasFull = Object.entries(counts).some(([g, n]) => n === 5 && !B.solved.has(+g));
+  if (!hasFull && B.pool.length) {
+    const groupsInPool = [...new Set(B.pool.map(groupOf))];
+    groupsInPool.sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+    const g = groupsInPool[0];
+    B.pool.filter(id => groupOf(id) === g).forEach(id => picked.push(id));
+    B.pool = B.pool.filter(id => !picked.includes(id));
+  }
+  shuffle(B.pool);
+  while (picked.length < COLS && B.pool.length) picked.push(B.pool.pop());
+  while (picked.length < COLS) picked.push(null);
+  return shuffle(picked);
+}
+
+function boardTick(dt, now) {
+  if (!B || B.over) return;
+  const frozen = now < B.frozenUntil;
+  if (!frozen) B.timeLeft -= dt;
+  const t = $("#timer");
+  if (t) {
+    t.querySelector("span").textContent = fmt(B.timeLeft);
+    t.classList.toggle("frozen", frozen);
+    t.classList.toggle("low", !frozen && B.timeLeft <= 30);
+  }
+  if (B.timeLeft <= 0) endBoard(false);
+}
+
+function renderBoardScreen() {
+  app.innerHTML = `
+  <div class="screen">
+    <div class="bar">
+      <button class="icon-btn" id="back" aria-label="Back to menu">${ICONS.back}</button>
+      <div class="title-block"><div class="lvl">${esc(B.level.name)}</div><span class="pill">${esc(B.level.difficulty)}</span></div>
+      <div class="timer" id="timer">${ICONS.clock}<span>${fmt(B.timeLeft)}</span></div>
+    </div>
+    <div class="sub">
+      <span class="hint-text">Group five tiles by putting them in one row</span>
+      <span class="counter" aria-label="Groups found"><span class="stack"><i></i><i></i><i></i></span><span id="count"></span></span>
+    </div>
+    <div class="stage"><div class="board" id="board"></div></div>
+    <div class="tools">
+      <div class="tool-wrap"><button class="tool" id="hintBtn" aria-label="Hint">💡<span class="n" id="hintN"></span></button><span class="tool-label">Hint</span></div>
+      <div class="tool-wrap"><button class="tool" id="freezeBtn" aria-label="Freeze the clock for 30 seconds">❄️<span class="n" id="freezeN"></span></button><span class="tool-label">Freeze</span></div>
+      <div class="tool-wrap"><button class="tool" id="shuffleBtn" aria-label="Shuffle the board">🔀</button><span class="tool-label">Shuffle</span></div>
+    </div>
+  </div>`;
+  $("#back").onclick = showHome;
+  $("#hintBtn").onclick = useHint;
+  $("#freezeBtn").onclick = useFreeze;
+  $("#shuffleBtn").onclick = () => {
+    if (B.busy || B.over) return;
+    const ids = shuffle(B.board.filter(x => x != null));
+    const slots = B.board.map((x, i) => x == null ? null : i).filter(x => x != null);
+    slots.forEach((s, k) => B.board[s] = ids[k]);
+    breakCompleteRows(); B.sel = null; B.anim = {};
+    B.board.forEach(id => { if (id != null) B.anim[id] = "drop"; });
+    renderBoard();
+  };
+  bindDrag($("#board"));
+  renderBoard();
+}
+
+function renderBoard() {
+  const el = $("#board"); if (!el) return;
+  let html = "";
+  if (B.completing) B.completing.forEach(({ row, group }) => {
+    html += `<div class="band" style="grid-row:${row + 1};--c:${GROUP_COLOURS[group % GROUP_COLOURS.length]}"><span>${esc(B.level.groups[group].name)}</span></div>`;
+  });
+  const completingRows = new Map((B.completing || []).map(c => [c.row, c.group]));
+  for (let i = 0; i < SIZE; i++) {
+    const id = B.board[i], r = Math.floor(i / COLS), c = i % COLS;
+    const pos = `grid-row:${r + 1};grid-column:${c + 1}`;
+    if (id == null) { html += `<div class="slot empty" data-i="${i}" style="${pos}"></div>`; continue; }
+    const t = B.tiles[id];
+    const cls = ["tile"];
+    if (B.sel === i) cls.push("sel");
+    if (completingRows.has(r)) cls.push("grouped");
+    if (B.hint != null && t.group === B.hint && !completingRows.has(r)) cls.push("hinted");
+    if (B.anim[id]) cls.push(B.anim[id]);
+    const style = completingRows.has(r) ? `style="--c:${GROUP_COLOURS[t.group % GROUP_COLOURS.length]}"` : "";
+    html += `<div class="slot" data-i="${i}" style="${pos}"><div class="tile ${cls.slice(1).join(" ")}" ${style} data-i="${i}" tabindex="0" aria-label="${esc(t.label)}">${tileFace(t)}</div></div>`;
+  }
+  el.innerHTML = html;
+  B.anim = {};
+  $("#count").textContent = `${B.solved.size}/${B.level.groups.length}`;
+  $("#hintN").textContent = B.hints; $("#hintBtn").disabled = !B.hints;
+  $("#freezeN").textContent = B.freezes; $("#freezeBtn").disabled = !B.freezes;
+}
+
+function swapSlots(a, b) {
+  if (a === b || B.busy || B.over) return;
+  [B.board[a], B.board[b]] = [B.board[b], B.board[a]];
+  B.sel = null;
+  const done = [];
+  for (let r = 0; r < ROWS; r++) { const g = rowComplete(r); if (g != null) done.push({ row: r, group: g }); }
+  if (done.length) {
+    B.busy = true; B.completing = done;
+    if (done.some(d => d.group === B.hint)) B.hint = null;
+    renderBoard();
+    { const cur = B; setTimeout(() => { if (B === cur) clearRows(done); }, 1300); }
+  } else renderBoard();
+}
+
+function clearRows(done) {
+  const doneRows = new Set(done.map(d => d.row));
+  done.forEach(d => B.solved.add(d.group));
+  let rows = [];
+  for (let r = 0; r < ROWS; r++) if (!doneRows.has(r)) rows.push(rowIds(r));
+  // Tiles above a cleared row slide down.
+  const lowest = Math.max(...doneRows);
+  for (let r = 0; r < lowest; r++) if (!doneRows.has(r)) rowIds(r).forEach(id => { if (id != null) B.anim[id] = "slide"; });
+  const remaining = rows.flat().filter(x => x != null);
+  const newRows = [];
+  for (let k = 0; k < done.length; k++) {
+    const row = drawFive([...remaining, ...newRows.flat().filter(x => x != null)]);
+    row.forEach(id => { if (id != null) B.anim[id] = "drop"; });
+    newRows.push(row);
+  }
+  B.board = [...newRows.flat(), ...rows.flat()];
+  breakCompleteRows();
+  B.completing = null; B.busy = false;
+  renderBoard();
+  if (B.solved.size === B.level.groups.length) { const cur = B; setTimeout(() => { if (B === cur) endBoard(true); }, 400); }
+}
+
+function useHint() {
+  if (!B.hints || B.busy || B.over) return;
+  const counts = {};
+  B.board.forEach(id => { if (id != null) { const g = groupOf(id); counts[g] = (counts[g] || 0) + 1; } });
+  const full = Object.keys(counts).map(Number).filter(g => counts[g] === 5 && !B.solved.has(g));
+  if (!full.length) return;
+  const g = full.includes(B.hint) ? B.hint : full[Math.floor(Math.random() * full.length)];
+  B.hints--; B.hint = g;
+  toast(`Look for: ${B.level.groups[g].name}`);
+  renderBoard();
+}
+function useFreeze() {
+  if (!B.freezes || B.over) return;
+  B.freezes--; B.frozenUntil = Math.max(performance.now(), B.frozenUntil) + 30000;
+  toast("Clock frozen for 30 seconds");
+  renderBoard();
+}
+
+function endBoard(won) {
+  if (B.over) return;
+  B.over = true; stopTicking();
+  const key = "board-" + B.levelIdx;
+  if (won) { const prev = store.get()[key]; if (!prev || B.timeLeft > prev) store.set(key, Math.ceil(B.timeLeft)); }
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+    <h2>${won ? "Board cleared!" : "Time's up"}</h2>
+    <p>${won ? `You found all ${B.level.groups.length} groups.` : `You found ${B.solved.size} of ${B.level.groups.length} groups.`}</p>
+    <div class="stats">
+      <div class="stat"><b>${B.solved.size}/${B.level.groups.length}</b><span>Groups</span></div>
+      <div class="stat"><b>${won ? fmt(B.timeLeft) : "0:00"}</b><span>Time left</span></div>
+      <div class="stat"><b>${3 - B.hints}</b><span>Hints used</span></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="again">Play again</button><button class="btn" id="menu">Back to menu</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const lvl = B.levelIdx;
+  $("#again", ov).onclick = () => { ov.remove(); startBoard(lvl); };
+  $("#menu", ov).onclick = () => { ov.remove(); showHome(); };
+}
+
+/* Drag and drop, plus tap one tile then tap another to swap. */
+function bindDrag(board) {
+  let drag = null;
+  const slotAt = (x, y) => { const el = document.elementFromPoint(x, y); const s = el && el.closest(".slot"); return s && board.contains(s) ? +s.dataset.i : null; };
+  const lockedRow = i => B.completing && B.completing.some(c => c.row === Math.floor(i / COLS));
+  board.addEventListener("pointerdown", e => {
+    const tile = e.target.closest(".tile");
+    if (!tile || B.busy || B.over) return;
+    const i = +tile.dataset.i;
+    if (lockedRow(i)) return;
+    drag = { i, x: e.clientX, y: e.clientY, moved: false, tile, ghost: null, target: null, pid: e.pointerId };
+    try { board.setPointerCapture(e.pointerId); } catch {}
+  });
+  board.addEventListener("pointermove", e => {
+    if (!drag || e.pointerId !== drag.pid) return;
+    if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 8) {
+      drag.moved = true;
+      const r = drag.tile.getBoundingClientRect();
+      const g = document.createElement("div"); g.className = "ghost";
+      g.style.width = r.width + "px"; g.style.height = r.height + "px";
+      g.style.fontSize = getComputedStyle(drag.tile).fontSize; g.innerHTML = drag.tile.innerHTML;
+      const pic = g.querySelector(".pic"); if (pic) pic.style.fontSize = getComputedStyle(drag.tile.querySelector(".pic")).fontSize;
+      document.body.appendChild(g); drag.ghost = g;
+      drag.tile.classList.add("lifted"); B.sel = null;
+      board.querySelectorAll(".tile.sel").forEach(t => t.classList.remove("sel"));
+    }
+    if (drag.moved) {
+      drag.ghost.style.left = e.clientX + "px"; drag.ghost.style.top = e.clientY + "px";
+      const t = slotAt(e.clientX, e.clientY);
+      if (t !== drag.target) {
+        board.querySelectorAll(".slot.target").forEach(s => s.classList.remove("target"));
+        drag.target = t;
+        if (t != null && t !== drag.i && !lockedRow(t)) board.querySelector(`.slot[data-i="${t}"]`).classList.add("target");
+      }
+    }
+  });
+  const finish = e => {
+    if (!drag || e.pointerId !== drag.pid) return;
+    const d = drag; drag = null;
+    if (d.ghost) d.ghost.remove();
+    if (d.moved) {
+      d.tile.classList.remove("lifted");
+      board.querySelectorAll(".slot.target").forEach(s => s.classList.remove("target"));
+      if (e.type === "pointerup" && d.target != null && d.target !== d.i && !lockedRow(d.target)) swapSlots(d.i, d.target);
+      return;
+    }
+    if (e.type !== "pointerup") return;
+    // Tap to select, tap another to swap.
+    if (B.sel == null) { B.sel = d.i; renderBoard(); }
+    else if (B.sel === d.i) { B.sel = null; renderBoard(); }
+    else swapSlots(B.sel, d.i);
+  };
+  board.addEventListener("pointerup", finish);
+  board.addEventListener("pointercancel", finish);
+  // Tapping an empty slot while a tile is selected moves it there.
+  board.addEventListener("click", e => {
+    const s = e.target.closest(".slot.empty");
+    if (s && B.sel != null) swapSlots(B.sel, +s.dataset.i);
+  });
+  board.addEventListener("keydown", e => {
+    if ((e.key === "Enter" || e.key === " ") && e.target.classList.contains("tile")) {
+      e.preventDefault(); const i = +e.target.dataset.i;
+      if (B.sel == null) B.sel = i; else if (B.sel === i) B.sel = null; else return swapSlots(B.sel, i);
+      renderBoard(); board.querySelector(`.tile[data-i="${i}"]`)?.focus();
+    }
+  });
+}
+
+/* =====================================================================
+   WALL MODE (Only Connect style)
+   ===================================================================== */
+let W = null;
+
+function startWall(idx) {
+  const wall = WALLS[idx];
+  const clues = [];
+  wall.groups.forEach((g, gi) => g.tiles.forEach(text => clues.push({ id: clues.length, group: gi, text })));
+  W = { idx, wall, clues, order: shuffle(clues.map(c => c.id)), found: [], sel: [], lives: null,
+        timeLeft: 180, over: false, busy: false, revealed: new Set(), credited: new Set(), endReason: "" };
+  renderWallScreen();
+  startTicking(wallTick);
+}
+
+function wallTick(dt) {
+  if (!W || W.over) return;
+  W.timeLeft -= dt;
+  const t = $("#timer");
+  if (t) { t.querySelector("span").textContent = fmt(W.timeLeft); t.classList.toggle("low", W.timeLeft <= 30); }
+  if (W.timeLeft <= 0) endWall("Time's up");
+}
+
+function renderWallScreen() {
+  app.innerHTML = `
+  <div class="screen">
+    <div class="bar">
+      <button class="icon-btn" id="back" aria-label="Back to menu">${ICONS.back}</button>
+      <div class="title-block"><div class="lvl">${esc(W.wall.name)}</div><span class="pill">Wall</span></div>
+      <div class="timer" id="timer">${ICONS.clock}<span>${fmt(W.timeLeft)}</span></div>
+    </div>
+    <div class="sub"><span class="hint-text" id="wallMsg"></span><span class="lives" id="lives"></span></div>
+    <div class="wall-stage"><div class="wall" id="wall"></div></div>
+  </div>`;
+  $("#back").onclick = showHome;
+  $("#wall").addEventListener("click", e => { const b = e.target.closest(".wtile"); if (b) tapClue(+b.dataset.id); });
+  renderWall();
+}
+
+function renderWall() {
+  const el = $("#wall"); if (!el) return;
+  const foundIds = W.found.flatMap(g => W.clues.filter(c => c.group === g).map(c => c.id));
+  const rest = W.order.filter(id => !foundIds.includes(id));
+  let html = "";
+  W.found.forEach((g, k) => W.clues.filter(c => c.group === g).forEach(c => {
+    const auto = W.revealedGroups && W.revealedGroups.includes(g);
+    html += `<button class="wtile found ${auto ? "revealed" : ""}" style="--c:${WALL_COLOURS[k]}" data-id="${c.id}" aria-disabled="true">${esc(c.text)}</button>`;
+  }));
+  rest.forEach(id => html += `<button class="wtile ${W.sel.includes(id) ? "sel" : ""}" data-id="${id}" aria-pressed="${W.sel.includes(id)}">${esc(W.clues[id].text)}</button>`);
+  el.innerHTML = html;
+  const msg = $("#wallMsg");
+  if (W.over) msg.textContent = W.endReason;
+  else if (W.lives == null) msg.textContent = `Pick four clues that connect. ${W.found.length} of 4 groups found.`;
+  else msg.textContent = "Careful now, every wrong guess costs a life.";
+  $("#lives").innerHTML = W.lives == null ? "" : `Lives ${[0, 1, 2].map(i => ICONS.heart.replace('class="heart"', `class="heart ${i < W.lives ? "" : "gone"}"`)).join("")}`;
+}
+
+function tapClue(id) {
+  if (W.over || W.busy) return;
+  if (W.found.includes(W.clues[id].group)) return;
+  const i = W.sel.indexOf(id);
+  if (i >= 0) W.sel.splice(i, 1); else W.sel.push(id);
+  if (W.sel.length < 4) return renderWall();
+  const g = W.clues[W.sel[0]].group;
+  if (W.sel.every(x => W.clues[x].group === g)) {
+    W.found.push(g); W.sel = [];
+    if (W.found.length === 2 && W.lives == null) { W.lives = 3; toast("Two groups found. You now have three lives."); }
+    if (W.found.length === 3) {
+      const last = [0, 1, 2, 3].find(x => !W.found.includes(x));
+      W.found.push(last);
+      renderWall();
+      return endWall("Wall solved!");
+    }
+    renderWall();
+  } else {
+    W.busy = true; renderWall();
+    const el = $("#wall"); el.classList.add("shake");
+    if (W.lives != null) W.lives--;
+    setTimeout(() => {
+      el.classList.remove("shake"); W.sel = []; W.busy = false;
+      if (W.lives === 0) { renderWall(); endWall("Out of lives"); } else renderWall();
+    }, 480);
+  }
+}
+
+function endWall(reason) {
+  if (W.over) return;
+  W.over = true; W.endReason = reason; stopTicking();
+  W.groupsScored = W.found.length;
+  // Show any groups the player didn't find, faded.
+  W.revealedGroups = [0, 1, 2, 3].filter(g => !W.found.includes(g));
+  W.found.push(...W.revealedGroups); W.sel = [];
+  renderWall();
+  setTimeout(showWallResults, 900);
+}
+
+function wallScore() {
+  const conns = W.credited.size;
+  return W.groupsScored + conns + (W.groupsScored === 4 && conns === 4 ? 2 : 0);
+}
+
+function showWallResults() {
+  const ov = document.createElement("div"); ov.className = "overlay";
+  const draw = () => {
+    const score = wallScore();
+    ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+      <h2>${esc(W.endReason)}</h2>
+      <p>You score a point for each group found. Now, did you know the connections? Reveal each one and give yourself a point if you had it. Get everything for a 2 point bonus.</p>
+      ${W.found.map((g, k) => {
+        const words = W.clues.filter(c => c.group === g).map(c => c.text).join(", ");
+        const shown = W.revealed.has(g);
+        return `<div class="conn" style="--c:${WALL_COLOURS[k]}"><span class="sw"></span>
+          <span class="name ${shown ? "" : "hidden"}">${shown ? esc(W.wall.groups[g].name) : "Connection hidden"}</span>
+          <span class="ctl">${shown ? `<button class="chip ${W.credited.has(g) ? "on" : ""}" data-credit="${g}">${W.credited.has(g) ? "Got it ✓" : "I had it"}</button>` : `<button class="chip" data-reveal="${g}">Reveal</button>`}</span>
+          <span class="words">${esc(words)}</span></div>`;
+      }).join("")}
+      <div class="stats">
+        <div class="stat"><b>${W.groupsScored}</b><span>Groups</span></div>
+        <div class="stat"><b>${W.credited.size}</b><span>Connections</span></div>
+        <div class="stat"><b>${score}</b><span>Total / 10</span></div>
+      </div>
+      <div class="actions"><button class="btn primary" id="again">Play again</button><button class="btn" id="menu">Back to menu</button></div>
+    </div>`;
+    ov.querySelectorAll("[data-reveal]").forEach(b => b.onclick = () => { W.revealed.add(+b.dataset.reveal); draw(); });
+    ov.querySelectorAll("[data-credit]").forEach(b => b.onclick = () => { const g = +b.dataset.credit; W.credited.has(g) ? W.credited.delete(g) : W.credited.add(g); draw(); });
+    $("#again", ov).onclick = () => { save(); ov.remove(); startWall(W.idx); };
+    $("#menu", ov).onclick = () => { save(); ov.remove(); showHome(); };
+  };
+  const save = () => { const k = "wall-" + W.idx, prev = store.get()[k]; if (prev == null || wallScore() > prev) store.set(k, wallScore()); };
+  draw();
+  document.body.appendChild(ov);
+}
+
+showHome();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>

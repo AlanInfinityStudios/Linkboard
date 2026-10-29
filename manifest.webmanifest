@@ -1,0 +1,16 @@
+{
+  "name": "Linkboard",
+  "short_name": "Linkboard",
+  "description": "An ad-free word connection game with a Board mode and an Only Connect style Wall mode.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E6ECF1",
+  "theme_color": "#1D2838",
+  "lang": "en-GB",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

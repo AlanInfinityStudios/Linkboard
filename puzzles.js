@@ -7,9 +7,13 @@
      - a smaller group, written { name, pic, tiles: [...] }. When the player
        finds it, its five tiles shrink into one picture tile (pic), and that
        picture becomes one of the five tiles of the group above it.
-   The groups at the top level never shrink. When found, they stay on the
-   board as a full-colour row. Keep it to 5 top-level groups or fewer so
+   Groups at the top level never shrink, because they are not part of a
+   bigger answer. When found, they stay on the board as a full-colour row.
+   A top-level group can be plain words (it just becomes a coloured row) or
+   be built from smaller groups. Keep to 5 top-level groups or fewer so
    there is still room to play.
+   Levels are played in order within their difficulty track (Easy, Medium,
+   Hard), so add new ones under the right difficulty.
    Set time (in seconds) for a countdown, or time: null for relaxed play.
 
    WALLS
@@ -35,6 +39,7 @@ const BOARD_LEVELS = [
       sub("Golf", "⛳", ["Caddie", "Birdie", "Tee", "Fairway", "Bunker"]),
       "Rugby",
     ]},
+    { name: "Vegetables", tiles: ["Carrot", "Potato", "Turnip", "Cabbage", "Parsnip"] },
   ]},
   { name: "Home and away", difficulty: "Easy", time: null, groups: [
     { name: "Around the house", tiles: [
@@ -51,6 +56,7 @@ const BOARD_LEVELS = [
       sub("Wind", "🌬️", ["Gust", "Gale", "Breeze", "Kite", "Windmill"]),
       "Fog",
     ]},
+    { name: "Colours", tiles: ["Scarlet", "Turquoise", "Magenta", "Ochre", "Lilac"] },
   ]},
   { name: "Out and about", difficulty: "Medium", time: 14 * 60, groups: [
     { name: "Transport", tiles: [
@@ -74,6 +80,7 @@ const BOARD_LEVELS = [
       sub("Violin", "🎻", ["Bow", "Chin rest", "Fiddle", "Rosin", "Orchestra"]),
       "Choir",
     ]},
+    { name: "Capital cities", tiles: ["Paris", "Madrid", "Oslo", "Lisbon", "Vienna"] },
   ]},
   { name: "Food and drink", difficulty: "Medium", time: null, groups: [
     { name: "Breakfast", tiles: [
@@ -97,6 +104,7 @@ const BOARD_LEVELS = [
       sub("Apple", "🍎", ["Crumble", "Pie", "Cox", "Core", "Orchard"]),
       "Trifle",
     ]},
+    { name: "Spices", tiles: ["Cumin", "Paprika", "Saffron", "Nutmeg", "Cinnamon"] },
   ]},
   { name: "Wordplay", difficulty: "Hard", time: 15 * 60, groups: [
     { name: "In the sky", tiles: [
@@ -120,6 +128,7 @@ const BOARD_LEVELS = [
       sub("Red___", "🔴", ["Head", "Wood", "Neck", "Brick", "Carpet"]),
       "Blue",
     ]},
+    { name: "Hidden numbers", tiles: ["Often", "Weight", "Canine", "Lonely", "Bitten"] },
   ]},
   { name: "Great British", difficulty: "Hard", time: 15 * 60, groups: [
     { name: "Christmas", tiles: [
@@ -143,6 +152,62 @@ const BOARD_LEVELS = [
       sub("Royal Ascot", "🏇", ["Racing", "Hats", "Royal box", "Enclosure", "Horses"]),
       "Palace",
     ]},
+    { name: "Seaside resorts", tiles: ["Blackpool", "Brighton", "Skegness", "Scarborough", "Margate"] },
+  ]},
+  { name: "Out in nature", difficulty: "Easy", time: null, groups: [
+    { name: "Pets", tiles: [
+      sub("Dog", "🐶", ["Bark", "Kennel", "Lead", "Fetch", "Puppy"]),
+      sub("Cat", "🐱", ["Purr", "Whiskers", "Kitten", "Meow", "Litter tray"]),
+      sub("Goldfish", "🐟", ["Bowl", "Fins", "Bubbles", "Gills", "Scales"]),
+      sub("Rabbit", "🐇", ["Hutch", "Burrow", "Carrot", "Ears", "Bunny"]),
+      "Hamster",
+    ]},
+    { name: "The year", tiles: [
+      sub("Spring", "🌸", ["Blossom", "Lambs", "Easter", "Showers", "Buds"]),
+      sub("Summer", "🏖️", ["Holiday", "Picnic", "Barbecue", "Sunshine", "Ice lolly"]),
+      sub("Autumn", "🍂", ["Leaves", "Conkers", "Harvest", "Bonfire", "Acorns"]),
+      sub("Winter", "⛄", ["Frost", "Scarf", "Mittens", "Snowman", "Hibernate"]),
+      "New Year",
+    ]},
+    { name: "Flowers", tiles: ["Rose", "Tulip", "Daisy", "Daffodil", "Bluebell"] },
+    { name: "Trees", tiles: ["Oak", "Birch", "Willow", "Maple", "Holly"] },
+  ]},
+  { name: "Night in", difficulty: "Medium", time: 12 * 60, groups: [
+    { name: "Film night", tiles: [
+      sub("Popcorn", "🍿", ["Kernels", "Salted", "Sweet", "Butter", "Bucket"]),
+      sub("Director", "🎬", ["Action", "Cut", "Clapperboard", "Take", "Script"]),
+      sub("Superhero", "🦸", ["Cape", "Mask", "Villain", "Secret identity", "Sidekick"]),
+      sub("Horror", "👻", ["Scream", "Zombie", "Haunted", "Vampire", "Jump scare"]),
+      "Trailer",
+    ]},
+    { name: "Takeaway", tiles: [
+      sub("Curry", "🍛", ["Korma", "Tikka", "Naan", "Poppadom", "Bhaji"]),
+      sub("Chinese", "🥡", ["Chow mein", "Spring roll", "Prawn crackers", "Sweet and sour", "Chopsticks"]),
+      sub("Chippy", "🐟", ["Cod", "Batter", "Mushy peas", "Vinegar", "Saveloy"]),
+      sub("Pizza", "🍕", ["Margherita", "Pepperoni", "Stuffed crust", "Dough", "Deep pan"]),
+      "Delivery",
+    ]},
+    { name: "Board games", tiles: ["Monopoly", "Cluedo", "Scrabble", "Risk", "Chess"] },
+    { name: "Card games", tiles: ["Snap", "Poker", "Rummy", "Bridge", "Patience"] },
+  ]},
+  { name: "Hidden words", difficulty: "Hard", time: 15 * 60, groups: [
+    { name: "Around the home", tiles: [
+      sub("House___", "🏠", ["Boat", "Hold", "Work", "Wife", "Plant"]),
+      sub("Door___", "🚪", ["Bell", "Mat", "Step", "Knob", "Way"]),
+      sub("Window___", "🪟", ["Sill", "Box", "Pane", "Shopping", "Cleaner"]),
+      sub("Bed___", "🛏️", ["Room", "Rock", "Bug", "Time", "Spread"]),
+      "Roof",
+    ]},
+    { name: "Weather", tiles: [
+      sub("Rain___", "🌧️", ["Coat", "Drop", "Forest", "Fall", "Check"]),
+      sub("Snow___", "❄️", ["Man", "Drift", "Flake", "Board", "Plough"]),
+      sub("Thunder___", "⚡", ["Bolt", "Clap", "Storm", "Struck", "Birds"]),
+      sub("Wind___", "🌬️", ["Mill", "Screen", "Sock", "Swept", "Breaker"]),
+      "Fog",
+    ]},
+    { name: "Hidden animals", tiles: ["Scatter", "Dogma", "Pirate", "Pigment", "Cowboy"] },
+    { name: "Hidden body parts", tiles: ["Fearless", "Hipster", "Elegant", "Chinese", "Charmed"] },
+    { name: "Palindromes", tiles: ["Level", "Radar", "Kayak", "Civic", "Rotor"] },
   ]},
 ];
 

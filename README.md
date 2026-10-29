@@ -6,7 +6,7 @@ An ad-free word connection game, built to play on an iPad.
 
 ## Modes
 
-- **Board**: a 5 by 7 grid of words. Drag a tile onto another to swap them (or tap one, then the other). Put five connected tiles in one row and they shrink into a single picture tile, and hidden words drop in from the stack. The pictures connect too: five of them in a row complete a top group, which stays on the board as a full-colour row. Some levels are timed (with clock freezes), others are relaxed and untimed.
+- **Board**: a 5 by 7 grid of words. Drag a tile onto another to swap them (or tap one, then the other). Put five connected tiles in one row and they shrink into a single picture tile, and hidden words drop in from the stack. The pictures connect too: five of them in a row complete a top group, which stays on the board as a full-colour row. A group only shrinks into a picture when it is part of a bigger answer; groups with nothing above them stay as full-colour rows. Levels come in Easy, Medium and Hard tracks, some timed and some relaxed. Hints light up two tiles that connect, and progress is saved so you can leave and carry on later.
 - **Wall**: inspired by Only Connect. Sixteen clues, four groups of four, three minutes. Once two groups are found you have three lives. Afterwards, reveal the connections and score yourself out of 10.
 
 ## Install on iPad

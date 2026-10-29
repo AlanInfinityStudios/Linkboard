@@ -558,7 +558,10 @@ function refill() {
     if (g) {
       const missing = g.memberTiles.filter(t => !onBoard.has(t));
       while (missing.length > room) {
-        const cands = playable().filter(i => B.board[i] != null && T(B.board[i]).symbolOf == null && T(B.board[i]).parent !== g.id && !B.hintTiles.includes(B.board[i]));
+        const others = playable().filter(i => B.board[i] != null && T(B.board[i]).parent !== g.id);
+        // Prefer sending back plain words; only move a picture back if there is nothing else.
+        let cands = others.filter(i => T(B.board[i]).symbolOf == null && !B.hintTiles.includes(B.board[i]));
+        if (!cands.length) cands = others;
         if (!cands.length) break;
         const i = pick(cands); B.pool.push(B.board[i]); B.board[i] = null; room++;
       }
@@ -595,11 +598,11 @@ function flip(before, fresh = new Set(), skip = null) {
       const dx = b.left - a.left, dy = b.top - a.top;
       if (Math.abs(dx) + Math.abs(dy) < 1) return;
       el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "translate(0, 0)" }],
-        { duration: (420 + Math.min(Math.hypot(dx, dy), 500) * .6) * slow, delay: dy < 0 ? 0 : c * 30, easing: "cubic-bezier(.33, 1.3, .55, 1)", fill: "backwards" });
+        { duration: (420 + Math.min(Math.hypot(dx, dy), 500) * .6) * slow, delay: dy < 0 ? 0 : c * 30, easing: "cubic-bezier(.3, 1.12, .5, 1)", fill: "backwards" });
     } else if (fresh.has(id)) {
       const dy = -(a.bottom - top) - 12;
       el.animate([{ transform: `translateY(${dy}px)`, opacity: 0 }, { opacity: 1, offset: .2 }, { transform: "translateY(0)", opacity: 1 }],
-        { duration: (650 + (a.bottom - top) * .4) * slow, delay: 250 + c * 70 + (ROWS - r) * 40, easing: "cubic-bezier(.33, 1.25, .55, 1)", fill: "backwards" });
+        { duration: (650 + (a.bottom - top) * .4) * slow, delay: 250 + c * 70 + (ROWS - r) * 40, easing: "cubic-bezier(.3, 1.1, .5, 1)", fill: "backwards" });
     }
   });
 }
@@ -761,10 +764,16 @@ function resolveRows(done) {
     B.completing = null;
     if (B.solved.size === B.groups.length) { B.busy = false; renderBoard(); flip(before); return setTimeout(() => { if (B === cur) endBoard(true); }, 900); }
     const fresh = refill();
+    // Near the end the last rows can only be filled one way; if a row is already complete, play it out.
+    const auto = [];
+    for (let r = 0; r < playRows(); r++) { const g = rowComplete(r); if (g != null) auto.push({ row: r, group: g }); }
     B.busy = false;
     renderBoard();
     flip(before, fresh);
-    saveBoard();
+    if (auto.length) {
+      B.busy = true; B.completing = auto;
+      setTimeout(() => { if (B !== cur) return; renderBoard(); setTimeout(() => { if (B === cur) resolveRows(auto); }, 1000); }, 1300);
+    } else saveBoard();
   }, subs.length ? SQUISH : 0);
 }
 

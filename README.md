@@ -17,7 +17,7 @@ Open the link above in Safari, tap the Share button, then **Add to Home Screen**
 
 All puzzles live in [`puzzles.js`](puzzles.js).
 
-- Board levels: every group has exactly 5 tiles. A tile is a word, or a smaller group written `sub("Cow", "🐄", [five words])` that shrinks into that picture when found. Top-level groups stay on the board, so keep to 5 or fewer per level. Use `time: 14 * 60` for a countdown or `time: null` for relaxed play.
+- Board levels: every level needs exactly 7 top-level groups, which keeps the board full from start to finish. Every group has exactly 5 tiles. A tile is a word, or a smaller group written `sub("Cow", "🐄", [five words])` that shrinks into that picture when found. Top-level groups stay on the board, so keep to 5 or fewer per level. Use `time: 14 * 60` for a countdown or `time: null` for relaxed play.
 - Walls need exactly 4 groups of 4. Add the new wall to `tools/check_walls.py` too, with its red herrings, and run `python3 tools/check_walls.py` to make sure there is only one way to solve it.
 
 ## Files

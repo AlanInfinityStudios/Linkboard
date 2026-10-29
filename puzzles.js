@@ -10,8 +10,10 @@
    Groups at the top level never shrink, because they are not part of a
    bigger answer. When found, they stay on the board as a full-colour row.
    A top-level group can be plain words (it just becomes a coloured row) or
-   be built from smaller groups. Keep to 5 top-level groups or fewer so
-   there is still room to play.
+   be built from smaller groups.
+   Every level needs EXACTLY 7 top-level groups. That keeps the board full
+   from start to finish (the hidden words run out at just the right moment)
+   and the finished board is seven coloured rows.
    Levels are played in order within their difficulty track (Easy, Medium,
    Hard), so add new ones under the right difficulty.
    Set time (in seconds) for a countdown, or time: null for relaxed play.
@@ -40,6 +42,10 @@ const BOARD_LEVELS = [
       "Rugby",
     ]},
     { name: "Vegetables", tiles: ["Carrot", "Potato", "Turnip", "Cabbage", "Parsnip"] },
+    { name: "Fruit", tiles: ["Apple", "Pear", "Plum", "Cherry", "Banana"] },
+    { name: "Birds", tiles: ["Robin", "Owl", "Crow", "Swan", "Wren"] },
+    { name: "Colours", tiles: ["Red", "Blue", "Green", "Yellow", "Purple"] },
+    { name: "Weather", tiles: ["Rain", "Snow", "Wind", "Hail", "Sleet"] },
   ]},
   { name: "Home and away", difficulty: "Easy", time: null, groups: [
     { name: "Around the house", tiles: [
@@ -57,6 +63,10 @@ const BOARD_LEVELS = [
       "Fog",
     ]},
     { name: "Colours", tiles: ["Scarlet", "Turquoise", "Magenta", "Ochre", "Lilac"] },
+    { name: "Pets", tiles: ["Dog", "Cat", "Hamster", "Goldfish", "Rabbit"] },
+    { name: "Fruit", tiles: ["Apple", "Pear", "Plum", "Grape", "Lemon"] },
+    { name: "Shapes", tiles: ["Circle", "Square", "Triangle", "Oval", "Star"] },
+    { name: "Transport", tiles: ["Car", "Bus", "Train", "Plane", "Boat"] },
   ]},
   { name: "Out and about", difficulty: "Medium", time: 14 * 60, groups: [
     { name: "Transport", tiles: [
@@ -81,6 +91,9 @@ const BOARD_LEVELS = [
       "Choir",
     ]},
     { name: "Capital cities", tiles: ["Paris", "Madrid", "Oslo", "Lisbon", "Vienna"] },
+    { name: "Planets", tiles: ["Mars", "Venus", "Saturn", "Jupiter", "Neptune"] },
+    { name: "Dog breeds", tiles: ["Beagle", "Poodle", "Boxer", "Pug", "Labrador"] },
+    { name: "Tools", tiles: ["Hammer", "Spanner", "Chisel", "Pliers", "Saw"] },
   ]},
   { name: "Food and drink", difficulty: "Medium", time: null, groups: [
     { name: "Breakfast", tiles: [
@@ -105,6 +118,9 @@ const BOARD_LEVELS = [
       "Trifle",
     ]},
     { name: "Spices", tiles: ["Cumin", "Paprika", "Saffron", "Nutmeg", "Cinnamon"] },
+    { name: "Herbs", tiles: ["Basil", "Mint", "Thyme", "Sage", "Parsley"] },
+    { name: "Nuts", tiles: ["Almond", "Walnut", "Cashew", "Peanut", "Pecan"] },
+    { name: "Fruit", tiles: ["Banana", "Mango", "Kiwi", "Peach", "Lime"] },
   ]},
   { name: "Wordplay", difficulty: "Hard", time: 15 * 60, groups: [
     { name: "In the sky", tiles: [
@@ -129,6 +145,9 @@ const BOARD_LEVELS = [
       "Blue",
     ]},
     { name: "Hidden numbers", tiles: ["Often", "Weight", "Canine", "Lonely", "Bitten"] },
+    { name: "Palindromes", tiles: ["Level", "Radar", "Kayak", "Civic", "Rotor"] },
+    { name: "___cake", tiles: ["Cup", "Pan", "Rock", "Fruit", "Carrot"] },
+    { name: "___ball", tiles: ["Snow", "Meat", "Hand", "Net", "Base"] },
   ]},
   { name: "Great British", difficulty: "Hard", time: 15 * 60, groups: [
     { name: "Christmas", tiles: [
@@ -153,6 +172,9 @@ const BOARD_LEVELS = [
       "Palace",
     ]},
     { name: "Seaside resorts", tiles: ["Blackpool", "Brighton", "Skegness", "Scarborough", "Margate"] },
+    { name: "Soaps", tiles: ["EastEnders", "Coronation Street", "Emmerdale", "Hollyoaks", "Neighbours"] },
+    { name: "Biscuits", tiles: ["Digestive", "Hobnob", "Custard cream", "Bourbon", "Jammie Dodger"] },
+    { name: "Mr Men", tiles: ["Tickle", "Greedy", "Bump", "Happy", "Messy"] },
   ]},
   { name: "Out in nature", difficulty: "Easy", time: null, groups: [
     { name: "Pets", tiles: [
@@ -171,6 +193,9 @@ const BOARD_LEVELS = [
     ]},
     { name: "Flowers", tiles: ["Rose", "Tulip", "Daisy", "Daffodil", "Bluebell"] },
     { name: "Trees", tiles: ["Oak", "Birch", "Willow", "Maple", "Holly"] },
+    { name: "Insects", tiles: ["Ant", "Bee", "Wasp", "Beetle", "Ladybird"] },
+    { name: "Birds", tiles: ["Robin", "Owl", "Blackbird", "Swan", "Wren"] },
+    { name: "Sea creatures", tiles: ["Crab", "Dolphin", "Whale", "Octopus", "Seal"] },
   ]},
   { name: "Night in", difficulty: "Medium", time: 12 * 60, groups: [
     { name: "Film night", tiles: [
@@ -189,6 +214,9 @@ const BOARD_LEVELS = [
     ]},
     { name: "Board games", tiles: ["Monopoly", "Cluedo", "Scrabble", "Risk", "Chess"] },
     { name: "Card games", tiles: ["Snap", "Poker", "Rummy", "Bridge", "Patience"] },
+    { name: "TV quiz shows", tiles: ["Pointless", "Mastermind", "The Chase", "Countdown", "Eggheads"] },
+    { name: "Drinks", tiles: ["Tea", "Cocoa", "Wine", "Lemonade", "Cola"] },
+    { name: "Snacks", tiles: ["Crisps", "Nachos", "Pretzels", "Peanuts", "Olives"] },
   ]},
   { name: "Hidden words", difficulty: "Hard", time: 15 * 60, groups: [
     { name: "Around the home", tiles: [
@@ -208,6 +236,8 @@ const BOARD_LEVELS = [
     { name: "Hidden animals", tiles: ["Scatter", "Dogma", "Pirate", "Pigment", "Cowboy"] },
     { name: "Hidden body parts", tiles: ["Fearless", "Hipster", "Elegant", "Chinese", "Charmed"] },
     { name: "Palindromes", tiles: ["Level", "Radar", "Kayak", "Civic", "Rotor"] },
+    { name: "Hidden numbers", tiles: ["Often", "Weight", "Canine", "Lonely", "Bitten"] },
+    { name: "Anagrams of STOP", tiles: ["Pots", "Tops", "Spot", "Opts", "Post"] },
   ]},
 ];
 

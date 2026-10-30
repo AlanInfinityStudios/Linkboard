@@ -87,6 +87,36 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .mini i { height: 10px; border-radius: 3px; background: var(--tile); box-shadow: 0 1px 0 var(--tile-edge); }
 .mini.w i { height: 14px; }
 .mini i.c { background: var(--c); box-shadow: none; }
+.home-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.flag-btn { border: 0; height: 46px; padding: 0 14px 0 10px; border-radius: 99px; background: var(--surface); box-shadow: var(--shadow); display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: .9rem; }
+.flag-btn b { font-size: 1.5rem; line-height: 1; }
+.greet { margin: -8px 0 0; font-size: 1.15rem; font-weight: 500; }
+.path { display: flex; gap: 3px; }
+.path i { flex: 1; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--c) 18%, var(--bg)); }
+.path i.d { background: var(--c); }
+.path i.cur { background: var(--surface); box-shadow: inset 0 0 0 2px var(--c); }
+.now { display: flex; flex-direction: column; gap: 2px; }
+.now small { font-size: .74rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--c); }
+.now b { font-size: 1.05rem; font-weight: 600; }
+.go.tinted { background: var(--c); color: #fff; }
+
+/* ---------- Welcome and settings ---------- */
+.welcome { justify-content: center; align-items: center; }
+.welcome .sheet { box-shadow: var(--shadow); animation: none; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field > span { font-weight: 700; font-size: 1rem; }
+.field input {
+  font: inherit; font-size: 1.1rem; padding: 12px 14px; border-radius: 14px; border: 2px solid var(--tile-edge); background: var(--tile); color: var(--ink);
+  -webkit-user-select: text; user-select: text; outline: none;
+}
+.field input:focus { border-color: var(--accent); }
+.langs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lang { border: 2px solid transparent; border-radius: 16px; background: var(--bg); padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.lang b { font-size: 2rem; line-height: 1.1; }
+.lang span { font-weight: 700; }
+.lang small { color: var(--muted); font-size: .78rem; }
+.lang.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.btn.big { padding: 14px 20px; font-size: 1.05rem; }
 
 /* ---------- Mode screen: tracks ---------- */
 .topbar { display: grid; grid-template-columns: 46px 1fr 46px; align-items: center; gap: 10px; }
@@ -167,6 +197,10 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .tile.hinted { animation: hintPulse 1.1s ease-in-out infinite; }
 .tile.hinted::after { content: "🔗"; position: absolute; top: .25em; right: .35em; font-size: .9em; }
 @keyframes hintPulse { 0%, 100% { box-shadow: 0 0 0 0.3cqw var(--gold), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); } 50% { box-shadow: 0 0 0 0.75cqw color-mix(in srgb, var(--gold) 55%, transparent), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); } }
+.tile.anag { color: #7A45D6; }
+.tile.anag::before { content: "↻"; position: absolute; top: .2em; left: .35em; font-size: .85em; opacity: .55; }
+.tile.unravel { animation: unravel .8s cubic-bezier(.3, 1.3, .5, 1) both; }
+@keyframes unravel { 0% { transform: rotateX(90deg) scale(.9); } 100% { transform: none; } }
 .tile.born { animation: born .6s cubic-bezier(.2, .9, .3, 1.5) both; }
 @keyframes born { from { transform: scale(.2) rotate(-25deg); } }
 .band {
@@ -291,7 +325,24 @@ function parseTile(raw) {
   const i = raw.indexOf("|");
   return i > 0 ? { pic: raw.slice(0, i), label: raw.slice(i + 1) } : { pic: null, label: raw };
 }
-function tileFace(t) { return t.pic ? `<span class="pic" role="img" aria-label="${esc(t.label)}">${t.pic}</span>` : esc(t.label); }
+// An anagram tile shows its scrambled letters until its group is found.
+const faceLabel = (t, reveal) => t.anagram && !reveal ? t.anagram : t.label;
+function tileFace(t, reveal = true) { return t.pic ? `<span class="pic" role="img" aria-label="${esc(t.label)}">${t.pic}</span>` : esc(faceLabel(t, reveal)); }
+// Same shuffle every time for a given level, so an anagram stays the same when you come back to it.
+function seeded(seed) {
+  return () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+function scramble(word, rnd) {
+  const w = word.toLowerCase();
+  let best = null, bestFixed = 99;
+  for (let k = 0; k < 40 && bestFixed > 0; k++) {
+    const a = w.split("");
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    const fixed = a.filter((c, i) => c === w[i]).length;
+    if (a.join("") !== w && fixed < bestFixed) { best = a.join(""); bestFixed = fixed; }
+  }
+  return best && best[0].toUpperCase() + best.slice(1);
+}
 let toastTimer;
 function toast(msg) {
   document.querySelectorAll(".toast").forEach(t => t.remove());
@@ -304,6 +355,35 @@ const store = {
   get() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } },
   set(k, v) { try { const d = store.get(); if (v === undefined) delete d[k]; else d[k] = v; localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch {} },
 };
+/* The player: their name and which English they want (en-GB or en-US). */
+const profile = () => store.get().profile || null;
+const playerName = () => ((profile() || {}).name || "").trim();
+const isUS = () => (profile() || {}).lang === "en-US";
+// Picks the British or American version of a word: "Porridge»Oatmeal" inline, or the US_WORDS list.
+function loc(text, dict = US_WORDS) {
+  const i = text.indexOf("»");
+  if (i >= 0) return isUS() ? text.slice(i + 1) : text.slice(0, i);
+  return isUS() && dict[text] || text;
+}
+const locWall = text => loc(text, US_SPELLING);
+const FLAGS = { "en-GB": "🇬🇧", "en-US": "🇺🇸" };
+
+/* Players work through one path: every Easy level, then Medium, then Hard. */
+const DIFFS = ["Easy", "Medium", "Hard"];
+const PATH = BOARD_LEVELS.map((_, i) => i).sort((a, b) => DIFFS.indexOf(BOARD_LEVELS[a].difficulty) - DIFFS.indexOf(BOARD_LEVELS[b].difficulty) || a - b);
+const levelNo = idx => PATH.indexOf(idx) + 1;
+function nextBoard() {
+  const s = store.get();
+  return PATH.find(i => s["save-board-" + i]) ?? PATH.find(i => !s["done-board-" + i]) ?? null;
+}
+function nextWall() {
+  const s = store.get();
+  const saved = WALLS.findIndex((_, i) => s["save-wall-" + i]);
+  if (saved >= 0) return saved;
+  const i = WALLS.findIndex((_, i) => !s["done-wall-" + i]);
+  return i >= 0 ? i : null;
+}
+
 const ICONS = {
   back: `<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>`,
   clock: `<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></svg>`,
@@ -341,37 +421,62 @@ function confetti() {
 /* =====================================================================
    HOME AND MODE SCREENS
    ===================================================================== */
-const levelsIn = track => BOARD_LEVELS.map((l, i) => ({ ...l, idx: i })).filter(l => l.difficulty === track);
 const isDone = key => !!store.get()["done-" + key];
 function boardProgress() { return BOARD_LEVELS.filter((_, i) => isDone("board-" + i)).length; }
 function wallProgress() { return WALLS.filter((_, i) => isDone("wall-" + i)).length; }
+const trackColour = d => (TRACKS.find(t => t.key === d) || TRACKS[0]).colour;
 
 function leaveGame() {
   stopTicking(); B = null; W = null;
   document.querySelectorAll(".overlay,.toast,#confetti").forEach(o => o.remove());
 }
 
-function showHome() {
+function greeting(first) {
+  const n = esc(playerName()), h = new Date().getHours();
+  const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+  if (!n) return `${part}! Ready for a puzzle?`;
+  if (first) return `${part}, ${n}. Let's find some connections.`;
+  return pick([`${part}, ${n}. Nice to see you today.`, `Hi ${n}, how are you doing today?`, `Welcome back, ${n}. Ready for another puzzle?`, `Hello ${n}! Lovely to see you again.`]);
+}
+
+function showHome(first = false) {
   leaveGame();
+  if (!profile()) return showWelcome();
+  const s = store.get();
+  const nb = nextBoard(), nw = nextWall();
   const miniB = Array.from({ length: 20 }, (_, i) => i >= 15 ? `<i class="c" style="--c:#3E7BFA"></i>` : i >= 10 ? `<i class="c" style="--c:#FF5A3C"></i>` : "<i></i>").join("");
   const miniW = Array.from({ length: 16 }, (_, i) => i < 4 ? `<i class="c" style="--c:${WALL_COLOURS[0]}"></i>` : i < 8 ? `<i class="c" style="--c:${WALL_COLOURS[1]}"></i>` : "<i></i>").join("");
+  const nbL = nb != null ? BOARD_LEVELS[nb] : null;
+  const bc = nbL ? trackColour(nbL.difficulty) : TRACKS[0].colour;
+  const boardNow = nbL
+    ? `<div class="now" style="--c:${bc}"><small>Level ${levelNo(nb)} of ${PATH.length} · ${nbL.difficulty}${nbL.time ? " · Timed" : ""}${nbL.anagrams ? " · Anagrams" : ""}</small><b>${esc(loc(nbL.name))}</b></div>`
+    : `<div class="now" style="--c:${bc}"><small>All ${PATH.length} levels solved</small><b>More levels are on the way</b></div>`;
+  const pathBar = `<div class="path">${PATH.map(i => `<i class="${s["done-board-" + i] ? "d" : ""} ${i === nb ? "cur" : ""}" style="--c:${trackColour(BOARD_LEVELS[i].difficulty)}"></i>`).join("")}</div>`;
+  const wallNow = nw != null
+    ? `<div class="now" style="--c:${WALL_COLOURS[0]}"><small>Wall ${nw + 1} of ${WALLS.length}</small><b>Three minute clock</b></div>`
+    : `<div class="now" style="--c:${WALL_COLOURS[0]}"><small>All ${WALLS.length} walls solved</small><b>More walls are on the way</b></div>`;
   app.innerHTML = `
   <div class="screen scroll">
-    <div class="brand"><div class="mark">${"<i></i>".repeat(9)}</div><h1>Linkboard</h1></div>
-    <p class="lede">Find the connections. No adverts, no coins, just puzzles.</p>
+    <div class="home-top">
+      <div class="brand"><div class="mark">${"<i></i>".repeat(9)}</div><h1>Linkboard</h1></div>
+      <button class="flag-btn" id="settings" aria-label="Change your name or language"><b>${FLAGS[profile().lang] || FLAGS["en-GB"]}</b>${isUS() ? "US" : "UK"}</button>
+    </div>
+    <p class="greet">${greeting(first)}</p>
     <p class="section-label">Game modes</p>
     <div class="modes">
       <button class="mode-card" id="modeBoard">
         <div class="art"><div class="mini b">${miniB}</div></div>
         <h2>Board</h2>
-        <p>Slide words into rows of five. Connections shrink into pictures that link up again.</p>
-        <div class="foot"><span class="progress-text">${boardProgress()} of ${BOARD_LEVELS.length} levels solved</span><span class="go">Play</span></div>
+        ${boardNow}
+        ${pathBar}
+        <div class="foot"><span class="progress-text">${boardProgress()} of ${BOARD_LEVELS.length} solved</span><span class="go tinted" style="--c:${bc}">${nb == null ? "Play again" : s["save-board-" + nb] ? "Continue" : "Play"}</span></div>
       </button>
       <button class="mode-card" id="modeWall">
         <div class="art"><div class="mini w">${miniW}</div></div>
         <h2>Wall</h2>
-        <p>Sixteen clues, four groups, three minutes. After two groups, three lives.</p>
-        <div class="foot"><span class="progress-text">${wallProgress()} of ${WALLS.length} walls played</span><span class="go">Play</span></div>
+        ${wallNow}
+        <p>Sixteen clues, four groups. After two groups, three lives.</p>
+        <div class="foot"><span class="progress-text">${wallProgress()} of ${WALLS.length} solved</span><span class="go tinted" style="--c:${WALL_COLOURS[0]}">${nw == null ? "Play again" : s["save-wall-" + nw] ? "Continue" : "Play"}</span></div>
       </button>
       <div class="mode-card soon" aria-label="More game modes coming soon">
         <div class="art">✨</div>
@@ -380,62 +485,53 @@ function showHome() {
       </div>
     </div>
   </div>`;
-  $("#modeBoard").onclick = showBoardMode;
-  $("#modeWall").onclick = showWallMode;
+  $("#modeBoard").onclick = () => startBoard(nb ?? pick(PATH));
+  $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
+  $("#settings").onclick = () => showProfileSheet(false);
 }
 
-function showBoardMode() {
-  leaveGame();
-  const saved = store.get();
-  app.innerHTML = `
-  <div class="screen scroll">
-    <div class="topbar"><button class="icon-btn" id="back" aria-label="Back to game modes">${ICONS.back}</button><h2>Board</h2><span></span></div>
-    <div class="tracks">${TRACKS.map(t => {
-      const lv = levelsIn(t.key);
-      const done = lv.filter(l => isDone("board-" + l.idx)).length;
-      const inProgress = lv.find(l => saved["save-board-" + l.idx]);
-      const next = inProgress || lv.find(l => !isDone("board-" + l.idx));
-      const timing = l => l.time ? `${l.time / 60} minute clock` : "No clock";
-      const nextHtml = next
-        ? `<div class="next-up"><small>${inProgress ? "In progress" : "Up next"}</small><b>${esc(next.name)}</b><span>${timing(next)}</span></div>
-           <button class="play" data-level="${next.idx}">${ICONS.play}${inProgress ? "Continue" : "Play level " + (lv.indexOf(next) + 1)}</button>`
-        : `<div class="next-up"><small>Track complete</small><b>All ${lv.length} levels solved</b><span>Tap a level below to play it again</span></div>`;
-      return `<section class="track" style="--c:${t.colour}">
-        <div class="track-head"><h3>${t.key}</h3><span class="count">${done} / ${lv.length}</span></div>
-        <div class="dots">${lv.map((l, k) => `<button class="dot ${isDone("board-" + l.idx) ? "done" : ""} ${next && next.idx === l.idx ? "next" : ""}" data-level="${l.idx}" aria-label="${esc(l.name)}">${k + 1}</button>`).join("")}</div>
-        ${nextHtml}
-      </section>`;
-    }).join("")}</div>
-  </div>`;
-  $("#back").onclick = showHome;
-  app.querySelectorAll("[data-level]").forEach(b => b.onclick = () => startBoard(+b.dataset.level));
+/* First launch: ask the player's name and which English they want. The same form changes them later. */
+function profileForm(p) {
+  return `<label class="field"><span>What should we call you?</span>
+      <input id="pName" maxlength="20" autocomplete="given-name" autocapitalize="words" placeholder="Your first name" value="${esc(p.name || "")}"></label>
+    <div class="field"><span>Which English for the answers?</span>
+      <div class="langs">
+        <button class="lang ${p.lang !== "en-US" ? "on" : ""}" data-lang="en-GB"><b>🇬🇧</b><span>British English</span><small>Colour, biscuit, holiday</small></button>
+        <button class="lang ${p.lang === "en-US" ? "on" : ""}" data-lang="en-US"><b>🇺🇸</b><span>American English</span><small>Color, cookie, vacation</small></button>
+      </div></div>`;
 }
-
-function showWallMode() {
-  leaveGame();
-  const s = store.get();
-  const inProgress = WALLS.findIndex((_, i) => s["save-wall-" + i]);
-  const next = inProgress >= 0 ? inProgress : WALLS.findIndex((_, i) => !isDone("wall-" + i));
-  const c = WALL_COLOURS[0];
+function bindProfileForm(root, p, done) {
+  root.querySelectorAll(".lang").forEach(b => b.onclick = () => {
+    p.lang = b.dataset.lang;
+    root.querySelectorAll(".lang").forEach(x => x.classList.toggle("on", x === b));
+  });
+  $("#pSave", root).onclick = () => { store.set("profile", { name: $("#pName", root).value.trim().slice(0, 20), lang: p.lang || "en-GB" }); done(); };
+}
+function showWelcome() {
+  const p = { name: "", lang: "en-GB" };
   app.innerHTML = `
-  <div class="screen scroll">
-    <div class="topbar"><button class="icon-btn" id="back" aria-label="Back to game modes">${ICONS.back}</button><h2>Wall</h2><span></span></div>
-    <div class="tracks">
-      <section class="track" style="--c:${c}">
-        <div class="track-head"><h3>Walls</h3><span class="count">${wallProgress()} / ${WALLS.length}</span></div>
-        ${next >= 0
-          ? `<div class="next-up"><small>${inProgress >= 0 ? "In progress" : "Up next"}</small><b>${esc(WALLS[next].name)}</b><span>Three minute clock</span></div>
-             <button class="play" data-wall="${next}">${ICONS.play}${inProgress >= 0 ? "Continue" : "Play " + esc(WALLS[next].name)}</button>`
-          : `<div class="next-up"><small>All played</small><b>Every wall done</b><span>Pick one below to beat your score</span></div>`}
-        <div class="wall-grid">${WALLS.map((w, i) => {
-          const best = s["best-wall-" + i];
-          return `<button class="wall-chip ${isDone("wall-" + i) ? "done" : ""} ${s["save-wall-" + i] ? "saved" : ""}" data-wall="${i}">${i + 1}<small>${best != null ? best + "/10" : "·"}</small></button>`;
-        }).join("")}</div>
-      </section>
+  <div class="screen welcome">
+    <div class="sheet">
+      <div class="brand"><div class="mark">${"<i></i>".repeat(9)}</div><h1>Linkboard</h1></div>
+      <p>Welcome! Find the connections. No adverts, no coins, just puzzles. First, a couple of quick questions.</p>
+      ${profileForm(p)}
+      <button class="btn primary big" id="pSave">Let's play</button>
     </div>
   </div>`;
-  $("#back").onclick = showHome;
-  app.querySelectorAll("[data-wall]").forEach(b => b.onclick = () => startWall(+b.dataset.wall));
+  bindProfileForm(app, p, () => { showHome(true); const n = playerName(); toast(n ? `Lovely to meet you, ${n}!` : "Lovely to meet you!"); });
+  setTimeout(() => $("#pName")?.focus(), 300);
+}
+function showProfileSheet() {
+  const p = { ...profile() };
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+    <h2>You and your words</h2>
+    ${profileForm(p)}
+    <div class="actions"><button class="btn primary" id="pSave">Save</button><button class="btn" id="pCancel">Cancel</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  bindProfileForm(ov, p, () => { ov.remove(); showHome(); });
+  $("#pCancel", ov).onclick = () => ov.remove();
 }
 
 /* =====================================================================
@@ -446,14 +542,14 @@ function showWallMode() {
    ===================================================================== */
 let B = null;
 
-function buildLevel(level) {
+function buildLevel(level, levelIdx) {
   const groups = [], tiles = [];
   function addGroup(spec, parent) {
-    const g = { id: groups.length, name: spec.name, pic: spec.pic || null, parent, memberTiles: [] };
+    const g = { id: groups.length, name: loc(spec.name), pic: spec.pic || null, parent, memberTiles: [] };
     groups.push(g);
     spec.tiles.forEach(t => {
       if (typeof t === "object") g.memberTiles.push(addGroup(t, g.id));
-      else { const tile = { id: tiles.length, ...parseTile(t), parent: g.id, symbolOf: null }; tiles.push(tile); g.memberTiles.push(tile.id); }
+      else { const raw = parseTile(t), tile = { id: tiles.length, ...raw, label: loc(raw.label), parent: g.id, symbolOf: null }; tiles.push(tile); g.memberTiles.push(tile.id); }
     });
     return g;
   }
@@ -465,18 +561,30 @@ function buildLevel(level) {
   let ci = 0;
   groups.filter(g => g.parent == null).forEach(g => g.colour = GROUP_COLOURS[ci++ % GROUP_COLOURS.length]);
   groups.filter(g => g.parent != null).forEach(g => g.colour = GROUP_COLOURS[ci++ % GROUP_COLOURS.length]);
+  // Anagram round: about half the groups get one scrambled word each, never more than one per group.
+  if (level.anagrams) {
+    const rnd = seeded(levelIdx * 7919 + (isUS() ? 1 : 0));
+    const word = id => tiles[id].symbolOf == null && /^[A-Za-z]{4,9}$/.test(tiles[id].label);
+    const cands = groups.filter(g => g.memberTiles.some(word));
+    for (let i = cands.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [cands[i], cands[j]] = [cands[j], cands[i]]; }
+    cands.slice(0, Math.ceil(cands.length / 2)).forEach(g => {
+      const opts = g.memberTiles.filter(word), t = tiles[opts[Math.floor(rnd() * opts.length)]];
+      t.anagram = scramble(t.label, rnd);
+    });
+  }
   return { groups, tiles };
 }
 
 function startBoard(levelIdx) {
   leaveGame();
   const level = BOARD_LEVELS[levelIdx];
-  const { groups, tiles } = buildLevel(level);
+  const { groups, tiles } = buildLevel(level, levelIdx);
   B = {
     levelIdx, level, groups, tiles, board: new Array(SIZE).fill(null), lockedList: [], solved: new Set(),
     pool: tiles.filter(t => t.symbolOf == null).map(t => t.id),
     timed: !!level.time, timeLeft: level.time || 0, elapsed: 0, frozenUntil: 0,
     hints: 3, freezes: level.time ? 2 : 0, busy: false, sel: null, completing: null, hintTiles: [], born: null, over: false,
+    unravelled: new Set(),
   };
   const saved = store.get()["save-board-" + levelIdx];
   if (saved && saved.sig === tiles.length + ":" + groups.length) {
@@ -495,6 +603,13 @@ function startBoard(levelIdx) {
     breakCompleteRows();
     renderBoardScreen();
     flip(new Map(), new Set(B.board.filter(x => x != null)));
+    if (level.anagrams) {
+      const ov = document.createElement("div"); ov.className = "overlay";
+      ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><h2>Anagram round</h2>
+        <p>Some groups have one word with its letters scrambled, marked ↻. Work out what it really says. When you find the group, it unscrambles.</p>
+        <div class="actions"><button class="btn primary" id="ok">Got it</button></div></div>`;
+      document.body.appendChild(ov); $("#ok", ov).onclick = () => ov.remove();
+    }
   }
   saveBoard();
   startTicking(boardTick);
@@ -635,16 +750,15 @@ function boardTick(dt, now) {
 
 function renderBoardScreen() {
   const L = B.level, track = TRACKS.find(t => t.key === L.difficulty) || TRACKS[0];
-  const num = levelsIn(L.difficulty).findIndex(l => l.idx === B.levelIdx) + 1;
   app.innerHTML = `
   <div class="screen">
     <div class="bar">
-      <button class="icon-btn" id="back" aria-label="Back to levels">${ICONS.back}</button>
-      <div class="title-block" style="--c:${track.colour}"><div class="lvl">${esc(L.name)}</div><small>${esc(L.difficulty)} · Level ${num}</small></div>
+      <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
+      <div class="title-block" style="--c:${track.colour}"><div class="lvl">${esc(loc(L.name))}</div><small>Level ${levelNo(B.levelIdx)} · ${esc(L.difficulty)}</small></div>
       <div class="timer" id="timer" aria-label="${B.timed ? "Time left" : "Time taken"}">${ICONS.clock}<span class="t">${fmt(B.timed ? B.timeLeft : B.elapsed)}</span></div>
     </div>
     <div class="sub">
-      <span class="hint-text">Put five connected tiles in one row</span>
+      <span class="hint-text">${L.anagrams ? "Anagram round: ↻ words are scrambled" : "Put five connected tiles in one row"}</span>
       <span class="counter" aria-label="Groups found"><span class="stack"><i></i><i></i><i></i></span><span id="count"></span></span>
     </div>
     <div class="stage"><div class="board" id="board"></div></div>
@@ -654,7 +768,7 @@ function renderBoardScreen() {
       <div class="tool-wrap"><button class="tool" id="shuffleBtn" aria-label="Shuffle the board">🔀</button><span class="tool-label">Shuffle</span></div>
     </div>
   </div>`;
-  $("#back").onclick = () => { saveBoard(); showBoardMode(); };
+  $("#back").onclick = () => { saveBoard(); showHome(); };
   $("#hintBtn").onclick = useHint;
   if (B.timed) $("#freezeBtn").onclick = useFreeze;
   $("#shuffleBtn").onclick = () => {
@@ -693,10 +807,15 @@ function renderBoard() {
     let style = "";
     if (t.symbolOf != null) cls.push("symbol");
     if (B.sel === i) cls.push("sel");
-    if (bandRows.has(r)) { cls.push("grouped"); style = `--c:${B.groups[bandRows.get(r)].colour}`; }
+    const shown = bandRows.has(r);
+    if (shown) { cls.push("grouped"); style = `--c:${B.groups[bandRows.get(r)].colour}`; }
     else if (B.hintTiles.includes(id)) cls.push("hinted");
+    if (t.anagram) {
+      if (!shown) cls.push("anag");
+      else if (!B.unravelled.has(id)) { cls.push("unravel"); B.unravelled.add(id); }
+    }
     if (B.born === id) cls.push("born");
-    html += `<div class="slot" data-i="${i}" style="${pos}"><div class="tile ${cls.join(" ")}" style="${style}" data-i="${i}" data-id="${id}" tabindex="0" aria-label="${esc(t.label)}">${tileFace(t)}</div></div>`;
+    html += `<div class="slot" data-i="${i}" style="${pos}"><div class="tile ${cls.join(" ")}" style="${style}" data-i="${i}" data-id="${id}" tabindex="0" aria-label="${esc(faceLabel(t, shown))}">${tileFace(t, shown)}</div></div>`;
   }
   el.innerHTML = html;
   B.born = null;
@@ -724,8 +843,11 @@ function swapSlots(a, b, dragged = false) {
   flip(before, new Set(), dragged ? movedId : null);
   if (!done.length) return saveBoard();
   const cur = B;
-  setTimeout(() => { if (B === cur) resolveRows(done); }, 1000);
+  setTimeout(() => { if (B === cur) resolveRows(done); }, unravelPause(done));
 }
+
+// Give a scrambled word time to unscramble before the row moves on.
+const unravelPause = rows => rows.some(d => rowIds(d.row).some(id => id != null && T(id).anagram)) ? 1700 : 1000;
 
 function resolveRows(done) {
   const subs = done.filter(d => B.groups[d.group].parent != null);
@@ -779,7 +901,7 @@ function resolveRows(done) {
     flip(before, fresh);
     if (auto.length) {
       B.busy = true; B.completing = auto;
-      setTimeout(() => { if (B !== cur) return; renderBoard(); setTimeout(() => { if (B === cur) resolveRows(auto); }, 1000); }, 1300);
+      setTimeout(() => { if (B !== cur) return; renderBoard(); setTimeout(() => { if (B === cur) resolveRows(auto); }, unravelPause(auto)); }, 1300);
     } else saveBoard();
   }, subs.length ? SQUISH : 0);
 }
@@ -817,27 +939,28 @@ function endBoard(won) {
     if (prev == null || (B.timed ? score > prev : score < prev)) store.set("best-" + key, score);
     confetti();
   }
-  const track = levelsIn(B.level.difficulty);
-  const nextLevel = won ? track.find(l => !isDone("board-" + l.idx)) : null;
+  const name = esc(playerName());
+  const next = won ? nextBoard() : null;
   const ov = document.createElement("div"); ov.className = "overlay";
+  // A failed level never shows the answers: the player starts it again with a fresh deal.
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
-    <h2>${won ? "Board complete!" : "Time's up"}</h2>
-    <p>${won ? `You found all ${B.groups.length} connections.` : `You found ${B.solved.size} of ${B.groups.length} connections. Have another go?`}</p>
+    <h2>${won ? `${pick(["Brilliant", "Well done", "Superb", "Nice work"])}${name ? ", " + name : ""}!` : `Time's up${name ? ", " + name : ""}`}</h2>
+    <p>${won ? `You found all ${B.groups.length} connections.` : `You found ${B.solved.size} of ${B.groups.length} connections. This level starts again from the beginning, with a fresh deal.`}</p>
     <div class="stats">
       <div class="stat"><b>${B.solved.size}/${B.groups.length}</b><span>Connections</span></div>
       <div class="stat"><b>${B.timed ? fmt(won ? B.timeLeft : 0) : fmt(B.elapsed)}</b><span>${B.timed ? "Time to spare" : "Time taken"}</span></div>
       <div class="stat"><b>${3 - B.hints}</b><span>Hints used</span></div>
     </div>
     <div class="actions">
-      ${nextLevel ? `<button class="btn primary" id="next">Next level</button>` : `<button class="btn primary" id="again">${won ? "Play again" : "Try again"}</button>`}
-      <button class="btn" id="menu">Back to levels</button>
+      ${won ? (next != null ? `<button class="btn primary" id="next">Level ${levelNo(next)}</button>` : "") : `<button class="btn primary" id="again">Restart level</button>`}
+      <button class="btn" id="menu">Home</button>
     </div>
   </div>`;
   document.body.appendChild(ov);
   const lvl = B.levelIdx;
-  if (nextLevel) $("#next", ov).onclick = () => startBoard(nextLevel.idx);
-  else $("#again", ov).onclick = () => startBoard(lvl);
-  $("#menu", ov).onclick = showBoardMode;
+  if (won && next != null) $("#next", ov).onclick = () => startBoard(next);
+  if (!won) $("#again", ov).onclick = () => startBoard(lvl);
+  $("#menu", ov).onclick = () => showHome();
 }
 
 /* Drag and drop, plus tap one tile then tap another to swap. */
@@ -915,7 +1038,7 @@ function startWall(idx) {
   leaveGame();
   const wall = WALLS[idx];
   const clues = [];
-  wall.groups.forEach((g, gi) => g.tiles.forEach(text => clues.push({ id: clues.length, group: gi, text })));
+  wall.groups.forEach((g, gi) => g.tiles.forEach(text => clues.push({ id: clues.length, group: gi, text: locWall(text) })));
   W = { idx, wall, clues, order: shuffle(clues.map(c => c.id)), found: [], sel: [], lives: null,
         timeLeft: 180, over: false, busy: false, revealed: new Set(), credited: new Set(), endReason: "" };
   const saved = store.get()["save-wall-" + idx];
@@ -945,14 +1068,14 @@ function renderWallScreen() {
   app.innerHTML = `
   <div class="screen">
     <div class="bar">
-      <button class="icon-btn" id="back" aria-label="Back to walls">${ICONS.back}</button>
-      <div class="title-block" style="--c:${WALL_COLOURS[0]}"><div class="lvl">${esc(W.wall.name)}</div><small>Connecting wall</small></div>
+      <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
+      <div class="title-block" style="--c:${WALL_COLOURS[0]}"><div class="lvl">Wall ${W.idx + 1}</div><small>Connecting wall</small></div>
       <div class="timer" id="timer">${ICONS.clock}<span class="t">${fmt(W.timeLeft)}</span></div>
     </div>
     <div class="sub"><span class="hint-text" id="wallMsg"></span><span class="lives" id="lives"></span></div>
     <div class="wall-stage"><div class="wall" id="wall"></div></div>
   </div>`;
-  $("#back").onclick = () => { saveWall(); showWallMode(); };
+  $("#back").onclick = () => { saveWall(); showHome(); };
   $("#wall").addEventListener("click", e => { const b = e.target.closest(".wtile"); if (b) tapClue(+b.dataset.id); });
   renderWall();
 }
@@ -1009,13 +1132,26 @@ function endWall(reason) {
   if (W.over) return;
   W.over = true; W.endReason = reason; stopTicking();
   store.set("save-wall-" + W.idx, undefined);
-  store.set("done-wall-" + W.idx, true);
   W.groupsScored = W.found.length;
-  W.revealedGroups = [0, 1, 2, 3].filter(g => !W.found.includes(g));
-  W.found.push(...W.revealedGroups); W.sel = [];
+  W.sel = [];
   renderWall();
-  if (W.groupsScored === 4) confetti();
   const cur = W;
+  if (W.found.length < 4) {
+    // Not solved: no answers shown. The wall is reshuffled for another go.
+    const name = esc(playerName());
+    const ov = document.createElement("div"); ov.className = "overlay";
+    ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+      <h2>${esc(reason)}${name ? ", " + name : ""}</h2>
+      <p>You found ${W.found.length} of 4 groups. Have another go: the wall starts again, reshuffled.</p>
+      <div class="actions"><button class="btn primary" id="again">Try again</button><button class="btn" id="menu">Home</button></div>
+    </div>`;
+    setTimeout(() => { if (W !== cur) return; document.body.appendChild(ov); }, 700);
+    $("#again", ov).onclick = () => startWall(cur.idx);
+    $("#menu", ov).onclick = () => showHome();
+    return;
+  }
+  store.set("done-wall-" + W.idx, true);
+  confetti();
   setTimeout(() => { if (W === cur) showWallResults(); }, 900);
 }
 
@@ -1027,7 +1163,7 @@ function wallScore() {
 function showWallResults() {
   const ov = document.createElement("div"); ov.className = "overlay";
   const save = () => { const k = "best-wall-" + W.idx, prev = store.get()[k]; if (prev == null || wallScore() > prev) store.set(k, wallScore()); };
-  const nextWall = WALLS.findIndex((_, i) => !isDone("wall-" + i));
+  const next = nextWall();
   const draw = () => {
     ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
       <h2>${esc(W.endReason)}</h2>
@@ -1036,7 +1172,7 @@ function showWallResults() {
         const words = W.clues.filter(c => c.group === g).map(c => c.text).join(", ");
         const shown = W.revealed.has(g);
         return `<div class="conn" style="--c:${WALL_COLOURS[k]}"><span class="sw"></span>
-          <span class="name ${shown ? "" : "hidden"}">${shown ? esc(W.wall.groups[g].name) : "Connection hidden"}</span>
+          <span class="name ${shown ? "" : "hidden"}">${shown ? esc(locWall(W.wall.groups[g].name)) : "Connection hidden"}</span>
           <span class="ctl">${shown ? `<button class="pill-btn ${W.credited.has(g) ? "on" : ""}" data-credit="${g}">${W.credited.has(g) ? "Got it ✓" : "I had it"}</button>` : `<button class="pill-btn" data-reveal="${g}">Reveal</button>`}</span>
           <span class="words">${esc(words)}</span></div>`;
       }).join("")}
@@ -1046,15 +1182,14 @@ function showWallResults() {
         <div class="stat"><b>${wallScore()}</b><span>Total / 10</span></div>
       </div>
       <div class="actions">
-        ${nextWall >= 0 ? `<button class="btn primary" id="next">Next wall</button>` : `<button class="btn primary" id="again">Play again</button>`}
-        <button class="btn" id="menu">Back to walls</button>
+        ${next != null ? `<button class="btn primary" id="next">Wall ${next + 1}</button>` : ""}
+        <button class="btn" id="menu">Home</button>
       </div>
     </div>`;
     ov.querySelectorAll("[data-reveal]").forEach(b => b.onclick = () => { W.revealed.add(+b.dataset.reveal); draw(); });
     ov.querySelectorAll("[data-credit]").forEach(b => b.onclick = () => { const g = +b.dataset.credit; W.credited.has(g) ? W.credited.delete(g) : W.credited.add(g); save(); draw(); });
-    if (nextWall >= 0) $("#next", ov).onclick = () => { save(); startWall(nextWall); };
-    else $("#again", ov).onclick = () => { save(); startWall(W.idx); };
-    $("#menu", ov).onclick = () => { save(); showWallMode(); };
+    if (next != null) $("#next", ov).onclick = () => { save(); startWall(next); };
+    $("#menu", ov).onclick = () => { save(); showHome(); };
   };
   save();
   draw();

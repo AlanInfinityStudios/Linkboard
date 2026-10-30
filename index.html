@@ -1526,6 +1526,8 @@ function fiveResult() {
 /* ---------- Letter Wheel: make words from seven letters, always using the middle one ---------- */
 let H = null;
 const WHEEL_RANKS = [["Just starting", 0], ["Warming up", 5], ["Good", 15], ["Great", 30], ["Brilliant", 50], ["Superstar", 70], ["Word wizard", 100]];
+// The wheel is a once-a-day challenge, so it has its own clues: 3 per day, no top-ups.
+const WHEEL_CLUES = 3;
 let wheelCache = null;
 function wheelState() {
   const key = todayKey() + lang();
@@ -1594,15 +1596,13 @@ function renderWheel() {
     return `<div class="wgroup"><h4>${n} letters <span>${list.filter(w => got.has(w)).length} of ${list.length}</span></h4>
       ${list.map(w => `<div class="ans ${got.has(w) ? "got" : ""} ${isPangram(w, pz) ? "pg" : ""}">${[...w].map((c, i) => `<i>${got.has(w) || i < st.clues ? c : ""}</i>`).join("")}</div>`).join("")}</div>`;
   }).join("");
-  const hw = hintWallet();
-  $("#clueN").textContent = `(${hw.n} left)`;
+  $("#clueN").textContent = `(${WHEEL_CLUES - st.clues} left today)`;
 }
 function wheelClue() {
   const st = wheelState(), missing = [...st.words].filter(w => !st.found.includes(w));
   if (!missing.length) return toast("You've found every word!");
   if (st.clues >= Math.max(...missing.map(w => w.length)) - 1) return toast("That's every clue for today.");
-  if (!hintWallet().n) return toast(`No clues left. More in ${hintWait()}.`);
-  spendHint();
+  if (st.clues >= WHEEL_CLUES) return toast("That's all your clues for today. New letters and clues tomorrow.");
   store.set("wheel-" + todayKey(), { found: st.found, clues: st.clues + 1 });
   $("#msg").textContent = st.clues === 0 ? "Clue: the first letter of every word is filled in." : `Clue: letter ${st.clues + 1} of every word is filled in.`;
   renderWheel();

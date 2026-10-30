@@ -113,6 +113,7 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .langs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .lang { border: 2px solid transparent; border-radius: 16px; background: var(--bg); padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
 .lang b { font-size: 2rem; line-height: 1.1; }
+.langs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .lang span { font-weight: 700; }
 .lang small { color: var(--muted); font-size: .78rem; }
 .lang.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
@@ -284,6 +285,63 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
   background: var(--ink); color: var(--surface); padding: 10px 18px; border-radius: 99px; font-weight: 600; z-index: 70;
   box-shadow: 0 10px 24px rgba(60, 40, 20, .25); animation: fade .2s; max-width: calc(100% - 48px); text-align: center;
 }
+
+/* ---------- Daily games ---------- */
+.tool.empty { opacity: .45; }
+.mini.f { grid-template-columns: repeat(5, 18px); }
+.mini.f i { height: 18px; }
+.mwheel { position: relative; width: 84px; height: 84px; }
+.mwheel b, .mwheel i { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: .8rem; text-transform: uppercase; }
+.mwheel b { background: #A855F7; color: #fff; }
+.mwheel i { background: var(--tile); box-shadow: 0 1px 0 var(--tile-edge); transform: rotate(var(--a)) translateY(-29px) rotate(calc(-1 * var(--a))); }
+.daily { align-items: center; }
+.daily .bar { width: 100%; }
+.daily-msg { margin: 0; min-height: 1.4em; text-align: center; color: var(--muted); font-weight: 500; }
+.fgrid { display: grid; gap: 7px; width: min(330px, 100%); }
+.frow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.frow.shake { animation: shake .45s; }
+.ft { aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center; font-size: 1.7rem; font-weight: 800; text-transform: uppercase; background: var(--surface); box-shadow: inset 0 0 0 2px var(--tile-edge); }
+.ft.typed { box-shadow: inset 0 0 0 2px var(--ink); animation: pop .15s; }
+.ft.c, .key.c { background: #1FB57A; color: #fff; box-shadow: none; }
+.ft.p, .key.p { background: #F5A300; color: #fff; box-shadow: none; }
+.ft.a, .key.a { background: #A99C8A; color: #fff; box-shadow: none; }
+.ft.flip { animation: fflip .5s ease both; animation-delay: var(--d); }
+@keyframes fflip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+#keys { width: 100%; display: flex; justify-content: center; margin-top: auto; padding-bottom: 6px; }
+.keys { display: flex; flex-direction: column; gap: 7px; width: min(560px, 100%); }
+.krow { display: flex; gap: 5px; justify-content: center; }
+.key { flex: 1; max-width: 48px; height: 54px; border: 0; border-radius: 9px; background: var(--surface); box-shadow: 0 1px 0 var(--tile-edge); font-weight: 700; font-size: 1.05rem; text-transform: uppercase; padding: 0; }
+.key.wide { max-width: 74px; flex: 1.5; font-size: .8rem; }
+.dist { display: flex; flex-direction: column; gap: 5px; }
+.dist div { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+.dist i { font-style: normal; background: var(--tile-edge); color: var(--ink); border-radius: 5px; padding: 2px 8px; text-align: right; font-size: .85rem; }
+.dist i.on { background: #1FB57A; color: #fff; }
+.wheel-top { width: min(640px, 100%); }
+.rank-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.rank-head b { font-size: 1.2rem; color: #A855F7; }
+.rank-head span { color: var(--muted); font-weight: 600; font-size: .9rem; }
+.rank-bar { display: flex; gap: 4px; margin-top: 6px; }
+.rank-bar i { flex: 1; height: 8px; border-radius: 4px; background: color-mix(in srgb, #A855F7 15%, var(--bg)); }
+.rank-bar i.on { background: #A855F7; }
+.wheel-body { flex: 1; min-height: 0; width: min(900px, 100%); display: flex; gap: 24px; align-items: stretch; }
+.wheel-play { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.typed { min-height: 46px; font-size: 2rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.typed .mid { color: #A855F7; }
+.typed .ph, .words .ph { font-size: 1rem; letter-spacing: 0; text-transform: none; color: var(--muted); font-weight: 500; }
+.wheel { position: relative; width: min(280px, 68vw); aspect-ratio: 1; }
+.wl { position: absolute; left: 50%; top: 50%; width: 27%; aspect-ratio: 1; margin: -13.5%; border: 0; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow); font-size: 1.7rem; font-weight: 800; text-transform: uppercase;
+  transform: rotate(var(--a)) translateY(-118%) rotate(calc(-1 * var(--a))); }
+.wl.centre { transform: none; background: #A855F7; color: #fff; }
+.wl:active { filter: brightness(.92); }
+.wheel-btns { display: flex; gap: 10px; }
+.found { flex: 1; max-width: 360px; background: var(--surface); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.words { display: flex; flex-wrap: wrap; gap: 6px; }
+.words span { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-weight: 600; text-transform: capitalize; }
+.words span.pg { background: #A855F7; color: #fff; }
+@media (max-width: 700px) {
+  .wheel-body { flex-direction: column; gap: 14px; }
+  .found { max-width: none; flex: 0 0 auto; max-height: 30vh; }
+}
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 65; }
 @media (prefers-reduced-motion: reduce) {
   .screen, .sheet, .overlay, .tile.hinted, .timer.low { animation: none !important; }
@@ -303,6 +361,7 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 <body>
 <div class="app" id="app"></div>
 <script src="puzzles.js"></script>
+<script src="words.js"></script>
 <script>
 const GROUP_COLOURS = ["#FF5A3C", "#3E7BFA", "#1FB57A", "#F5A300", "#A855F7", "#00B2C9", "#FF7A1A", "#EC4899", "#5B6CFF", "#7CB82F", "#0EA5A0", "#E8456B", "#2E86DE", "#D97706", "#6366F1", "#16A34A"];
 const WALL_COLOURS = ["#3E7BFA", "#1FB57A", "#F5A300", "#FF5A3C"];
@@ -349,16 +408,62 @@ function toast(msg) {
   const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t);
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.remove(), 2400);
 }
-/* Everything the player has done is kept in this browser: finished levels, best scores and any game in progress. */
+/* Everything the player has done: finished levels, best scores, games in progress, hints and the daily games.
+   It is kept in this browser, and when the game runs inside Claude it is also kept in the player's own private
+   Claude storage, so a new version never loses it and it follows them between devices. */
 const STORE_KEY = "linkboard-v3";
+let storeData = null;
 const store = {
-  get() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } },
-  set(k, v) { try { const d = store.get(); if (v === undefined) delete d[k]; else d[k] = v; localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch {} },
+  get() {
+    if (!storeData) { try { storeData = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { storeData = {}; } }
+    return storeData;
+  },
+  set(k, v) {
+    const d = store.get();
+    if (v === undefined) delete d[k]; else d[k] = v;
+    d.updatedAt = Date.now();
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch {}
+    cloud.push();
+  },
 };
-/* The player: their name and which English they want (en-GB or en-US). */
+const cloud = {
+  ref: null, timer: null, writing: false,
+  async start() {
+    try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch {}
+    try {
+      if (!window.claude || !window.claude.use) return;
+      const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+      const id = user && await user.id();
+      if (!db || !id) return;
+      this.ref = db.doc("data/users/" + id + "/progress");
+      const snap = await this.ref.get();
+      if (snap.exists) {
+        const remote = JSON.parse((snap.data() || {}).state || "{}"), local = store.get();
+        // Newer copy wins, but a level finished on either copy stays finished.
+        const merged = (remote.updatedAt || 0) > (local.updatedAt || 0) ? { ...local, ...remote } : { ...remote, ...local };
+        Object.keys({ ...local, ...remote }).filter(k => k.startsWith("done-")).forEach(k => { if (local[k] || remote[k]) merged[k] = true; });
+        storeData = merged;
+        try { localStorage.setItem(STORE_KEY, JSON.stringify(merged)); } catch {}
+        if (!B && !W && !D && !H) showHome();
+      }
+      this.push();
+    } catch {}
+  },
+  push() { if (!this.ref) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.write(), 1500); },
+  async write() {
+    if (this.writing) return this.push();
+    this.writing = true;
+    try { await this.ref.set({ state: JSON.stringify(store.get()), updatedAt: Date.now() }); } catch {}
+    this.writing = false;
+  },
+};
+
+/* The player: their name and language (en-GB, en-US or fr). */
 const profile = () => store.get().profile || null;
 const playerName = () => ((profile() || {}).name || "").trim();
-const isUS = () => (profile() || {}).lang === "en-US";
+const lang = () => (profile() || {}).lang || "en-GB";
+const isUS = () => lang() === "en-US";
+const isFR = () => lang() === "fr";
 // Picks the British or American version of a word: "Porridge»Oatmeal" inline, or the US_WORDS list.
 function loc(text, dict = US_WORDS) {
   const i = text.indexOf("»");
@@ -366,15 +471,50 @@ function loc(text, dict = US_WORDS) {
   return isUS() && dict[text] || text;
 }
 const locWall = text => loc(text, US_SPELLING);
-const FLAGS = { "en-GB": "🇬🇧", "en-US": "🇺🇸" };
+const FLAGS = { "en-GB": "🇬🇧", "en-US": "🇺🇸", fr: "🇫🇷" };
+const LANG_SHORT = { "en-GB": "UK", "en-US": "US", fr: "FR" };
 
-/* Players work through one path: every Easy level, then Medium, then Hard. */
+/* The game's own words in French. English is the key; anything missing stays in English. */
+const FR = {
+  "Game modes": "Jeux", "Play": "Jouer", "Continue": "Continuer", "Play again": "Rejouer", "Level {n}": "Niveau {n}",
+  "Easy": "Facile", "Medium": "Moyen", "Hard": "Difficile", "Timed": "Chrono", "Anagrams": "Anagrammes",
+  "More levels are on the way": "D'autres niveaux arrivent bientôt", "You've played every level": "Vous avez joué tous les niveaux",
+  "Swap the words around to make rows of five that belong together. Small groups shrink into pictures, and the pictures make bigger groups.":
+    "Échangez les mots pour former des rangées de cinq qui vont ensemble. Les petits groupes deviennent des images, et les images forment de plus grands groupes.",
+  "More on the way": "Bientôt d'autres jeux", "New games will appear here as we build them.": "De nouveaux jeux apparaîtront ici.",
+  "Coming soon in French": "Bientôt en français",
+  "What should we call you?": "Comment vous appelez-vous ?", "Your first name": "Votre prénom", "Which language?": "Quelle langue ?",
+  "Let's play": "C'est parti", "Save": "Enregistrer", "Cancel": "Annuler", "You and your words": "Vous et vos mots",
+  "Put five connected tiles in one row": "Placez cinq mots liés sur une même rangée",
+  "Anagram round: ↻ words are scrambled": "Manche anagrammes : les mots ↻ sont mélangés",
+  "Hint": "Indice", "Freeze": "Geler", "Shuffle": "Mélanger", "Home": "Accueil", "Restart level": "Recommencer",
+  "Welcome back. Carrying on where you left off.": "Bon retour ! On reprend où vous en étiez.",
+  "Clock frozen for 30 seconds": "Chrono gelé pendant 30 secondes", "{name} complete!": "{name} : trouvé !",
+  "Brilliant": "Bravo", "Well done": "Bien joué", "Superb": "Superbe", "Nice work": "Excellent",
+  "Time's up": "Temps écoulé",
+  "You found all {n} connections.": "Vous avez trouvé les {n} liens.",
+  "You found {a} of {b} connections. This level starts again from the beginning, with a fresh deal.": "Vous avez trouvé {a} liens sur {b}. Le niveau recommence depuis le début, avec un nouveau tirage.",
+  "Connections": "Liens", "Time to spare": "Temps restant", "Time taken": "Temps", "Hints used": "Indices utilisés",
+  "No hints left. More in {t}.": "Plus d'indices. Les prochains dans {t}.",
+  "Anagram round": "Manche anagrammes",
+  "Some groups have one word with its letters scrambled, marked ↻. Work out what it really says. When you find the group, it unscrambles.":
+    "Certains groupes ont un mot aux lettres mélangées, marqué ↻. Devinez le vrai mot. Quand vous trouvez le groupe, il se remet en ordre.",
+  "Got it": "Compris",
+};
+function tr(text, vars = {}) {
+  const t = isFR() && FR[text] || text;
+  return t.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
+}
+
+/* Players work through one path: every Easy level, then Medium, then Hard. French players have their own levels. */
 const DIFFS = ["Easy", "Medium", "Hard"];
-const PATH = BOARD_LEVELS.map((_, i) => i).sort((a, b) => DIFFS.indexOf(BOARD_LEVELS[a].difficulty) - DIFFS.indexOf(BOARD_LEVELS[b].difficulty) || a - b);
-const levelNo = idx => PATH.indexOf(idx) + 1;
+const LEVELS = () => isFR() ? BOARD_LEVELS_FR : BOARD_LEVELS;
+const bkey = i => (isFR() ? "fr-board-" : "board-") + i;
+const PATH = () => LEVELS().map((_, i) => i).sort((a, b) => DIFFS.indexOf(LEVELS()[a].difficulty) - DIFFS.indexOf(LEVELS()[b].difficulty) || a - b);
+const levelNo = idx => PATH().indexOf(idx) + 1;
 function nextBoard() {
   const s = store.get();
-  return PATH.find(i => s["save-board-" + i]) ?? PATH.find(i => !s["done-board-" + i]) ?? null;
+  return PATH().find(i => s["save-" + bkey(i)]) ?? PATH().find(i => !s["done-" + bkey(i)]) ?? null;
 }
 function nextWall() {
   const s = store.get();
@@ -382,6 +522,23 @@ function nextWall() {
   if (saved >= 0) return saved;
   const i = WALLS.findIndex((_, i) => !s["done-wall-" + i]);
   return i >= 0 ? i : null;
+}
+
+/* Hints: up to 3 at a time. Using one starts a 6 hour wait, after which you are back to 3. They never stack up beyond 3. */
+const HINT_MAX = 3, HINT_REFILL_MS = 6 * 3600 * 1000;
+function hintWallet() {
+  const w = store.get().hints || { n: HINT_MAX, at: 0 };
+  return w.n < HINT_MAX && Date.now() >= w.at ? { n: HINT_MAX, at: 0 } : w;
+}
+function spendHint() {
+  const w = hintWallet();
+  if (!w.n) return false;
+  store.set("hints", { n: w.n - 1, at: w.n === HINT_MAX ? Date.now() + HINT_REFILL_MS : w.at });
+  return true;
+}
+function hintWait() {
+  const mins = Math.ceil(Math.max(0, hintWallet().at - Date.now()) / 60000), h = Math.floor(mins / 60), m = mins % 60;
+  return h ? `${h}h ${m}m` : `${m}m`;
 }
 
 const ICONS = {
@@ -422,17 +579,21 @@ function confetti() {
    HOME AND MODE SCREENS
    ===================================================================== */
 const isDone = key => !!store.get()["done-" + key];
-function boardProgress() { return BOARD_LEVELS.filter((_, i) => isDone("board-" + i)).length; }
-function wallProgress() { return WALLS.filter((_, i) => isDone("wall-" + i)).length; }
 const trackColour = d => (TRACKS.find(t => t.key === d) || TRACKS[0]).colour;
 
 function leaveGame() {
-  stopTicking(); B = null; W = null;
+  stopTicking(); B = null; W = null; D = null; H = null;
   document.querySelectorAll(".overlay,.toast,#confetti").forEach(o => o.remove());
 }
 
 function greeting(first) {
   const n = esc(playerName()), h = new Date().getHours();
+  if (isFR()) {
+    const part = h < 18 ? "Bonjour" : "Bonsoir";
+    if (!n) return `${part} ! Prêt pour un jeu ?`;
+    if (first) return `${part} ${n}, cherchons des liens.`;
+    return pick([`${part} ${n}, ravi de vous revoir.`, `Salut ${n}, comment ça va aujourd'hui ?`, `Bon retour, ${n}. Prêt pour un nouveau défi ?`]);
+  }
   const part = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
   if (!n) return `${part}! Ready for a puzzle?`;
   if (first) return `${part}, ${n}. Let's find some connections.`;
@@ -446,58 +607,83 @@ function showHome(first = false) {
   const nb = nextBoard(), nw = nextWall();
   const miniB = Array.from({ length: 20 }, (_, i) => i >= 15 ? `<i class="c" style="--c:#3E7BFA"></i>` : i >= 10 ? `<i class="c" style="--c:#FF5A3C"></i>` : "<i></i>").join("");
   const miniW = Array.from({ length: 16 }, (_, i) => i < 4 ? `<i class="c" style="--c:${WALL_COLOURS[0]}"></i>` : i < 8 ? `<i class="c" style="--c:${WALL_COLOURS[1]}"></i>` : "<i></i>").join("");
-  const nbL = nb != null ? BOARD_LEVELS[nb] : null;
+  const miniF = ["#1FB57A", "#B9AE9C", "#F5A300", "#B9AE9C", "#1FB57A"].map(c => `<i class="c" style="--c:${c}"></i>`).join("") + "<i></i>".repeat(10);
+  const nbL = nb != null ? LEVELS()[nb] : null;
   const bc = nbL ? trackColour(nbL.difficulty) : TRACKS[0].colour;
+  const tags = l => [tr(l.difficulty), l.time ? tr("Timed") : "", l.anagrams ? tr("Anagrams") : ""].filter(Boolean).join(" · ");
   const boardNow = nbL
-    ? `<div class="now" style="--c:${bc}"><small>Level ${levelNo(nb)} of ${PATH.length} · ${nbL.difficulty}${nbL.time ? " · Timed" : ""}${nbL.anagrams ? " · Anagrams" : ""}</small><b>${esc(loc(nbL.name))}</b></div>`
-    : `<div class="now" style="--c:${bc}"><small>All ${PATH.length} levels solved</small><b>More levels are on the way</b></div>`;
-  const pathBar = `<div class="path">${PATH.map(i => `<i class="${s["done-board-" + i] ? "d" : ""} ${i === nb ? "cur" : ""}" style="--c:${trackColour(BOARD_LEVELS[i].difficulty)}"></i>`).join("")}</div>`;
+    ? `<div class="now" style="--c:${bc}"><small>${tags(nbL)}</small><b>${tr("Level {n}", { n: levelNo(nb) })}</b></div>`
+    : `<div class="now" style="--c:${bc}"><small>${tr("You've played every level")}</small><b>${tr("More levels are on the way")}</b></div>`;
   const wallNow = nw != null
-    ? `<div class="now" style="--c:${WALL_COLOURS[0]}"><small>Wall ${nw + 1} of ${WALLS.length}</small><b>Three minute clock</b></div>`
-    : `<div class="now" style="--c:${WALL_COLOURS[0]}"><small>All ${WALLS.length} walls solved</small><b>More walls are on the way</b></div>`;
+    ? `<div class="now" style="--c:${WALL_COLOURS[0]}"><small>Three minutes on the clock</small><b>Level ${nw + 1}</b></div>`
+    : `<div class="now" style="--c:${WALL_COLOURS[0]}"><small>You've played every wall</small><b>More walls are on the way</b></div>`;
+  const five = fiveState(), wheel = wheelState();
+  const english = !isFR();
   app.innerHTML = `
   <div class="screen scroll">
     <div class="home-top">
       <div class="brand"><div class="mark">${"<i></i>".repeat(9)}</div><h1>Linkboard</h1></div>
-      <button class="flag-btn" id="settings" aria-label="Change your name or language"><b>${FLAGS[profile().lang] || FLAGS["en-GB"]}</b>${isUS() ? "US" : "UK"}</button>
+      <button class="flag-btn" id="settings" aria-label="Change your name or language"><b>${FLAGS[lang()]}</b>${LANG_SHORT[lang()]}</button>
     </div>
     <p class="greet">${greeting(first)}</p>
-    <p class="section-label">Game modes</p>
+    <p class="section-label">${tr("Game modes")}</p>
     <div class="modes">
       <button class="mode-card" id="modeBoard">
         <div class="art"><div class="mini b">${miniB}</div></div>
-        <h2>Board</h2>
+        <h2>Linkboard</h2>
         ${boardNow}
-        ${pathBar}
-        <div class="foot"><span class="progress-text">${boardProgress()} of ${BOARD_LEVELS.length} solved</span><span class="go tinted" style="--c:${bc}">${nb == null ? "Play again" : s["save-board-" + nb] ? "Continue" : "Play"}</span></div>
+        <p>${tr("Swap the words around to make rows of five that belong together. Small groups shrink into pictures, and the pictures make bigger groups.")}</p>
+        <div class="foot"><span></span><span class="go tinted" style="--c:${bc}">${nb == null ? tr("Play again") : s["save-" + bkey(nb)] ? tr("Continue") : tr("Play")}</span></div>
+      </button>
+      ${english ? `
+      <button class="mode-card" id="modeFive">
+        <div class="art"><div class="mini f">${miniF}</div></div>
+        <h2>Daily Five</h2>
+        <div class="now" style="--c:#1FB57A"><small>A new word every day</small><b>${five.over ? (five.won ? "Solved today" : "Done for today") : five.guesses.length ? "In progress" : "Today's word is ready"}</b></div>
+        <p>Guess the five-letter word in six tries. Green means the right letter in the right spot, yellow means it's in the word but somewhere else.</p>
+        <div class="foot"><span class="progress-text">${fiveStats().streak ? "Streak: " + fiveStats().streak + " days" : ""}</span><span class="go tinted" style="--c:#1FB57A">${five.over ? "See result" : five.guesses.length ? "Continue" : "Play"}</span></div>
+      </button>
+      <button class="mode-card" id="modeWheel">
+        <div class="art">${wheelArt(wheel.puzzle)}</div>
+        <h2>Letter Wheel</h2>
+        <div class="now" style="--c:#A855F7"><small>New letters every day</small><b>${wheel.found.length ? `${wheel.found.length} words, ${wheelRank(wheel).name}` : "Today's wheel is ready"}</b></div>
+        <p>Make as many words as you can from seven letters. Every word must use the letter in the middle, and a word that uses all seven scores a bonus.</p>
+        <div class="foot"><span></span><span class="go tinted" style="--c:#A855F7">${wheel.found.length ? "Continue" : "Play"}</span></div>
       </button>
       <button class="mode-card" id="modeWall">
         <div class="art"><div class="mini w">${miniW}</div></div>
-        <h2>Wall</h2>
+        <h2>The Wall</h2>
         ${wallNow}
-        <p>Sixteen clues, four groups. After two groups, three lives.</p>
-        <div class="foot"><span class="progress-text">${wallProgress()} of ${WALLS.length} solved</span><span class="go tinted" style="--c:${WALL_COLOURS[0]}">${nw == null ? "Play again" : s["save-wall-" + nw] ? "Continue" : "Play"}</span></div>
-      </button>
+        <p>Sixteen clues are hiding four groups of four. Tap four clues that belong together to make a group. You have three minutes, and once you've found two groups, you only get three more wrong guesses. At the end, score bonus points for saying what links each group.</p>
+        <div class="foot"><span></span><span class="go tinted" style="--c:${WALL_COLOURS[0]}">${nw == null ? "Play again" : s["save-wall-" + nw] ? "Continue" : "Play"}</span></div>
+      </button>` : `
+      <div class="mode-card soon"><div class="art">🧱</div><h2>Le Mur, Daily Five, Letter Wheel</h2><p>${tr("Coming soon in French")}</p></div>`}
       <div class="mode-card soon" aria-label="More game modes coming soon">
         <div class="art">✨</div>
-        <h2>More on the way</h2>
-        <p>New game modes will appear here as we build them.</p>
+        <h2>${tr("More on the way")}</h2>
+        <p>${tr("New games will appear here as we build them.")}</p>
       </div>
     </div>
   </div>`;
-  $("#modeBoard").onclick = () => startBoard(nb ?? pick(PATH));
-  $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
+  $("#modeBoard").onclick = () => startBoard(nb ?? pick(PATH()));
+  if (english) {
+    $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
+    $("#modeFive").onclick = startFive;
+    $("#modeWheel").onclick = startWheel;
+  }
   $("#settings").onclick = () => showProfileSheet(false);
 }
 
-/* First launch: ask the player's name and which English they want. The same form changes them later. */
+/* First launch: ask the player's name and language. The same form changes them later. */
 function profileForm(p) {
-  return `<label class="field"><span>What should we call you?</span>
-      <input id="pName" maxlength="20" autocomplete="given-name" autocapitalize="words" placeholder="Your first name" value="${esc(p.name || "")}"></label>
-    <div class="field"><span>Which English for the answers?</span>
+  const opt = (code, label, sample) => `<button class="lang ${p.lang === code ? "on" : ""}" data-lang="${code}"><b>${FLAGS[code]}</b><span>${label}</span><small>${sample}</small></button>`;
+  return `<label class="field"><span>${tr("What should we call you?")}</span>
+      <input id="pName" maxlength="20" autocomplete="given-name" autocapitalize="words" placeholder="${tr("Your first name")}" value="${esc(p.name || "")}"></label>
+    <div class="field"><span>${tr("Which language?")}</span>
       <div class="langs">
-        <button class="lang ${p.lang !== "en-US" ? "on" : ""}" data-lang="en-GB"><b>🇬🇧</b><span>British English</span><small>Colour, biscuit, holiday</small></button>
-        <button class="lang ${p.lang === "en-US" ? "on" : ""}" data-lang="en-US"><b>🇺🇸</b><span>American English</span><small>Color, cookie, vacation</small></button>
+        ${opt("en-GB", "British English", "Colour, biscuit, holiday")}
+        ${opt("en-US", "American English", "Color, cookie, vacation")}
+        ${opt("fr", "Français", "3 niveaux pour l'instant")}
       </div></div>`;
 }
 function bindProfileForm(root, p, done) {
@@ -518,16 +704,16 @@ function showWelcome() {
       <button class="btn primary big" id="pSave">Let's play</button>
     </div>
   </div>`;
-  bindProfileForm(app, p, () => { showHome(true); const n = playerName(); toast(n ? `Lovely to meet you, ${n}!` : "Lovely to meet you!"); });
+  bindProfileForm(app, p, () => { showHome(true); const n = playerName(); toast(isFR() ? `Enchanté${n ? ", " + n : ""} !` : n ? `Lovely to meet you, ${n}!` : "Lovely to meet you!"); });
   setTimeout(() => $("#pName")?.focus(), 300);
 }
 function showProfileSheet() {
   const p = { ...profile() };
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
-    <h2>You and your words</h2>
+    <h2>${tr("You and your words")}</h2>
     ${profileForm(p)}
-    <div class="actions"><button class="btn primary" id="pSave">Save</button><button class="btn" id="pCancel">Cancel</button></div>
+    <div class="actions"><button class="btn primary" id="pSave">${tr("Save")}</button><button class="btn" id="pCancel">${tr("Cancel")}</button></div>
   </div>`;
   document.body.appendChild(ov);
   bindProfileForm(ov, p, () => { ov.remove(); showHome(); });
@@ -561,10 +747,12 @@ function buildLevel(level, levelIdx) {
   let ci = 0;
   groups.filter(g => g.parent == null).forEach(g => g.colour = GROUP_COLOURS[ci++ % GROUP_COLOURS.length]);
   groups.filter(g => g.parent != null).forEach(g => g.colour = GROUP_COLOURS[ci++ % GROUP_COLOURS.length]);
+  // Order of play: groups that shrink into pictures come first (tier 0), then the big groups they build (1), then plain rows (2).
+  groups.forEach(g => g.tier = g.parent != null ? 0 : g.memberTiles.some(t => tiles[t].symbolOf != null) ? 1 : 2);
   // Anagram round: about half the groups get one scrambled word each, never more than one per group.
   if (level.anagrams) {
     const rnd = seeded(levelIdx * 7919 + (isUS() ? 1 : 0));
-    const word = id => tiles[id].symbolOf == null && /^[A-Za-z]{4,9}$/.test(tiles[id].label);
+    const word = id => tiles[id].symbolOf == null && !tiles[id].pic && /^[A-Za-z]{4,9}$/.test(tiles[id].label);
     const cands = groups.filter(g => g.memberTiles.some(word));
     for (let i = cands.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [cands[i], cands[j]] = [cands[j], cands[i]]; }
     cands.slice(0, Math.ceil(cands.length / 2)).forEach(g => {
@@ -577,27 +765,27 @@ function buildLevel(level, levelIdx) {
 
 function startBoard(levelIdx) {
   leaveGame();
-  const level = BOARD_LEVELS[levelIdx];
+  const level = LEVELS()[levelIdx];
   const { groups, tiles } = buildLevel(level, levelIdx);
   B = {
     levelIdx, level, groups, tiles, board: new Array(SIZE).fill(null), lockedList: [], solved: new Set(),
     pool: tiles.filter(t => t.symbolOf == null).map(t => t.id),
     timed: !!level.time, timeLeft: level.time || 0, elapsed: 0, frozenUntil: 0,
-    hints: 3, freezes: level.time ? 2 : 0, busy: false, sel: null, completing: null, hintTiles: [], born: null, over: false,
+    hintsUsed: 0, freezes: level.time ? 2 : 0, busy: false, sel: null, completing: null, hintTiles: [], born: null, over: false,
     unravelled: new Set(),
   };
-  const saved = store.get()["save-board-" + levelIdx];
+  const saved = store.get()["save-" + bkey(levelIdx)];
   if (saved && saved.sig === tiles.length + ":" + groups.length) {
     Object.assign(B, { board: saved.board, lockedList: saved.lockedList, solved: new Set(saved.solved), pool: saved.pool,
-      timeLeft: saved.timeLeft, elapsed: saved.elapsed, hints: saved.hints, freezes: saved.freezes, hintTiles: saved.hintTiles || [] });
+      timeLeft: saved.timeLeft, elapsed: saved.elapsed, hintsUsed: saved.hintsUsed || 0, freezes: saved.freezes, hintTiles: saved.hintTiles || [] });
     renderBoardScreen();
     flip(new Map(), new Set(B.board.filter(x => x != null)));
-    toast("Welcome back. Carrying on where you left off.");
+    toast(tr("Welcome back. Carrying on where you left off."));
   } else {
     // Opening deal: the minimum number of complete word groups plus a random mix.
-    const wordGroups = shuffle(groups.filter(g => g.memberTiles.every(t => tiles[t].symbolOf == null)));
+    const wordGroups = shuffle(groups.filter(g => g.memberTiles.every(t => tiles[t].symbolOf == null))).sort((a, b) => a.tier - b.tier);
     const deal = wordGroups.slice(0, MIN_ANSWERS[level.difficulty] ?? 2).flatMap(g => g.memberTiles);
-    B.pool = shuffle(B.pool.filter(t => !deal.includes(t)));
+    B.pool = poolOrder(B.pool.filter(t => !deal.includes(t)));
     while (deal.length < SIZE && B.pool.length) deal.push(B.pool.pop());
     shuffle(deal).forEach((id, i) => B.board[i] = id);
     breakCompleteRows();
@@ -605,9 +793,9 @@ function startBoard(levelIdx) {
     flip(new Map(), new Set(B.board.filter(x => x != null)));
     if (level.anagrams) {
       const ov = document.createElement("div"); ov.className = "overlay";
-      ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><h2>Anagram round</h2>
-        <p>Some groups have one word with its letters scrambled, marked ↻. Work out what it really says. When you find the group, it unscrambles.</p>
-        <div class="actions"><button class="btn primary" id="ok">Got it</button></div></div>`;
+      ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><h2>${tr("Anagram round")}</h2>
+        <p>${tr("Some groups have one word with its letters scrambled, marked ↻. Work out what it really says. When you find the group, it unscrambles.")}</p>
+        <div class="actions"><button class="btn primary" id="ok">${tr("Got it")}</button></div></div>`;
       document.body.appendChild(ov); $("#ok", ov).onclick = () => ov.remove();
     }
   }
@@ -617,9 +805,9 @@ function startBoard(levelIdx) {
 
 function saveBoard() {
   if (!B || B.over || B.busy) return;
-  store.set("save-board-" + B.levelIdx, {
+  store.set("save-" + bkey(B.levelIdx), {
     sig: B.tiles.length + ":" + B.groups.length, board: B.board, lockedList: B.lockedList, solved: [...B.solved], pool: B.pool,
-    timeLeft: B.timeLeft, elapsed: B.elapsed, hints: B.hints, freezes: B.freezes, hintTiles: B.hintTiles,
+    timeLeft: B.timeLeft, elapsed: B.elapsed, hintsUsed: B.hintsUsed, freezes: B.freezes, hintTiles: B.hintTiles,
   });
 }
 
@@ -661,6 +849,10 @@ function gravity() {
 const MIN_ANSWERS = { Easy: 3, Medium: 3, Hard: 2 };
 const minAnswers = () => MIN_ANSWERS[B.level.difficulty] ?? 2;
 
+// Hidden tiles are drawn from the end of the pool: picture-group words first, plain-row words last.
+const tierOf = id => B.groups[T(id).parent].tier;
+const poolOrder = pool => shuffle(pool).sort((a, b) => tierOf(b) - tierOf(a));
+
 // Drop hidden words in from the top, keeping a minimum number of complete answers on the board.
 function refill() {
   const incoming = [], keep = new Set();
@@ -673,7 +865,7 @@ function refill() {
     const inPool = new Set(B.pool);
     const missingOf = g => g.memberTiles.filter(t => !on.has(t)).length;
     const ready = open.filter(g => !keep.has(g.id) && g.memberTiles.every(t => on.has(t) || inPool.has(t)))
-      .sort((x, y) => missingOf(x) - missingOf(y));
+      .sort((x, y) => x.tier - y.tier || missingOf(x) - missingOf(y));
     const g = ready[0];
     if (!g) break;
     keep.add(g.id);
@@ -685,14 +877,16 @@ function refill() {
       let cands = others.filter(i => T(B.board[i]).symbolOf == null && !B.hintTiles.includes(B.board[i]));
       if (!cands.length) cands = others;
       if (!cands.length) break;
-      const i = pick(cands); B.pool.push(B.board[i]); B.board[i] = null; room++;
+      // Send back plain-row words first, so the picture groups stay in play.
+      const top = Math.max(...cands.map(i => tierOf(B.board[i])));
+      const i = pick(cands.filter(i => tierOf(B.board[i]) === top)); B.pool.push(B.board[i]); B.board[i] = null; room++;
     }
     if (missing.length > room) break;
     incoming.push(...missing);
     B.pool = B.pool.filter(t => !missing.includes(t));
   }
   gravity();
-  shuffle(B.pool);
+  B.pool = poolOrder(B.pool);
   const empties = playable().filter(i => B.board[i] == null);
   while (incoming.length < empties.length && B.pool.length) incoming.push(B.pool.pop());
   shuffle(incoming);
@@ -754,18 +948,18 @@ function renderBoardScreen() {
   <div class="screen">
     <div class="bar">
       <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
-      <div class="title-block" style="--c:${track.colour}"><div class="lvl">${esc(loc(L.name))}</div><small>Level ${levelNo(B.levelIdx)} · ${esc(L.difficulty)}</small></div>
+      <div class="title-block" style="--c:${track.colour}"><div class="lvl">${esc(loc(L.name))}</div><small>${tr("Level {n}", { n: levelNo(B.levelIdx) })} · ${esc(tr(L.difficulty))}</small></div>
       <div class="timer" id="timer" aria-label="${B.timed ? "Time left" : "Time taken"}">${ICONS.clock}<span class="t">${fmt(B.timed ? B.timeLeft : B.elapsed)}</span></div>
     </div>
     <div class="sub">
-      <span class="hint-text">${L.anagrams ? "Anagram round: ↻ words are scrambled" : "Put five connected tiles in one row"}</span>
+      <span class="hint-text">${L.anagrams ? tr("Anagram round: ↻ words are scrambled") : tr("Put five connected tiles in one row")}</span>
       <span class="counter" aria-label="Groups found"><span class="stack"><i></i><i></i><i></i></span><span id="count"></span></span>
     </div>
     <div class="stage"><div class="board" id="board"></div></div>
     <div class="tools">
-      <div class="tool-wrap"><button class="tool" id="hintBtn" aria-label="Hint: show two tiles that connect">💡<span class="n" id="hintN"></span></button><span class="tool-label">Hint</span></div>
-      ${B.timed ? `<div class="tool-wrap"><button class="tool" id="freezeBtn" aria-label="Freeze the clock for 30 seconds">❄️<span class="n" id="freezeN"></span></button><span class="tool-label">Freeze</span></div>` : ""}
-      <div class="tool-wrap"><button class="tool" id="shuffleBtn" aria-label="Shuffle the board">🔀</button><span class="tool-label">Shuffle</span></div>
+      <div class="tool-wrap"><button class="tool" id="hintBtn" aria-label="Hint: show two tiles that connect">💡<span class="n" id="hintN"></span></button><span class="tool-label">${tr("Hint")}</span></div>
+      ${B.timed ? `<div class="tool-wrap"><button class="tool" id="freezeBtn" aria-label="Freeze the clock for 30 seconds">❄️<span class="n" id="freezeN"></span></button><span class="tool-label">${tr("Freeze")}</span></div>` : ""}
+      <div class="tool-wrap"><button class="tool" id="shuffleBtn" aria-label="Shuffle the board">🔀</button><span class="tool-label">${tr("Shuffle")}</span></div>
     </div>
   </div>`;
   $("#back").onclick = () => { saveBoard(); showHome(); };
@@ -820,7 +1014,8 @@ function renderBoard() {
   el.innerHTML = html;
   B.born = null;
   $("#count").textContent = `${B.solved.size}/${B.groups.length}`;
-  $("#hintN").textContent = B.hints; $("#hintBtn").disabled = !B.hints;
+  const hw = hintWallet();
+  $("#hintN").textContent = hw.n; $("#hintBtn").classList.toggle("empty", !hw.n);
   if (B.timed) { $("#freezeN").textContent = B.freezes; $("#freezeBtn").disabled = !B.freezes; }
 }
 
@@ -888,7 +1083,7 @@ function resolveRows(done) {
       tops.forEach(d => B.solved.add(d.group));
       B.lockedList = [...tops.map(d => d.group), ...B.lockedList];
       B.board = [...keep.flat(), ...tops.map(d => rows[d.row]).flat(), ...rows.slice(P).flat()];
-      toast(`${B.groups[tops[0].group].name} complete!`);
+      toast(tr("{name} complete!", { name: B.groups[tops[0].group].name }));
     }
     B.completing = null;
     if (B.solved.size === B.groups.length) { B.busy = false; renderBoard(); flip(before); return setTimeout(() => { if (B === cur) endBoard(true); }, 900); }
@@ -908,29 +1103,30 @@ function resolveRows(done) {
 
 // Hint: light up two tiles on the board that belong together.
 function useHint() {
-  if (!B.hints || B.busy || B.over) return;
+  if (B.busy || B.over) return;
+  if (!hintWallet().n) return toast(tr("No hints left. More in {t}.", { t: hintWait() }));
   const onBoard = new Set(B.board.filter(x => x != null));
   const full = B.groups.filter(g => !B.solved.has(g.id) && g.memberTiles.every(t => onBoard.has(t)));
-  if (!full.length) return;
+  if (!full.length || !spendHint()) return;
   const g = pick(full);
   // Prefer two tiles that are not already sharing a row, so the hint tells you something new.
   const members = shuffle([...g.memberTiles]);
   const first = members[0];
   const second = members.find(t => t !== first && rowOf(B.board.indexOf(t)) !== rowOf(B.board.indexOf(first))) || members[1];
-  B.hints--; B.hintTiles = [first, second];
+  B.hintsUsed++; B.hintTiles = [first, second];
   renderBoard(); saveBoard();
 }
 function useFreeze() {
   if (!B.freezes || B.over) return;
   B.freezes--; B.frozenUntil = Math.max(performance.now(), B.frozenUntil) + 30000;
-  toast("Clock frozen for 30 seconds");
+  toast(tr("Clock frozen for 30 seconds"));
   renderBoard(); saveBoard();
 }
 
 function endBoard(won) {
   if (B.over) return;
   B.over = true; stopTicking();
-  const key = "board-" + B.levelIdx;
+  const key = bkey(B.levelIdx);
   store.set("save-" + key, undefined);
   const score = B.timed ? Math.ceil(B.timeLeft) : Math.floor(B.elapsed);
   if (won) {
@@ -944,16 +1140,16 @@ function endBoard(won) {
   const ov = document.createElement("div"); ov.className = "overlay";
   // A failed level never shows the answers: the player starts it again with a fresh deal.
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
-    <h2>${won ? `${pick(["Brilliant", "Well done", "Superb", "Nice work"])}${name ? ", " + name : ""}!` : `Time's up${name ? ", " + name : ""}`}</h2>
-    <p>${won ? `You found all ${B.groups.length} connections.` : `You found ${B.solved.size} of ${B.groups.length} connections. This level starts again from the beginning, with a fresh deal.`}</p>
+    <h2>${won ? `${tr(pick(["Brilliant", "Well done", "Superb", "Nice work"]))}${name ? ", " + name : ""}!` : `${tr("Time's up")}${name ? ", " + name : ""}`}</h2>
+    <p>${won ? tr("You found all {n} connections.", { n: B.groups.length }) : tr("You found {a} of {b} connections. This level starts again from the beginning, with a fresh deal.", { a: B.solved.size, b: B.groups.length })}</p>
     <div class="stats">
-      <div class="stat"><b>${B.solved.size}/${B.groups.length}</b><span>Connections</span></div>
-      <div class="stat"><b>${B.timed ? fmt(won ? B.timeLeft : 0) : fmt(B.elapsed)}</b><span>${B.timed ? "Time to spare" : "Time taken"}</span></div>
-      <div class="stat"><b>${3 - B.hints}</b><span>Hints used</span></div>
+      <div class="stat"><b>${B.solved.size}/${B.groups.length}</b><span>${tr("Connections")}</span></div>
+      <div class="stat"><b>${B.timed ? fmt(won ? B.timeLeft : 0) : fmt(B.elapsed)}</b><span>${B.timed ? tr("Time to spare") : tr("Time taken")}</span></div>
+      <div class="stat"><b>${B.hintsUsed}</b><span>${tr("Hints used")}</span></div>
     </div>
     <div class="actions">
-      ${won ? (next != null ? `<button class="btn primary" id="next">Level ${levelNo(next)}</button>` : "") : `<button class="btn primary" id="again">Restart level</button>`}
-      <button class="btn" id="menu">Home</button>
+      ${won ? (next != null ? `<button class="btn primary" id="next">${tr("Level {n}", { n: levelNo(next) })}</button>` : "") : `<button class="btn primary" id="again">${tr("Restart level")}</button>`}
+      <button class="btn" id="menu">${tr("Home")}</button>
     </div>
   </div>`;
   document.body.appendChild(ov);
@@ -1069,7 +1265,7 @@ function renderWallScreen() {
   <div class="screen">
     <div class="bar">
       <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
-      <div class="title-block" style="--c:${WALL_COLOURS[0]}"><div class="lvl">Wall ${W.idx + 1}</div><small>Connecting wall</small></div>
+      <div class="title-block" style="--c:${WALL_COLOURS[0]}"><div class="lvl">The Wall</div><small>Level ${W.idx + 1}</small></div>
       <div class="timer" id="timer">${ICONS.clock}<span class="t">${fmt(W.timeLeft)}</span></div>
     </div>
     <div class="sub"><span class="hint-text" id="wallMsg"></span><span class="lives" id="lives"></span></div>
@@ -1093,8 +1289,8 @@ function renderWall() {
   el.innerHTML = html;
   const msg = $("#wallMsg");
   if (W.over) msg.textContent = W.endReason;
-  else if (W.lives == null) msg.textContent = `Pick four clues that connect. ${W.found.length} of 4 groups found.`;
-  else msg.textContent = "Careful now, every wrong guess costs a life.";
+  else if (W.lives == null) msg.textContent = W.found.length ? `Nice! ${W.found.length} group${W.found.length > 1 ? "s" : ""} found. Keep going.` : "Tap four clues that belong together.";
+  else msg.textContent = "Careful now: from here, each wrong guess loses a life.";
   $("#lives").innerHTML = W.lives == null ? "" : `Lives ${[0, 1, 2].map(i => ICONS.heart.replace('class="heart"', `class="heart ${i < W.lives ? "" : "gone"}"`)).join("")}`;
 }
 
@@ -1107,7 +1303,7 @@ function tapClue(id) {
   const g = W.clues[W.sel[0]].group;
   if (W.sel.every(x => W.clues[x].group === g)) {
     W.found.push(g); W.sel = [];
-    if (W.found.length === 2 && W.lives == null) { W.lives = 3; toast("Two groups found. You now have three lives."); }
+    if (W.found.length === 2 && W.lives == null) { W.lives = 3; toast("Two groups found! Now you have three lives left for the rest."); }
     if (W.found.length === 3) {
       const last = [0, 1, 2, 3].find(x => !W.found.includes(x));
       W.found.push(last);
@@ -1167,7 +1363,7 @@ function showWallResults() {
   const draw = () => {
     ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
       <h2>${esc(W.endReason)}</h2>
-      <p>You score a point for each group found. Now, did you know the connections? Reveal each one and give yourself a point if you had it. Get everything for a 2 point bonus.</p>
+      <p>You get a point for every group you found. Now, did you know what links each group? Tap Reveal to see the answer, and give yourself a point if you got it. Get all eight points and you earn 2 bonus points.</p>
       ${W.found.map((g, k) => {
         const words = W.clues.filter(c => c.group === g).map(c => c.text).join(", ");
         const shown = W.revealed.has(g);
@@ -1182,7 +1378,7 @@ function showWallResults() {
         <div class="stat"><b>${wallScore()}</b><span>Total / 10</span></div>
       </div>
       <div class="actions">
-        ${next != null ? `<button class="btn primary" id="next">Wall ${next + 1}</button>` : ""}
+        ${next != null ? `<button class="btn primary" id="next">Level ${next + 1}</button>` : ""}
         <button class="btn" id="menu">Home</button>
       </div>
     </div>`;
@@ -1196,11 +1392,224 @@ function showWallResults() {
   document.body.appendChild(ov);
 }
 
+/* =====================================================================
+   DAILY GAMES
+   The date picks the puzzle, so everyone gets the same one each day,
+   with no server. A new puzzle arrives at midnight, local time.
+   ===================================================================== */
+const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const dayNumber = () => { const d = new Date(); return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026, 9, 1)) / 864e5); };
+const ofToday = list => list[((dayNumber() % list.length) + list.length) % list.length];
+const todayLabel = () => new Date().toLocaleDateString(isUS() ? "en-US" : "en-GB", { weekday: "long", day: "numeric", month: "long" });
+function dailyKeys(onKey) {
+  return k => `<div class="keys">${["qwertyuiop", "asdfghjkl", "+zxcvbnm-"].map(row => `<div class="krow">${[...row].map(c =>
+    c === "+" ? `<button class="key wide" data-k="Enter">Enter</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="Delete">⌫</button>` :
+    `<button class="key ${k[c] || ""}" data-k="${c}">${c}</button>`).join("")}</div>`).join("")}</div>`;
+}
+document.addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".overlay")) return;
+  const k = e.key === "Enter" || e.key === "Backspace" ? e.key : /^[a-zA-Z]$/.test(e.key) ? e.key.toLowerCase() : null;
+  if (!k) return;
+  if (D) { e.preventDefault(); fiveKey(k); } else if (H) { e.preventDefault(); wheelKey(k); }
+});
+
+/* ---------- Daily Five: guess the five-letter word in six tries ---------- */
+let D = null;
+const fiveAnswer = () => ofToday(FIVE_ANSWERS);
+const fiveState = () => store.get()["five-" + todayKey()] || { guesses: [], over: false, won: false };
+function fiveStats() {
+  const s = store.get().fiveStats || { played: 0, won: 0, streak: 0, best: 0, lastWin: null, dist: [0, 0, 0, 0, 0, 0] };
+  return { ...s, streak: s.lastWin != null && dayNumber() - s.lastWin <= 1 ? s.streak : 0 };
+}
+// Colours for one guess: c = right letter, right place; p = in the word, wrong place; a = not in the word.
+function fiveScore(guess, answer) {
+  const res = Array(5).fill("a"), left = {};
+  [...answer].forEach((c, i) => { if (guess[i] === c) res[i] = "c"; else left[c] = (left[c] || 0) + 1; });
+  [...guess].forEach((c, i) => { if (res[i] !== "c" && left[c]) { res[i] = "p"; left[c]--; } });
+  return res;
+}
+function startFive() {
+  leaveGame();
+  D = { answer: fiveAnswer(), ...fiveState(), typed: "", busy: false };
+  app.innerHTML = `
+  <div class="screen daily">
+    <div class="bar">
+      <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
+      <div class="title-block" style="--c:#1FB57A"><div class="lvl">Daily Five</div><small>${esc(todayLabel())}</small></div>
+      <span></span>
+    </div>
+    <p class="daily-msg" id="msg">Guess today's five-letter word. You have six tries.</p>
+    <div class="fgrid" id="fgrid"></div>
+    <div id="keys"></div>
+  </div>`;
+  $("#back").onclick = () => showHome();
+  $("#keys").addEventListener("click", e => { const b = e.target.closest(".key"); if (b) fiveKey(b.dataset.k); });
+  renderFive();
+  if (D.over) setTimeout(() => D && fiveResult(), 400);
+}
+function renderFive(revealRow = -1) {
+  const rows = [];
+  for (let r = 0; r < 6; r++) {
+    const g = D.guesses[r], sc = g ? fiveScore(g, D.answer) : null;
+    const text = g || (r === D.guesses.length ? D.typed : "");
+    rows.push(`<div class="frow ${r === D.guesses.length && D.shake ? "shake" : ""}">${[0, 1, 2, 3, 4].map(i =>
+      `<div class="ft ${sc ? sc[i] : text[i] ? "typed" : ""} ${r === revealRow ? "flip" : ""}" style="--d:${i * 0.25}s">${text[i] || ""}</div>`).join("")}</div>`);
+  }
+  $("#fgrid").innerHTML = rows.join("");
+  const k = {};
+  D.guesses.forEach(g => fiveScore(g, D.answer).forEach((r, i) => { const c = g[i], rank = { c: 3, p: 2, a: 1 }; if (!k[c] || rank[r] > rank[k[c]]) k[c] = r; }));
+  $("#keys").innerHTML = dailyKeys()(k);
+  D.shake = false;
+}
+function fiveKey(k) {
+  if (!D || D.over || D.busy) return;
+  if (k === "Backspace") D.typed = D.typed.slice(0, -1);
+  else if (k === "Enter") return fiveSubmit();
+  else if (D.typed.length < 5) D.typed += k;
+  renderFive();
+}
+function fiveSubmit() {
+  const msg = $("#msg");
+  if (D.typed.length < 5) { msg.textContent = "Five letters, please."; D.shake = true; return renderFive(); }
+  if (!FIVE_GUESSES.has(D.typed)) { msg.textContent = `"${D.typed.toUpperCase()}" isn't in our word list.`; D.shake = true; return renderFive(); }
+  D.guesses.push(D.typed); D.typed = "";
+  const won = D.guesses[D.guesses.length - 1] === D.answer;
+  D.over = won || D.guesses.length === 6; D.won = won;
+  store.set("five-" + todayKey(), { guesses: D.guesses, over: D.over, won: D.won });
+  if (D.over) {
+    const s = fiveStats(), today = dayNumber();
+    s.played++;
+    if (won) { s.won++; s.streak = s.lastWin === today - 1 ? s.streak + 1 : 1; s.best = Math.max(s.best, s.streak); s.lastWin = today; s.dist[D.guesses.length - 1]++; }
+    else s.streak = 0;
+    store.set("fiveStats", s);
+  }
+  D.busy = true;
+  renderFive(D.guesses.length - 1);
+  msg.textContent = won ? pick(["Brilliant!", "Spot on!", "Lovely!", "Got it!"]) : D.over ? "So close. Better luck tomorrow!" : `${6 - D.guesses.length} ${6 - D.guesses.length === 1 ? "try" : "tries"} left.`;
+  const cur = D;
+  setTimeout(() => { if (D !== cur) return; D.busy = false; if (D.over) { if (won) confetti(); setTimeout(() => D === cur && fiveResult(), 700); } }, 1500);
+}
+function fiveResult() {
+  const s = fiveStats(), name = esc(playerName());
+  const maxD = Math.max(1, ...s.dist);
+  const grid = D.guesses.map(g => fiveScore(g, D.answer).map(r => ({ c: "🟩", p: "🟨", a: "⬜" }[r])).join("")).join("\n");
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+    <h2>${D.won ? `${D.guesses.length === 1 ? "First go!" : "Got it in " + D.guesses.length}${name ? ", " + name : ""}!` : "Not today"}</h2>
+    <p>${D.won ? "A new word arrives at midnight." : `Today's word was <b>${D.answer.toUpperCase()}</b>. A new word arrives at midnight.`}</p>
+    <div class="stats">
+      <div class="stat"><b>${s.played}</b><span>Played</span></div>
+      <div class="stat"><b>${s.played ? Math.round(100 * s.won / s.played) : 0}%</b><span>Won</span></div>
+      <div class="stat"><b>${s.streak}</b><span>Streak</span></div>
+      <div class="stat"><b>${s.best}</b><span>Best streak</span></div>
+    </div>
+    <div class="dist">${s.dist.map((n, i) => `<div><span>${i + 1}</span><i style="width:${8 + 92 * n / maxD}%" class="${D.won && D.guesses.length === i + 1 ? "on" : ""}">${n}</i></div>`).join("")}</div>
+    <div class="actions"><button class="btn primary" id="share">Share result</button><button class="btn" id="menu">Home</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  $("#menu", ov).onclick = () => showHome();
+  $("#share", ov).onclick = async () => {
+    const text = `Daily Five ${todayKey()} ${D.won ? D.guesses.length : "X"}/6\n${grid}`;
+    try { if (navigator.share) await navigator.share({ text }); else { await navigator.clipboard.writeText(text); toast("Copied. Paste it into a message."); } }
+    catch { try { await navigator.clipboard.writeText(text); toast("Copied. Paste it into a message."); } catch { toast("Sharing isn't available here."); } }
+  };
+}
+
+/* ---------- Letter Wheel: make words from seven letters, always using the middle one ---------- */
+let H = null;
+const WHEEL_RANKS = [["Just starting", 0], ["Warming up", 5], ["Good", 15], ["Great", 30], ["Brilliant", 50], ["Superstar", 70], ["Word wizard", 100]];
+let wheelCache = null;
+function wheelState() {
+  const key = todayKey() + lang();
+  if (!wheelCache || wheelCache.key !== key) {
+    const p = ofToday(WHEEL_PUZZLES), puzzle = { centre: p[0], letters: p.slice(1) };
+    const words = WHEEL_WORDS.concat(isUS() ? WHEEL_US : WHEEL_UK).filter(w => w.includes(puzzle.centre) && [...w].every(c => puzzle.letters.includes(c)));
+    wheelCache = { key, puzzle, words: new Set(words), max: words.reduce((t, w) => t + wheelPoints(w, puzzle), 0) };
+  }
+  const found = (store.get()["wheel-" + todayKey()] || { found: [] }).found.filter(w => wheelCache.words.has(w));
+  return { ...wheelCache, found, score: found.reduce((t, w) => t + wheelPoints(w, wheelCache.puzzle), 0) };
+}
+const isPangram = (w, pz) => [...pz.letters].every(c => w.includes(c));
+const wheelPoints = (w, pz) => (w.length === 4 ? 1 : w.length) + (isPangram(w, pz) ? 7 : 0);
+function wheelRank(st) {
+  const pct = st.max ? 100 * st.score / st.max : 0;
+  let i = 0; WHEEL_RANKS.forEach((r, k) => { if (pct >= r[1]) i = k; });
+  return { name: WHEEL_RANKS[i][0], i, next: WHEEL_RANKS[i + 1] ? Math.ceil(WHEEL_RANKS[i + 1][1] * st.max / 100) - st.score : 0 };
+}
+function wheelArt(pz) {
+  const outer = [...pz.letters].filter(c => c !== pz.centre);
+  return `<div class="mwheel"><b>${pz.centre}</b>${outer.map((c, i) => `<i style="--a:${i * 60}deg">${c}</i>`).join("")}</div>`;
+}
+function startWheel() {
+  leaveGame();
+  const st = wheelState();
+  H = { puzzle: st.puzzle, outer: shuffle([...st.puzzle.letters].filter(c => c !== st.puzzle.centre)), typed: "" };
+  app.innerHTML = `
+  <div class="screen daily">
+    <div class="bar">
+      <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
+      <div class="title-block" style="--c:#A855F7"><div class="lvl">Letter Wheel</div><small>${esc(todayLabel())}</small></div>
+      <span></span>
+    </div>
+    <div class="wheel-top"><div class="rank" id="rank"></div></div>
+    <div class="wheel-body">
+      <div class="wheel-play">
+        <div class="typed" id="typed"></div>
+        <p class="daily-msg" id="msg">Make words of 4 letters or more. Every word must use the middle letter.</p>
+        <div class="wheel" id="wheel"></div>
+        <div class="wheel-btns"><button class="btn" id="del">Delete</button><button class="btn" id="mix">Shuffle</button><button class="btn primary" id="enter">Enter</button></div>
+      </div>
+      <div class="found" id="found"></div>
+    </div>
+  </div>`;
+  $("#back").onclick = () => showHome();
+  $("#wheel").addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (b) wheelKey(b.dataset.c); });
+  $("#del").onclick = () => wheelKey("Backspace");
+  $("#enter").onclick = () => wheelKey("Enter");
+  $("#mix").onclick = () => { shuffle(H.outer); renderWheel(); };
+  renderWheel();
+}
+function renderWheel() {
+  const st = wheelState(), pz = H.puzzle, r = wheelRank(st);
+  $("#wheel").innerHTML = `<button class="wl centre" data-c="${pz.centre}">${pz.centre}</button>` +
+    H.outer.map((c, i) => `<button class="wl" data-c="${c}" style="--a:${i * 60}deg">${c}</button>`).join("");
+  $("#typed").innerHTML = H.typed ? [...H.typed].map(c => `<span class="${c === pz.centre ? "mid" : ""}">${c}</span>`).join("") : `<span class="ph">Tap the letters</span>`;
+  $("#rank").innerHTML = `<div class="rank-head"><b>${r.name}</b><span>${st.score} points${r.next ? ` · ${r.next} to the next rank` : ""}</span></div>
+    <div class="rank-bar">${WHEEL_RANKS.map((_, k) => `<i class="${k <= r.i ? "on" : ""}"></i>`).join("")}</div>`;
+  const sorted = [...st.found].sort();
+  $("#found").innerHTML = `<p class="section-label">You've found ${st.found.length} word${st.found.length === 1 ? "" : "s"}</p>
+    <div class="words">${sorted.map(w => `<span class="${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("") || `<span class="ph">Your words will appear here</span>`}</div>`;
+}
+function wheelKey(k) {
+  if (!H) return;
+  const pz = H.puzzle, msg = $("#msg");
+  if (k === "Backspace") H.typed = H.typed.slice(0, -1);
+  else if (k === "Enter") {
+    const w = H.typed, st = wheelState();
+    let say;
+    if (!w) return;
+    if (w.length < 4) say = "Words need at least 4 letters.";
+    else if (!w.includes(pz.centre)) say = `Every word must use the middle letter, ${pz.centre.toUpperCase()}.`;
+    else if (st.found.includes(w)) say = "You've already found that one.";
+    else if (!st.words.has(w)) say = `"${w.toUpperCase()}" isn't in our word list.`;
+    else {
+      const pts = wheelPoints(w, pz), before = wheelRank(st).i;
+      store.set("wheel-" + todayKey(), { found: [...st.found, w] });
+      say = isPangram(w, pz) ? `All seven letters! +${pts} points` : `${pick(["Nice", "Good one", "Lovely", "Yes"])}! +${pts} point${pts > 1 ? "s" : ""}`;
+      const after = wheelRank(wheelState());
+      if (after.i > before) { say += `. You're now ${after.name}!`; confetti(); }
+    }
+    msg.textContent = say; H.typed = "";
+  } else if (pz.letters.includes(k) && H.typed.length < 15) H.typed += k;
+  renderWheel();
+}
+
 // Save on the way out, so closing the app or switching away never loses progress.
 addEventListener("pagehide", () => { saveBoard(); saveWall(); });
 document.addEventListener("visibilitychange", () => { if (document.hidden) { saveBoard(); saveWall(); } });
 
 showHome();
+cloud.start();
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));

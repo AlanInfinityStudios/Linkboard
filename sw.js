@@ -1,7 +1,7 @@
 // Offline support. The game files are fetched fresh when online (so new puzzles
 // arrive straight away) and served from the cache when offline.
-const CACHE = "linkboard-v9";
-const SHELL = ["./", "index.html", "puzzles.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
+const CACHE = "linkboard-v10";
+const SHELL = ["./", "index.html", "puzzles.js", "words.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

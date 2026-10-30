@@ -18,6 +18,9 @@ const distinct=w=>new Set(w).size;
 const base=up("english",35).filter(ok), uk=up("british",35).filter(ok), us=up("american",35).filter(ok);
 const wf=w=>w.length>=4&&distinct(w)<=7&&!w.includes("s");
 const B=base.filter(wf), UK=uk.filter(wf), US=us.filter(wf);
+// Bonus words: less common words that are accepted and score, but are not in the day's answer list.
+const inBase=new Set([...B,...UK,...US]);
+const BONUS=[...new Set([...L("english-words-40"),...L("english-words-50"),...L("british-words-40"),...L("british-words-50"),...L("american-words-40"),...L("american-words-50")].filter(w=>ok(w)&&wf(w)&&!inBase.has(w)))];
 const pang=[...new Set(up("english",20).filter(w=>ok(w)&&!w.includes("s")&&distinct(w)===7))];
 const dict=(letters,centre,extra)=>B.concat(extra).filter(w=>w.includes(centre)&&[...w].every(c=>letters.includes(c)));
 const puzzles=[]; const usedSets=new Set();
@@ -32,12 +35,13 @@ console.log("answers",answers.length,"guesses",guessAll.size,"wheel base",B.leng
 console.log(answers.slice(0,60).join(" "));
 const out=`/* Word lists for the daily games. Built from SCOWL (wordlist-english on npm, MIT licence) by tools/build_words.js.
    FIVE_ANSWERS: one answer per day, in a fixed shuffled order. FIVE_GUESSES: every word accepted as a guess.
-   WHEEL_*: words of 4+ letters, no S, at most 7 different letters. WHEEL_PUZZLES: centre letter first, then the 7 letters. */
+   WHEEL_*: words of 4+ letters, no S, at most 7 different letters. WHEEL_BONUS: rarer words accepted as bonus words. WHEEL_PUZZLES: centre letter first, then the 7 letters. */
 const FIVE_ANSWERS = "${answers.join(" ")}".split(" ");
 const FIVE_GUESSES = new Set("${[...guessAll].sort().join(" ")}".split(" "));
 const WHEEL_WORDS = "${B.join(" ")}".split(" ");
 const WHEEL_UK = "${UK.join(" ")}".split(" ");
 const WHEEL_US = "${US.join(" ")}".split(" ");
+const WHEEL_BONUS = "${BONUS.join(" ")}".split(" ");
 const WHEEL_PUZZLES = "${puzzles.join(" ")}".split(" ");
 `;
 require("fs").writeFileSync(require("path").join(__dirname, "..", "words.js"),out);

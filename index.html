@@ -334,13 +334,21 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .wl.centre { transform: none; background: #A855F7; color: #fff; }
 .wl:active { filter: brightness(.92); }
 .wheel-btns { display: flex; gap: 10px; }
-.found { flex: 1; max-width: 360px; background: var(--surface); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.found { flex: 1; max-width: 420px; background: var(--surface); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.clue-btn { background: #FFF3D6; }
+.wgroup { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.wgroup h4 { flex-basis: 100%; margin: 4px 0 0; font-size: .85rem; display: flex; justify-content: space-between; }
+.wgroup h4 span { color: var(--muted); font-weight: 600; }
+.ans { display: flex; gap: 2px; }
+.ans i { width: 19px; height: 24px; border-bottom: 2px solid var(--tile-edge); display: grid; place-items: center; font-style: normal; font-weight: 700; text-transform: uppercase; font-size: .9rem; color: var(--muted); }
+.ans.got i { color: var(--ink); border-color: #A855F7; }
+.ans.pg.got i { color: #A855F7; }
 .words { display: flex; flex-wrap: wrap; gap: 6px; }
 .words span { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-weight: 600; text-transform: capitalize; }
 .words span.pg { background: #A855F7; color: #fff; }
 @media (max-width: 700px) {
   .wheel-body { flex-direction: column; gap: 14px; }
-  .found { max-width: none; flex: 0 0 auto; max-height: 30vh; }
+  .found { max-width: none; flex: 1 1 auto; min-height: 160px; }
 }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 65; }
 @media (prefers-reduced-motion: reduce) {
@@ -1526,8 +1534,9 @@ function wheelState() {
     const words = WHEEL_WORDS.concat(isUS() ? WHEEL_US : WHEEL_UK).filter(w => w.includes(puzzle.centre) && [...w].every(c => puzzle.letters.includes(c)));
     wheelCache = { key, puzzle, words: new Set(words), max: words.reduce((t, w) => t + wheelPoints(w, puzzle), 0) };
   }
-  const found = (store.get()["wheel-" + todayKey()] || { found: [] }).found.filter(w => wheelCache.words.has(w));
-  return { ...wheelCache, found, score: found.reduce((t, w) => t + wheelPoints(w, wheelCache.puzzle), 0) };
+  const saved = store.get()["wheel-" + todayKey()] || { found: [], clues: 0 };
+  const found = saved.found.filter(w => wheelCache.words.has(w));
+  return { ...wheelCache, found, clues: saved.clues || 0, score: found.reduce((t, w) => t + wheelPoints(w, wheelCache.puzzle), 0) };
 }
 const isPangram = (w, pz) => [...pz.letters].every(c => w.includes(c));
 const wheelPoints = (w, pz) => (w.length === 4 ? 1 : w.length) + (isPangram(w, pz) ? 7 : 0);
@@ -1558,6 +1567,7 @@ function startWheel() {
         <p class="daily-msg" id="msg">Make words of 4 letters or more. Every word must use the middle letter.</p>
         <div class="wheel" id="wheel"></div>
         <div class="wheel-btns"><button class="btn" id="del">Delete</button><button class="btn" id="mix">Shuffle</button><button class="btn primary" id="enter">Enter</button></div>
+        <button class="btn clue-btn" id="clue">💡 Clue <span id="clueN"></span></button>
       </div>
       <div class="found" id="found"></div>
     </div>
@@ -1567,6 +1577,7 @@ function startWheel() {
   $("#del").onclick = () => wheelKey("Backspace");
   $("#enter").onclick = () => wheelKey("Enter");
   $("#mix").onclick = () => { shuffle(H.outer); renderWheel(); };
+  $("#clue").onclick = wheelClue;
   renderWheel();
 }
 function renderWheel() {
@@ -1576,9 +1587,25 @@ function renderWheel() {
   $("#typed").innerHTML = H.typed ? [...H.typed].map(c => `<span class="${c === pz.centre ? "mid" : ""}">${c}</span>`).join("") : `<span class="ph">Tap the letters</span>`;
   $("#rank").innerHTML = `<div class="rank-head"><b>${r.name}</b><span>${st.score} points${r.next ? ` · ${r.next} to the next rank` : ""}</span></div>
     <div class="rank-bar">${WHEEL_RANKS.map((_, k) => `<i class="${k <= r.i ? "on" : ""}"></i>`).join("")}</div>`;
-  const sorted = [...st.found].sort();
-  $("#found").innerHTML = `<p class="section-label">You've found ${st.found.length} word${st.found.length === 1 ? "" : "s"}</p>
-    <div class="words">${sorted.map(w => `<span class="${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("") || `<span class="ph">Your words will appear here</span>`}</div>`;
+  // Every answer is listed as blanks, grouped by length and in alphabetical order. Clues fill in letters from the front.
+  const all = [...st.words], lengths = [...new Set(all.map(w => w.length))].sort((a, b) => a - b), got = new Set(st.found);
+  $("#found").innerHTML = `<p class="section-label">You've found ${st.found.length} of ${all.length} words</p>` + lengths.map(n => {
+    const list = all.filter(w => w.length === n).sort();
+    return `<div class="wgroup"><h4>${n} letters <span>${list.filter(w => got.has(w)).length} of ${list.length}</span></h4>
+      ${list.map(w => `<div class="ans ${got.has(w) ? "got" : ""} ${isPangram(w, pz) ? "pg" : ""}">${[...w].map((c, i) => `<i>${got.has(w) || i < st.clues ? c : ""}</i>`).join("")}</div>`).join("")}</div>`;
+  }).join("");
+  const hw = hintWallet();
+  $("#clueN").textContent = `(${hw.n} left)`;
+}
+function wheelClue() {
+  const st = wheelState(), missing = [...st.words].filter(w => !st.found.includes(w));
+  if (!missing.length) return toast("You've found every word!");
+  if (st.clues >= Math.max(...missing.map(w => w.length)) - 1) return toast("That's every clue for today.");
+  if (!hintWallet().n) return toast(`No clues left. More in ${hintWait()}.`);
+  spendHint();
+  store.set("wheel-" + todayKey(), { found: st.found, clues: st.clues + 1 });
+  $("#msg").textContent = st.clues === 0 ? "Clue: the first letter of every word is filled in." : `Clue: letter ${st.clues + 1} of every word is filled in.`;
+  renderWheel();
 }
 function wheelKey(k) {
   if (!H) return;
@@ -1594,7 +1621,7 @@ function wheelKey(k) {
     else if (!st.words.has(w)) say = `"${w.toUpperCase()}" isn't in our word list.`;
     else {
       const pts = wheelPoints(w, pz), before = wheelRank(st).i;
-      store.set("wheel-" + todayKey(), { found: [...st.found, w] });
+      store.set("wheel-" + todayKey(), { found: [...st.found, w], clues: st.clues });
       say = isPangram(w, pz) ? `All seven letters! +${pts} points` : `${pick(["Nice", "Good one", "Lovely", "Yes"])}! +${pts} point${pts > 1 ? "s" : ""}`;
       const after = wheelRank(wheelState());
       if (after.i > before) { say += `. You're now ${after.name}!`; confetti(); }

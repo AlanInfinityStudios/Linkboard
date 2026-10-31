@@ -244,7 +244,8 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
   font-weight: 600; font-size: 3cqw; line-height: 1.1; padding: 0 .4em; min-width: 0; transition: background .2s, color .2s, transform .12s;
 }
 .wtile.sel { transform: translateY(-0.4cqw); box-shadow: 0 0 0 0.45cqw var(--accent), 0 1cqw 2cqw rgba(90, 60, 25, .18); }
-.wtile.found { color: #fff; background: var(--c); box-shadow: 0 0.25cqw 0 color-mix(in srgb, var(--c) 70%, #000); cursor: default; animation: pop .4s ease-out; }
+.wtile.found { color: #fff; background: var(--c); box-shadow: 0 0.25cqw 0 color-mix(in srgb, var(--c) 70%, #000); cursor: default; }
+.wtile.found.new { animation: pop .4s ease-out; }
 .wtile.revealed { filter: saturate(.4); opacity: .8; }
 @keyframes pop { 40% { transform: scale(1.07); } }
 .wall.shake { animation: shake .45s; }
@@ -348,6 +349,12 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .words { display: flex; flex-wrap: wrap; gap: 6px; }
 .words span { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-weight: 600; text-transform: capitalize; }
 .words span.pg { background: #A855F7; color: #fff; }
+.yday { max-height: 86vh; display: flex; flex-direction: column; }
+.yday-head { display: flex; align-items: center; gap: 14px; }
+.yday-head h2 { margin: 0; } .yday-head p { margin: 4px 0 0; color: var(--muted); }
+.yday-list { overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+.words span.miss { background: color-mix(in srgb, #A855F7 18%, var(--surface)); color: #6B21A8; }
+.words span.miss.pg { background: #A855F7; color: #fff; }
 .bonus { border-top: 1px dashed var(--tile-edge); padding-top: 10px; }
 .bonus h4 { margin: 0 0 6px; font-size: .85rem; display: flex; justify-content: space-between; }
 .bonus h4 span, .bonus p { color: var(--muted); font-weight: 600; }
@@ -1299,8 +1306,9 @@ function renderWall() {
   let html = "";
   W.found.forEach((g, k) => W.clues.filter(c => c.group === g).forEach(c => {
     const auto = W.revealedGroups && W.revealedGroups.includes(g);
-    html += `<button class="wtile found ${auto ? "revealed" : ""}" style="--c:${WALL_COLOURS[k]}" data-id="${c.id}" aria-disabled="true">${esc(c.text)}</button>`;
+    html += `<button class="wtile found ${auto ? "revealed" : ""} ${g === W.justFound ? "new" : ""}" style="--c:${WALL_COLOURS[k]}" data-id="${c.id}" aria-disabled="true">${esc(c.text)}</button>`;
   }));
+  W.justFound = null;
   rest.forEach(id => html += `<button class="wtile ${W.sel.includes(id) ? "sel" : ""}" data-id="${id}" aria-pressed="${W.sel.includes(id)}">${esc(W.clues[id].text)}</button>`);
   el.innerHTML = html;
   const msg = $("#wallMsg");
@@ -1318,7 +1326,7 @@ function tapClue(id) {
   if (W.sel.length < 4) return renderWall();
   const g = W.clues[W.sel[0]].group;
   if (W.sel.every(x => W.clues[x].group === g)) {
-    W.found.push(g); W.sel = [];
+    W.found.push(g); W.sel = []; W.justFound = g;
     if (W.found.length === 2 && W.lives == null) { W.lives = 3; toast("Two groups found! Now you have three lives left for the rest."); }
     if (W.found.length === 3) {
       const last = [0, 1, 2, 3].find(x => !W.found.includes(x));
@@ -1413,9 +1421,12 @@ function showWallResults() {
    The date picks the puzzle, so everyone gets the same one each day,
    with no server. A new puzzle arrives at midnight, local time.
    ===================================================================== */
-const todayKey = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const dateKey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const yesterdayKey = () => { const d = new Date(); d.setDate(d.getDate() - 1); return dateKey(d); };
+const ofDay = (list, n) => list[((n % list.length) + list.length) % list.length];
+const todayKey = () => dateKey(new Date());
 const dayNumber = () => { const d = new Date(); return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026, 9, 1)) / 864e5); };
-const ofToday = list => list[((dayNumber() % list.length) + list.length) % list.length];
+const ofToday = list => ofDay(list, dayNumber());
 const todayLabel = () => new Date().toLocaleDateString(isUS() ? "en-US" : "en-GB", { weekday: "long", day: "numeric", month: "long" });
 function dailyKeys(onKey) {
   return k => `<div class="keys">${["qwertyuiop", "asdfghjkl", "+zxcvbnm-"].map(row => `<div class="krow">${[...row].map(c =>
@@ -1537,12 +1548,15 @@ const WHEEL_RANKS = [["Just starting", 0], ["Warming up", 5], ["Good", 15], ["Gr
 // The wheel is a once-a-day challenge, so it has its own clues: 3 per day, no top-ups.
 const WHEEL_CLUES = 3;
 let wheelCache = null;
+function wheelDay(n) {
+  const p = ofDay(WHEEL_PUZZLES, n), puzzle = { centre: p[0], letters: p.slice(1) };
+  const fits = w => w.includes(puzzle.centre) && [...w].every(c => puzzle.letters.includes(c));
+  return { puzzle, fits, words: WHEEL_WORDS.concat(isUS() ? WHEEL_US : WHEEL_UK).filter(fits) };
+}
 function wheelState() {
   const key = todayKey() + lang();
   if (!wheelCache || wheelCache.key !== key) {
-    const p = ofToday(WHEEL_PUZZLES), puzzle = { centre: p[0], letters: p.slice(1) };
-    const fits = w => w.includes(puzzle.centre) && [...w].every(c => puzzle.letters.includes(c));
-    const words = WHEEL_WORDS.concat(isUS() ? WHEEL_US : WHEEL_UK).filter(fits);
+    const { puzzle, fits, words } = wheelDay(dayNumber());
     // Rarer words still count, as bonus words: they score points but aren't in the list of blanks.
     wheelCache = { key, puzzle, words: new Set(words), bonusWords: new Set(WHEEL_BONUS.filter(fits)), max: words.reduce((t, w) => t + wheelPoints(w, puzzle), 0) };
   }
@@ -1579,7 +1593,7 @@ function startWheel() {
         <p class="daily-msg" id="msg">Make words of 4 or more letters. The purple middle letter must be in every word, anywhere you like. Letters can be used more than once.</p>
         <div class="wheel" id="wheel"></div>
         <div class="wheel-btns"><button class="btn" id="del">Delete</button><button class="btn" id="mix">Shuffle</button><button class="btn primary" id="enter">Enter</button></div>
-        <button class="btn clue-btn" id="clue">💡 Clue <span id="clueN"></span></button>
+        <div class="wheel-btns"><button class="btn clue-btn" id="clue">💡 Clue <span id="clueN"></span></button><button class="btn" id="yday">Yesterday's answers</button></div>
       </div>
       <div class="found" id="found"></div>
     </div>
@@ -1590,6 +1604,7 @@ function startWheel() {
   $("#enter").onclick = () => wheelKey("Enter");
   $("#mix").onclick = () => { shuffle(H.outer); renderWheel(); };
   $("#clue").onclick = wheelClue;
+  $("#yday").onclick = wheelYesterday;
   renderWheel();
 }
 function renderWheel() {
@@ -1609,6 +1624,22 @@ function renderWheel() {
     ? `<div class="words">${st.bonus.sort().map(w => `<span class="${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("")}</div>`
     : `<p>Rarer words that aren't in the list above still score points here.</p>`}</div>`;
   $("#clueN").textContent = `(${WHEEL_CLUES - st.clues} left today)`;
+}
+// Yesterday's full answer list, so players can see what they missed.
+function wheelYesterday() {
+  const { puzzle: pz, words } = wheelDay(dayNumber() - 1), got = new Set((store.get()["wheel-" + yesterdayKey()] || { found: [] }).found);
+  const lengths = [...new Set(words.map(w => w.length))].sort((a, b) => a - b), mine = words.filter(w => got.has(w)).length;
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet yday" role="dialog" aria-modal="true">
+    <div class="yday-head">${wheelArt(pz)}<div><h2>Yesterday's answers</h2><p>${mine ? `You found ${mine} of ${words.length}. The ones you missed are in purple.` : `There were ${words.length} words to find.`}</p></div></div>
+    <div class="yday-list">${lengths.map(n => `<div class="wgroup"><h4>${n} letters</h4><div class="words">${words.filter(w => w.length === n).sort()
+      .map(w => `<span class="${got.has(w) ? "" : "miss"} ${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("")}</div></div>`).join("")}</div>
+    <div class="actions"><button class="btn primary" id="ydayClose">Back to today</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.querySelector("#ydayClose").onclick = close;
+  ov.addEventListener("click", e => { if (e.target === ov) close(); });
 }
 function wheelClue() {
   const st = wheelState(), missing = [...st.words].filter(w => !st.found.includes(w));

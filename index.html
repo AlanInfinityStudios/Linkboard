@@ -337,6 +337,8 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .wl.centre { transform: none; background: #A855F7; color: #fff; }
 .wl:active { filter: brightness(.92); }
 .wheel-btns { display: flex; gap: 10px; }
+.wheel-btns.extra { margin-top: 28px; padding-top: 18px; border-top: 1px dashed var(--tile-edge); }
+.clue-btn.ask { background: #F5B42A; color: #2A2420; }
 .found { flex: 1; max-width: 420px; background: var(--surface); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 .clue-btn { background: #FFF3D6; }
 .wgroup { display: flex; flex-wrap: wrap; gap: 6px 10px; }
@@ -349,6 +351,9 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .words { display: flex; flex-wrap: wrap; gap: 6px; }
 .words span { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-weight: 600; text-transform: capitalize; }
 .words span.pg { background: #A855F7; color: #fff; }
+.done-sheet { text-align: center; }
+.done-art { position: relative; width: 84px; margin: 0 auto 8px; }
+.done-art span { position: absolute; right: -26px; bottom: -6px; font-size: 2.4rem; animation: pop .6s ease-out; }
 .yday { max-height: 86vh; display: flex; flex-direction: column; }
 .yday-head { display: flex; align-items: center; gap: 14px; }
 .yday-head h2 { margin: 0; } .yday-head p { margin: 4px 0 0; color: var(--muted); }
@@ -669,9 +674,9 @@ function showHome(first = false) {
       <button class="mode-card" id="modeWheel">
         <div class="art">${wheelArt(wheel.puzzle)}</div>
         <h2>Letter Wheel</h2>
-        <div class="now" style="--c:#A855F7"><small>New letters every day</small><b>${wheel.found.length ? `${wheel.found.length} words, ${wheelRank(wheel).name}` : "Today's wheel is ready"}</b></div>
+        <div class="now" style="--c:#A855F7"><small>New letters every day</small><b>${wheelDone(wheel) ? `All ${wheel.found.length} words found! 🎉` : wheel.found.length ? `${wheel.found.length} words, ${wheelRank(wheel).name}` : "Today's wheel is ready"}</b></div>
         <p>Make as many words as you can from seven letters. Every word must use the letter in the middle, and a word that uses all seven scores a bonus.</p>
-        <div class="foot"><span></span><span class="go tinted" style="--c:#A855F7">${wheel.found.length ? "Continue" : "Play"}</span></div>
+        <div class="foot"><span></span><span class="go tinted" style="--c:#A855F7">${wheelDone(wheel) ? "See today's wheel" : wheel.found.length ? "Continue" : "Play"}</span></div>
       </button>
       <button class="mode-card" id="modeWall">
         <div class="art"><div class="mini w">${miniW}</div></div>
@@ -1564,6 +1569,23 @@ function wheelState() {
   const found = saved.found.filter(w => wheelCache.words.has(w)), bonus = saved.found.filter(w => wheelCache.bonusWords.has(w));
   return { ...wheelCache, found, bonus, clues: saved.clues || 0, score: found.concat(bonus).reduce((t, w) => t + wheelPoints(w, wheelCache.puzzle), 0) };
 }
+const wheelDone = st => st.found.length === st.words.size;
+function wheelComplete() {
+  const st = wheelState(), name = esc(playerName());
+  store.set("wheelCelebrated", todayKey());
+  confetti();
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet done-sheet" role="dialog" aria-modal="true">
+    <div class="done-art">${wheelArt(st.puzzle)}<span>🏆</span></div>
+    <h2>Wheel complete${name ? ", " + name : ""}!</h2>
+    <p>You found all ${st.words.size} words${st.bonus.length ? `, plus ${st.bonus.length} bonus word${st.bonus.length > 1 ? "s" : ""}` : ""}, for ${st.score} points. That's every answer on today's wheel.</p>
+    <p>New letters arrive at midnight.</p>
+    <div class="actions"><button class="btn primary" id="doneHome">Home</button><button class="btn" id="doneStay">Look for bonus words</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector("#doneHome").onclick = () => { ov.remove(); showHome(); };
+  ov.querySelector("#doneStay").onclick = () => ov.remove();
+}
 const isPangram = (w, pz) => [...pz.letters].every(c => w.includes(c));
 const wheelPoints = (w, pz) => (w.length === 4 ? 1 : w.length) + (isPangram(w, pz) ? 7 : 0);
 function wheelRank(st) {
@@ -1593,7 +1615,7 @@ function startWheel() {
         <p class="daily-msg" id="msg">Make words of 4 or more letters. The purple middle letter must be in every word, anywhere you like. Letters can be used more than once.</p>
         <div class="wheel" id="wheel"></div>
         <div class="wheel-btns"><button class="btn" id="del">Delete</button><button class="btn" id="mix">Shuffle</button><button class="btn primary" id="enter">Enter</button></div>
-        <div class="wheel-btns"><button class="btn clue-btn" id="clue">💡 Clue <span id="clueN"></span></button><button class="btn" id="yday">Yesterday's answers</button></div>
+        <div class="wheel-btns extra"><button class="btn clue-btn" id="clue">💡 Clue <span id="clueN"></span></button><button class="btn" id="yday">Yesterday's answers</button></div>
       </div>
       <div class="found" id="found"></div>
     </div>
@@ -1606,6 +1628,7 @@ function startWheel() {
   $("#clue").onclick = wheelClue;
   $("#yday").onclick = wheelYesterday;
   renderWheel();
+  if (wheelDone(st) && store.get().wheelCelebrated !== todayKey()) setTimeout(() => H && wheelComplete(), 500);
 }
 function renderWheel() {
   const st = wheelState(), pz = H.puzzle, r = wheelRank(st);
@@ -1623,7 +1646,9 @@ function renderWheel() {
   }).join("") + `<div class="bonus"><h4>Bonus words <span>${st.bonus.length}</span></h4>${st.bonus.length
     ? `<div class="words">${st.bonus.sort().map(w => `<span class="${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("")}</div>`
     : `<p>Rarer words that aren't in the list above still score points here.</p>`}</div>`;
-  $("#clueN").textContent = `(${WHEEL_CLUES - st.clues} left today)`;
+  $("#clue").className = "btn clue-btn";
+  $("#clue").innerHTML = wheelDone(st) ? "🎉 All found" : `💡 Clue <span id="clueN">(${WHEEL_CLUES - st.clues} left today)</span>`;
+  if (wheelDone(st) && !$("#msg").textContent.includes("+")) $("#msg").textContent = "You've found every word! Bonus words still score points.";
 }
 // Yesterday's full answer list, so players can see what they missed.
 function wheelYesterday() {
@@ -1642,6 +1667,18 @@ function wheelYesterday() {
   ov.addEventListener("click", e => { if (e.target === ov) close(); });
 }
 function wheelClue() {
+  const btn = $("#clue");
+  if (!btn.classList.contains("ask")) {
+    const st = wheelState();
+    if (wheelDone(st) || st.clues >= WHEEL_CLUES) return wheelClueUse();
+    btn.classList.add("ask"); btn.innerHTML = "Tap again to use a clue";
+    clearTimeout(H.clueTimer); H.clueTimer = setTimeout(() => H && $("#clue") && renderWheel(), 3000);
+    return;
+  }
+  clearTimeout(H.clueTimer);
+  wheelClueUse();
+}
+function wheelClueUse() {
   const st = wheelState(), missing = [...st.words].filter(w => !st.found.includes(w));
   if (!missing.length) return toast("You've found every word!");
   if (st.clues >= Math.max(...missing.map(w => w.length)) - 1) return toast("That's every clue for today.");
@@ -1668,6 +1705,7 @@ function wheelKey(k) {
       say = isPangram(w, pz) ? `All seven letters! +${pts} points` : !st.words.has(w) ? `Bonus word! +${pts} point${pts > 1 ? "s" : ""}` : `${pick(["Nice", "Good one", "Lovely", "Yes"])}! +${pts} point${pts > 1 ? "s" : ""}`;
       const after = wheelRank(wheelState());
       if (after.i > before) { say += `. You're now ${after.name}!`; confetti(); }
+      if (st.words.has(w) && wheelDone(wheelState())) setTimeout(() => H && wheelComplete(), 600);
     }
     msg.textContent = say; H.typed = "";
   } else if (pz.letters.includes(k) && H.typed.length < 15) H.typed += k;

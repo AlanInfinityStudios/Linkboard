@@ -209,9 +209,11 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .tile.sel { box-shadow: 0 0 0 0.45cqw var(--accent), 0 1cqw 2cqw rgba(90, 60, 25, .18); transform: translateY(-0.4cqw); }
 .tile.lifted { opacity: .2; }
 .tile.grouped { color: #fff; background: var(--c); box-shadow: 0 0.25cqw 0 color-mix(in srgb, var(--c) 70%, #000); cursor: default; }
-.tile.hinted { animation: hintPulse 1.1s ease-in-out infinite; }
-.tile.hinted::after { content: "🔗"; position: absolute; top: .25em; right: .35em; font-size: .9em; }
-@keyframes hintPulse { 0%, 100% { box-shadow: 0 0 0 0.3cqw var(--gold), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); } 50% { box-shadow: 0 0 0 0.75cqw color-mix(in srgb, var(--gold) 55%, transparent), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); } }
+/* Hinted tiles keep a steady ring until their group is solved; each hint has its own number and colour. */
+.tile.hinted { --hc: var(--gold); box-shadow: 0 0 0 0.45cqw var(--hc), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); animation: hintPulse 1.1s ease-in-out infinite; }
+.tile.hinted.h2 { --hc: #2FA7C9; } .tile.hinted.h3 { --hc: #E86B9D; } .tile.hinted.h4 { --hc: #20B583; }
+.tile.hinted::after { content: attr(data-h); position: absolute; top: .3em; right: .35em; min-width: 1.35em; height: 1.35em; padding: 0 .2em; border-radius: 999px; background: var(--hc); color: #fff; font-size: .62em; font-weight: 900; line-height: 1.35em; text-align: center; }
+@keyframes hintPulse { 0%, 100% { box-shadow: 0 0 0 0.45cqw var(--hc), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); } 50% { box-shadow: 0 0 0 0.85cqw color-mix(in srgb, var(--hc) 55%, transparent), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); } }
 .tile.anag { color: #7A45D6; }
 .tile.anag::before { content: "↻"; position: absolute; top: .2em; left: .35em; font-size: .85em; opacity: .55; }
 .tile.unravel { animation: unravel .8s cubic-bezier(.3, 1.3, .5, 1) both; }
@@ -1105,6 +1107,9 @@ const FR = {
   "Hint": "Indice", "Freeze": "Geler", "Shuffle": "Mélanger", "Home": "Accueil", "Restart level": "Recommencer",
   "Welcome back. Carrying on where you left off.": "Bon retour ! On reprend où vous en étiez.",
   "Clock frozen for 30 seconds": "Chrono gelé pendant 30 secondes", "{name} complete!": "{name} : trouvé !",
+  "No new hint right now. Swap a few words and try again.": "Pas de nouvel indice pour l'instant. Échangez quelques mots et réessayez.",
+  "Hint {n}: a different connection": "Indice {n} : un autre lien", "These two words belong together": "Ces deux mots vont ensemble",
+  "One more word for hint {n}": "Un mot de plus pour l'indice {n}",
   "Brilliant": "Bravo", "Well done": "Bien joué", "Superb": "Superbe", "Nice work": "Excellent",
   "Time's up": "Temps écoulé",
   "You found all {n} connections.": "Vous avez trouvé les {n} liens.",
@@ -1722,13 +1727,14 @@ function startBoard(levelIdx) {
     levelIdx, level, groups, tiles, board: new Array(SIZE).fill(null), lockedList: [], solved: new Set(),
     pool: tiles.filter(t => t.symbolOf == null).map(t => t.id),
     timed: !!level.time, timeLeft: level.time || 0, elapsed: 0, frozenUntil: 0,
-    hintsUsed: 0, freezes: level.time ? 2 : 0, busy: false, sel: null, completing: null, hintTiles: [], born: null, over: false,
+    hintsUsed: 0, freezes: level.time ? 2 : 0, busy: false, sel: null, completing: null, hints: [], hintTiles: [], born: null, over: false,
     unravelled: new Set(),
   };
   const saved = store.get()["save-" + bkey(levelIdx)];
   if (saved && saved.sig === tiles.length + ":" + groups.length) {
     Object.assign(B, { board: saved.board, lockedList: saved.lockedList, solved: new Set(saved.solved), pool: saved.pool,
-      timeLeft: saved.timeLeft, elapsed: saved.elapsed, hintsUsed: saved.hintsUsed || 0, freezes: saved.freezes, hintTiles: saved.hintTiles || [] });
+      timeLeft: saved.timeLeft, elapsed: saved.elapsed, hintsUsed: saved.hintsUsed || 0, freezes: saved.freezes, hints: loadHints(saved) });
+    syncHints();
     renderBoardScreen();
     flip(new Map(), new Set(B.board.filter(x => x != null)));
     toast(tr("Welcome back. Carrying on where you left off."));
@@ -1758,7 +1764,7 @@ function saveBoard() {
   if (!B || B.over || B.busy) return;
   store.set("save-" + bkey(B.levelIdx), {
     sig: B.tiles.length + ":" + B.groups.length, board: B.board, lockedList: B.lockedList, solved: [...B.solved], pool: B.pool,
-    timeLeft: B.timeLeft, elapsed: B.elapsed, hintsUsed: B.hintsUsed, freezes: B.freezes, hintTiles: B.hintTiles,
+    timeLeft: B.timeLeft, elapsed: B.elapsed, hintsUsed: B.hintsUsed, freezes: B.freezes, hints: B.hints, hintTiles: B.hintTiles,
   });
 }
 
@@ -1806,7 +1812,7 @@ const poolOrder = pool => shuffle(pool).sort((a, b) => tierOf(b) - tierOf(a));
 
 // Drop hidden words in from the top, keeping a minimum number of complete answers on the board.
 function refill() {
-  const incoming = [], keep = new Set();
+  const incoming = [], keep = new Set(B.hints.map(h => h.g));
   for (let guard = 0; guard < 12; guard++) {
     const on = new Set([...B.board.filter(x => x != null), ...incoming]);
     const open = B.groups.filter(g => !B.solved.has(g.id));
@@ -1947,18 +1953,18 @@ function renderBoard() {
     if (id == null) { html += `<div class="slot empty ${r < emptyTop ? "gone" : ""}" data-i="${i}" style="${pos}"></div>`; continue; }
     const t = T(id);
     const cls = [];
-    let style = "";
+    let style = "", hintAttr = "";
     if (t.symbolOf != null) cls.push("symbol");
     if (B.sel === i) cls.push("sel");
     const shown = bandRows.has(r);
     if (shown) { cls.push("grouped"); style = `--c:${B.groups[bandRows.get(r)].colour}`; }
-    else if (B.hintTiles.includes(id)) cls.push("hinted");
+    else if (B.hintTiles.includes(id)) { const h = B.hints.findIndex(x => x.tiles.includes(id)); cls.push("hinted", "h" + (h + 1)); style = ""; hintAttr = ` data-h="${h + 1}"`; }
     if (t.anagram) {
       if (!shown) cls.push("anag");
       else if (!B.unravelled.has(id)) { cls.push("unravel"); B.unravelled.add(id); }
     }
     if (B.born === id) cls.push("born");
-    html += `<div class="slot" data-i="${i}" style="${pos}"><div class="tile ${cls.join(" ")}" style="${style}" data-i="${i}" data-id="${id}" tabindex="0" aria-label="${esc(faceLabel(t, shown))}">${tileFace(t, shown)}</div></div>`;
+    html += `<div class="slot" data-i="${i}" style="${pos}"><div class="tile ${cls.join(" ")}" style="${style}"${hintAttr} data-i="${i}" data-id="${id}" tabindex="0" aria-label="${esc(faceLabel(t, shown))}">${tileFace(t, shown)}</div></div>`;
   }
   el.innerHTML = html;
   B.born = null;
@@ -1981,7 +1987,7 @@ function swapSlots(a, b, dragged = false) {
   if (done.length) {
     B.busy = true; B.completing = done;
     const found = new Set(done.map(d => d.group));
-    if (B.hintTiles.some(t => found.has(T(t).parent))) B.hintTiles = [];
+    B.hints = B.hints.filter(h => !found.has(h.g)); syncHints();
   }
   renderBoard();
   flip(before, new Set(), dragged ? movedId : null);
@@ -2050,19 +2056,44 @@ function resolveRows(done) {
   }, subs.length ? SQUISH : 0);
 }
 
-// Hint: light up two tiles on the board that belong together.
+// Hints: each one lights up two tiles that belong together, and stays lit until that group is solved.
+// Only groups with every word on the board are hinted, so a hint can always be acted on.
+// A second hint picks a different connection; if there is none, it adds one more word to an existing hint.
+function loadHints(saved) {
+  if (Array.isArray(saved.hints)) return saved.hints;
+  const old = (saved.hintTiles || []).filter(t => T(t));
+  return old.length ? [{ g: T(old[0]).parent, tiles: old }] : [];
+}
+function syncHints() {
+  const onBoard = new Set(B.board.filter(x => x != null));
+  B.hints = B.hints.filter(h => !B.solved.has(h.g) && h.tiles.every(t => onBoard.has(t)));
+  B.hintTiles = B.hints.flatMap(h => h.tiles);
+}
 function useHint() {
   if (B.busy || B.over) return;
-  if (!hintWallet().n) return showHintShop();
+  syncHints();
   const onBoard = new Set(B.board.filter(x => x != null));
-  const full = B.groups.filter(g => !B.solved.has(g.id) && g.memberTiles.every(t => onBoard.has(t)));
-  if (!full.length || !spendHint()) return;
-  const g = pick(full);
-  // Prefer two tiles that are not already sharing a row, so the hint tells you something new.
-  const members = shuffle([...g.memberTiles]);
-  const first = members[0];
-  const second = members.find(t => t !== first && rowOf(B.board.indexOf(t)) !== rowOf(B.board.indexOf(first))) || members[1];
-  B.hintsUsed++; B.hintTiles = [first, second];
+  const doable = B.groups.filter(g => !B.solved.has(g.id) && g.memberTiles.every(t => onBoard.has(t)));
+  const fresh = doable.filter(g => !B.hints.some(h => h.g === g.id));
+  const extend = B.hints.find(h => { const g = B.groups[h.g]; return doable.includes(g) && h.tiles.length < g.memberTiles.length - 1; });
+  if (!fresh.length && !extend) return toast(tr("No new hint right now. Swap a few words and try again."));
+  if (!hintWallet().n) return showHintShop();
+  if (!spendHint()) return;
+  B.hintsUsed++;
+  if (fresh.length) {
+    const g = pick(fresh);
+    // Prefer two tiles that are not already sharing a row, so the hint tells you something new.
+    const members = shuffle([...g.memberTiles]);
+    const first = members[0];
+    const second = members.find(t => t !== first && rowOf(B.board.indexOf(t)) !== rowOf(B.board.indexOf(first))) || members[1];
+    B.hints.push({ g: g.id, tiles: [first, second] });
+    toast(B.hints.length > 1 ? tr("Hint {n}: a different connection", { n: B.hints.length }) : tr("These two words belong together"));
+  } else {
+    const g = B.groups[extend.g], more = shuffle(g.memberTiles.filter(t => !extend.tiles.includes(t)))[0];
+    extend.tiles.push(more);
+    toast(tr("One more word for hint {n}", { n: B.hints.indexOf(extend) + 1 }));
+  }
+  syncHints();
   renderBoard(); saveBoard();
 }
 function useFreeze() {

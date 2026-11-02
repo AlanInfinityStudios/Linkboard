@@ -532,6 +532,10 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .barrow .track i { display: block; height: 100%; border-radius: 9px; background: var(--c); }
 .barrow em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
 .note { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+.install-steps { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 10px; text-align: left; }
+.install-steps li { display: flex; align-items: center; gap: 12px; font-size: 15px; line-height: 1.35; }
+.install-steps .n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+.install-steps svg { width: 20px; height: 20px; vertical-align: -4px; color: #2F7BF6; }
 .setting { display: flex; align-items: center; gap: 14px; }
 .setting .txt { flex: 1; min-width: 0; }
 .setting .txt b { display: block; font-family: var(--head); font-weight: 800; font-size: 16px; }
@@ -1692,7 +1696,7 @@ function showWelcome() {
       <button class="btn primary big" id="pSave">Let's play</button>
     </div>
   </div>`;
-  bindProfileForm(app, p, () => { showHome(true); const n = playerName(); toast(isFR() ? `Enchanté${n ? ", " + n : ""} !` : n ? `Lovely to meet you, ${n}!` : "Lovely to meet you!"); });
+  bindProfileForm(app, p, () => { showHome(true); setTimeout(maybeOfferInstall, 1500); const n = playerName(); toast(isFR() ? `Enchanté${n ? ", " + n : ""} !` : n ? `Lovely to meet you, ${n}!` : "Lovely to meet you!"); });
   setTimeout(() => $("#pName")?.focus(), 300);
 }
 const showProfileSheet = () => showSettings();
@@ -3261,10 +3265,40 @@ async function offerMove() {
   if ($("#moveCopy", ov)) $("#moveCopy", ov).onclick = copyProgress;
 }
 
+/* First launch: invite the player to put Wordolio on their home screen. Android and desktop Chrome can show the
+   real install prompt; Apple only allows instructions. Asked once ("install-asked"), never inside the installed app. */
+let installEvent = null;
+addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvent = e; });
+const isStandalone = () => navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+const isApple = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const SHARE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Share"><path d="M12 3v12"/><path d="m8 7 4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>`;
+function maybeOfferInstall() {
+  if (isStandalone() || !profile() || store.get()["install-asked"] || $(".overlay") || (OLD_HOME && MOVE_LIVE)) return;
+  if (B || W || D || H || S || K) return;
+  const apple = isApple();
+  if (!apple && !installEvent) return;
+  store.set("install-asked", true);
+  const ov = document.createElement("div"); ov.className = "overlay install-ov";
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+    <div class="logo">${MARK(40)}</div>
+    <h2>${tr("Keep Wordolio one tap away")}</h2>
+    ${apple ? `<ol class="install-steps">
+      <li><span class="n">1</span><span>${tr("Tap the Share button")} ${SHARE_ICON} ${tr("at the top or bottom of the screen.")}</span></li>
+      <li><span class="n">2</span><span>${tr("Choose <b>Add to Home Screen</b>, then <b>Add</b>.")}</span></li>
+      <li><span class="n">3</span><span>${tr("Play from the new Wordolio icon from now on, so your progress stays in one place.")}</span></li>
+    </ol>` : `<p>${tr("Add Wordolio to your home screen and open it like an app, even offline.")}</p>`}
+    <div class="actions">${apple ? `<button class="btn primary" id="instOk">${tr("Got it")}</button>` : `<button class="btn primary" id="instGo">${tr("Add to home screen")}</button><button class="btn" id="instOk">${tr("Not now")}</button>`}</div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  $("#instOk", ov).onclick = close;
+  if ($("#instGo", ov)) $("#instGo", ov).onclick = async () => { close(); try { installEvent.prompt(); await installEvent.userChoice; } catch {} installEvent = null; };
+}
+
 applyCalm();
 showHome();
 cloud.start();
-receiveMove().then(moved => { if (!moved) offerMove(); });
+receiveMove().then(moved => { if (!moved) offerMove(); setTimeout(maybeOfferInstall, 1200); });
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));

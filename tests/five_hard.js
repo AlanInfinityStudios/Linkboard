@@ -50,7 +50,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
       ok(!(await pg.isVisible('#tryHard')), 'no Try Hard button after hard');
       await pg.screenshot({ path: out + 'f-hard-done.png' });
       const txt = await pg.evaluate(async () => { let t; navigator.share = async o => { t = o.text; }; document.querySelector('#share').click(); await new Promise(r => setTimeout(r, 50)); return t; });
-      ok(/Daily Five Hard, .*: 2\/7\n.*🟢🟢🟢🟢🟢🟢/s.test(txt), 'share text ' + JSON.stringify(txt));
+      ok(/Sussed Hard, .*: 2\/7\n.*🟢🟢🟢🟢🟢🟢/s.test(txt), 'share text ' + JSON.stringify(txt));
       await pg.click('#menu'); await pg.waitForTimeout(300);
       // finish classic -> Try Hard should not appear (hard done)
       await pg.evaluate(() => startFive('classic')); await pg.waitForTimeout(300);

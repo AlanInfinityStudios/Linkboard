@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=Nunito+Sans:wght@400;600;700;800&display=swap">
 <style>
 /* Layout: a calm cream app. Screens stack a header, then a stage that scales the board to fit. Colour comes only from the groups. */
 :root {
@@ -45,7 +45,7 @@
   --lift: 0 1px 1px rgba(41, 36, 45, .05), 0 8px 20px rgba(41, 36, 45, .08);
   --card: 0 1px 1px rgba(41, 36, 45, .04), 0 14px 34px rgba(80, 50, 40, .10);
   --font: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --head: "Manrope", "Nunito Sans", system-ui, sans-serif;
+  --head: "Nunito", "Nunito Sans", system-ui, sans-serif;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background: var(--bg);
@@ -901,6 +901,11 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 @media (max-height: 700px) { .five-screen .key { height: 46px; } .five-screen { gap: 8px; } }
 @media (prefers-reduced-motion: reduce) { .five-screen .ft.flip { animation: none; } }
 html.calm .five-screen .ft.flip { animation: none; }
+/* Rounded, extra-bold headings across every game (Nunito, to match the Sussed artwork). */
+h1, h2, h3, .wordmark, .ghead-c h1, .gcard h3, .hello h1, .sheet h2, .games-head h2 { font-weight: 900; letter-spacing: -.01em; }
+.ft, .wl, .tile, .key { font-family: var(--head); }
+.five-screen .ft { font-weight: 900; }
+.mt, .mboard i, .gart i { font-style: normal; font-family: var(--head); }
 .dayres { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
 .dayres div { background: var(--bg); border-radius: 14px; padding: 8px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .dayres span { font: 800 11px var(--head); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
@@ -1307,7 +1312,7 @@ const PATHS = {
 const ic = name => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${PATHS[name]}</svg>`;
 const GAMES = {
   board: { name: "Linkology", c: "#FF6B57", ci: "#C2402E", icon: "grid", art: "linear-gradient(160deg,#FFE3DC,#FFC9BE)", badge: "linear-gradient(160deg,#FF8A73,#E8503A)" },
-  five: { name: "Daily Five", c: "#20B583", ci: "#0E7F5A", icon: "cal", art: "linear-gradient(160deg,#DDF5EA,#BDE8D5)", badge: "linear-gradient(160deg,#35C894,#0E8F63)" },
+  five: { name: "Sussed", tag: "Suss out the hidden word.", c: "#20B583", ci: "#0E7F5A", icon: "cal", art: "linear-gradient(160deg,#DDF5EA,#BDE8D5)", badge: "linear-gradient(160deg,#35C894,#0E8F63)" },
   wheel: { name: "Letter Wheel", c: "#A552E8", ci: "#7B2FC0", icon: "wheel", art: "linear-gradient(160deg,#F1E4FD,#DDC5F8)", badge: "linear-gradient(160deg,#B66CF2,#8336D6)" },
   wall: { name: "The Wall", c: "#477EF0", ci: "#2856C2", icon: "wall", art: "linear-gradient(160deg,#E2EBFE,#C5D6FB)", badge: "linear-gradient(160deg,#6A98F5,#2F64D6)" },
   steps: { name: "Word Steps", c: "#F1AA3C", ci: "#B9780F", icon: "steps", art: "linear-gradient(160deg,#FFF0D6,#FCDCA6)", badge: "linear-gradient(160deg,#F6BE5C,#D98C17)" },
@@ -1488,7 +1493,7 @@ function showHome(first = false) {
   const dailies = [five.over, wheelDone(wheel), dayDone("steps"), dayDone("lock")].filter(Boolean).length;
   const stat = (icon, bg, col, big, small) => `<div><span class="dotico" style="background:${bg};color:${col}">${ic(icon)}</span><span><b>${big}</b><span>${small}</span></span></div>`;
   const strip = english
-    ? stat("flame", "#FFE9DC", "#E8642F", `${fs.streak} day${fs.streak === 1 ? "" : "s"}`, "Five streak") +
+    ? stat("flame", "#FFE9DC", "#E8642F", `${fs.streak} day${fs.streak === 1 ? "" : "s"}`, "Sussed streak") +
       stat("check", "#D9F3E8", "#13996D", `${dailies} / 4`, "dailies completed today") +
       stat("trophy", "#FCEFCF", "#C88A12", boards + walls, "levels and walls solved")
     : stat("trophy", "#FCEFCF", "#C88A12", boards, tr("levels solved"));
@@ -1503,7 +1508,7 @@ function showHome(first = false) {
   const boardCard = gameCard("board", "modeBoard", tr("Swap words to link groups of five."),
     `<b>${nbL ? `${tr("Level {n}", { n: levelNo(nb) })} · ${tr(nbL.difficulty)}` : tr("Every level solved")}</b>${meter(boards, LEVELS().length)}`,
     nb == null ? tr("Play again") : s["save-" + bkey(nb)] ? tr("Continue") : tr("Play"), artBoard, "", "feature");
-  const fiveCard = english ? gameCard("five", "modeFive", "Guess the five-letter word in six tries.",
+  const fiveCard = english ? gameCard("five", "modeFive", "Suss out the hidden word. Five letters, or six on Hard.",
     `<b>${five.over ? (five.won ? `Solved in ${five.guesses.length}` : "Done for today") : five.guesses.length ? `${five.guesses.length} of 6 tries used` : "Today's word is ready"}</b><small>${fiveState("hard").over ? (fiveState("hard").won ? `Hard: solved in ${fiveState("hard").guesses.length}` : "Hard: done for today") : fs.streak ? `${fs.streak} day streak` : "&nbsp;"}</small>`,
     five.over ? "See result" : five.guesses.length ? "Continue" : "Play", artFive)
     : gameCard("five", "modeFive", "", "", "", artFive, soon);
@@ -2401,7 +2406,7 @@ function startFive(mode = store.get().fiveMode || "classic") {
   D = { mode, len: M.len, tries: M.tries, answer: fiveAnswer(mode), ...fiveState(mode), typed: "", busy: false };
   app.innerHTML = `
   <div class="screen daily five-screen">
-    ${gameHeader("five", esc(todayLabel()), `<span class="gpill" aria-label="${mode === "hard" ? "Hard mode" : "Daily Five"} streak">${ic("flame")}${fiveStats(mode).streak}</span>`)}
+    ${gameHeader("five", esc(todayLabel()), `<span class="gpill" aria-label="${mode === "hard" ? "Hard mode" : "Sussed"} streak">${ic("flame")}${fiveStats(mode).streak}</span>`)}
     <div class="fmode" role="tablist" aria-label="Mode">
       <button role="tab" aria-selected="${mode === "classic"}" data-mode="classic">Classic<small>5 letters</small></button>
       <button role="tab" aria-selected="${mode === "hard"}" data-mode="hard">Hard<small>6 letters</small></button>
@@ -2483,7 +2488,7 @@ function fiveResult() {
   $("#menu", ov).onclick = () => showHome();
   const th = $("#tryHard", ov); if (th) th.onclick = () => startFive("hard");
   $("#share", ov).onclick = async () => {
-    shareText(`Wordolio Daily Five${hard ? " Hard" : ""}, ${shareDate()}: ${D.won ? D.guesses.length : "X"}/${D.tries}\n${grid}\n${D.won ? "Can you beat me?" : "This one got me. Can you get it?"}`);
+    shareText(`Wordolio Sussed${hard ? " Hard" : ""}, ${shareDate()}: ${D.won ? D.guesses.length : "X"}/${D.tries}\n${grid}\n${D.won ? "Can you beat me?" : "This one got me. Can you get it?"}`);
   };
 }
 

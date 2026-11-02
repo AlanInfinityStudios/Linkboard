@@ -351,7 +351,7 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .wheel-btns { display: flex; gap: 10px; }
 .wheel-btns.extra { margin-top: 28px; padding-top: 18px; border-top: 1px dashed var(--tile-edge); }
 .clue-btn.ask { background: #F5B42A; color: #2A2420; }
-.found { flex: 1; max-width: 420px; background: var(--surface); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.wheel-body .found { flex: 1; max-width: 420px; background: var(--surface); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 .clue-btn { background: #FFF3D6; }
 .wgroup { display: flex; flex-wrap: wrap; gap: 6px 10px; }
 .wgroup h4 { flex-basis: 100%; margin: 4px 0 0; font-size: .85rem; display: flex; justify-content: space-between; }
@@ -581,8 +581,8 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 
 /* ---------- The Wall ---------- */
 .wall { background: var(--tray); box-shadow: inset 0 0.3cqw 1cqw rgba(80, 50, 40, .10); }
-.wtile { font-family: var(--head); font-weight: 700; padding: 0 .3em; overflow: hidden; }
-.wtile .tx { display: inline-block; max-width: 100%; overflow-wrap: normal; word-break: keep-all; hyphens: none; }
+.wtile { font-family: var(--head); font-weight: 700; padding: 0 .3em; overflow: hidden; display: flex; align-items: center; justify-content: center; text-align: center; }
+.wtile .tx { display: block; width: 100%; overflow: hidden; white-space: normal; overflow-wrap: normal; word-break: keep-all; hyphens: none; line-height: 1.1; }
 .wtile.sel { box-shadow: 0 0 0 0.45cqw var(--blue), 0 1cqw 2cqw rgba(41, 36, 45, .18); }
 
 /* ---------- Daily Five ---------- */
@@ -608,8 +608,8 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .wl { font-family: var(--head); background: #fff; box-shadow: var(--lift); color: var(--ink); }
 .wl.centre { background: linear-gradient(160deg, #B66CF2, #8336D6); color: #fff; }
 .typed { font-family: var(--head); }
-.found { border-radius: 26px; box-shadow: var(--card); }
-.found .section-label { font-family: var(--head); }
+.wheel-body .found { border-radius: 26px; box-shadow: var(--card); }
+.wheel-body .found .section-label { font-family: var(--head); }
 .clue-btn { background: #FFF1D6; box-shadow: var(--lift); }
 .clue-btn.ask { background: var(--amber); color: var(--ink); }
 .rank-head b { font-family: var(--head); color: var(--purple-ink); }
@@ -1115,14 +1115,18 @@ function bindNav() {
 }
 
 /* Shrinks a tile's text until the longest word fits, so long clues never spill out on small screens. */
+// The text box has overflow hidden, so scrollWidth reliably shows a word that is too wide (Safari included).
 function fitText(root, sel) {
-  root.querySelectorAll(sel).forEach(el => {
+  const run = () => root.querySelectorAll(sel).forEach(el => {
     const tx = el.querySelector(".tx"); if (!tx) return;
     tx.style.fontSize = "";
     let size = parseFloat(getComputedStyle(tx).fontSize), n = 0;
-    const room = () => el.clientWidth - parseFloat(getComputedStyle(el).paddingLeft) * 2;
-    while ((tx.scrollWidth > room() + 0.5 || tx.offsetHeight > el.clientHeight * 0.92) && n++ < 14) { size *= 0.92; tx.style.fontSize = size + "px"; }
+    while ((tx.scrollWidth > tx.clientWidth + 0.5 || tx.scrollHeight > el.clientHeight * 0.92) && n++ < 16) { size *= 0.93; tx.style.fontSize = size + "px"; }
   });
+  run();
+  // Measure again once the fonts have loaded and the layout has settled.
+  requestAnimationFrame(run);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => root.isConnected && run());
 }
 addEventListener("resize", () => { const w = $("#wall"); if (w) fitText(w, ".wtile"); });
 

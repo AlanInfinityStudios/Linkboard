@@ -784,6 +784,108 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
   .wheel-btns.extra { margin-top: 6px; padding-top: 10px; }
   .wheel-btns.extra .btn { padding: 8px 14px; font-size: .9rem; }
 }
+/* ---------- Word Steps and Letter Lock ---------- */
+.steps-screen { --ci: #B9780F; }
+.lock-screen { --ci: #B83A6E; }
+.steps-screen .btn.primary, .lock-screen .btn.primary, .lvsheet .btn.primary { background: linear-gradient(160deg, color-mix(in srgb, var(--ci) 88%, #fff), var(--ci)); }
+.btn:disabled { opacity: .45; box-shadow: none; }
+.steps-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.steps-btns .btn { padding: 10px 16px; white-space: nowrap; }
+.steps-btns .btn span { font-weight: 600; opacity: .7; font-size: .85em; }
+.steps-body { flex: 1; min-height: 0; width: min(560px, 100%); display: flex; flex-direction: column; gap: 10px; }
+.ladder { flex: 0 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 4px; }
+.rung { display: grid; grid-template-columns: 72px auto 72px; align-items: center; gap: 12px; position: relative; }
+.rl { font: 800 11px var(--head); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); text-align: right; }
+.tiles { display: flex; gap: 6px; }
+.st { width: 48px; height: 52px; border: 0; padding: 0; border-radius: 12px; display: grid; place-items: center; font: 800 1.55rem var(--head); font-style: normal; text-transform: uppercase; background: var(--surface); color: var(--ink); box-shadow: var(--lift); position: relative; }
+.st.match::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 6px; height: 3px; border-radius: 2px; background: var(--ci); }
+.rung.start .st { background: #FFF0D6; }
+.rung.target .st { background: var(--c); color: var(--ink); box-shadow: 0 4px 10px rgba(217, 140, 23, .25); }
+.rung.current .st { box-shadow: inset 0 0 0 2px var(--border), var(--lift); cursor: pointer; }
+.rung.current .rl { color: var(--ci); }
+.st.edit.changed { background: #FFE3B0; transform: translateY(-3px); }
+.st.edit.hinted { box-shadow: inset 0 0 0 2px var(--c), var(--lift); }
+.st.edit.hinted::before { content: "?"; position: absolute; top: -9px; right: -6px; width: 18px; height: 18px; border-radius: 50%; background: var(--c); color: var(--ink); font-size: 11px; display: grid; place-items: center; }
+.st.edit.sel { outline: 3px solid var(--ci); outline-offset: 2px; }
+.rung.current.shake, .phrase.shake { animation: shake .45s; }
+.ladder-note { margin: 4px 0 0; font-size: .85rem; font-weight: 600; color: var(--muted); text-align: center; }
+.lock-body { flex: 1; min-height: 0; width: min(1040px, 100%); display: flex; gap: 20px; align-items: flex-start; }
+.lock-main { flex: 1; min-width: 0; max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 4px; }
+.phrase { container-type: inline-size; background: var(--surface); border-radius: 24px; padding: 18px 14px; box-shadow: var(--card); display: flex; flex-wrap: wrap; gap: 14px 16px; justify-content: center; }
+.pw { display: flex; gap: 3px; }
+.pc { --w: min(36px, calc(100cqw / 12 - 3px)); width: var(--w); border: 0; padding: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--ink); }
+.pc b { width: 100%; height: calc(var(--w) * 1.2); border-radius: 8px; background: var(--bg); border-bottom: 3px solid var(--border); display: grid; place-items: center; font: 800 calc(var(--w) * .6) var(--head); }
+.pc small { display: flex; align-items: center; gap: 1px; font: 700 calc(var(--w) * .32) var(--head); color: var(--muted); font-variant-numeric: tabular-nums; }
+.pc small .ico { width: 1em; height: 1em; stroke-width: 3; }
+.pc.guessed b { background: #FDE3EE; border-bottom-color: var(--c); }
+.pc.locked b { background: var(--ci); color: #fff; border-bottom-color: color-mix(in srgb, var(--ci) 70%, #000); }
+.pc.locked small { color: var(--ci); }
+.pc.sel b { outline: 3px solid var(--ci); outline-offset: 2px; }
+.pc.punct { width: auto; min-width: 8px; }
+.pc.punct b { background: none; border: 0; width: auto; }
+.lock-clue { margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; background: #FFF1D6; border-radius: 16px; padding: 10px 14px; font-weight: 700; }
+.lock-clue .ico { width: 18px; height: 18px; }
+.lock-ref { width: 252px; flex: none; max-height: 100%; overflow-y: auto; background: var(--surface); border-radius: 24px; padding: 14px; box-shadow: var(--card); }
+.lock-ref h4 { margin: 0 0 10px; display: flex; justify-content: space-between; font: 800 .95rem var(--head); }
+.lock-ref h4 span { color: var(--muted); font-weight: 700; }
+.refs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ref { border: 0; border-radius: 10px; background: var(--bg); padding: 6px 0; display: flex; flex-direction: column; align-items: center; gap: 1px; color: var(--ink); }
+.ref small { font: 700 11px var(--head); color: var(--muted); }
+.ref b { font: 800 1.1rem var(--head); }
+.ref.guessed { background: #FDE3EE; }
+.ref.locked { background: var(--ci); color: #fff; }
+.ref.locked small { color: #fff; }
+.ref.sel { outline: 3px solid var(--ci); outline-offset: 2px; }
+.lock-screen .key.a { background: var(--ci); color: #fff; }
+.key.used { background: #FDE3EE; color: var(--ci); text-decoration: underline; text-underline-offset: 3px; }
+.cracked { margin: 0; padding: 12px 16px; background: var(--bg); border-radius: 16px; font: 700 1.1rem/1.4 var(--head); }
+.lvsheet .stars i { font-size: 30px; }
+.stars { display: inline-flex; gap: 2px; justify-content: center; }
+.stars i { font-style: normal; color: #DCD2D7; font-size: 14px; line-height: 1; }
+.stars i.on { color: #E9A12E; }
+.lvgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; padding: 4px 0 24px; }
+.lv { border: 0; background: var(--surface); border-radius: 18px; box-shadow: var(--lift); padding: 12px 6px 10px; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--ink); }
+.lv b { font: 800 1.5rem var(--head); }
+.lv small { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); }
+.lv em { font-style: normal; font-size: 11px; font-weight: 800; color: var(--ci); }
+.lv.done { background: color-mix(in srgb, var(--c) 16%, var(--surface)); }
+.lv.next { box-shadow: inset 0 0 0 3px var(--c), var(--lift); }
+.lv.saved { box-shadow: inset 0 0 0 2px var(--c), var(--lift); }
+.lv.locked { background: transparent; box-shadow: none; border: 2px dashed var(--border); opacity: .6; cursor: default; }
+.lv.locked b .ico { width: 22px; height: 22px; stroke: var(--muted); }
+@media (max-width: 700px) {
+  .lock-body { flex-direction: column; gap: 10px; overflow-y: auto; align-items: stretch; }
+  .lock-main { max-height: none; overflow: visible; }
+  .lock-ref { width: auto; max-height: none; overflow: visible; padding: 10px 12px; border-radius: 18px; }
+  .lock-ref h4 { font-size: .85rem; margin-bottom: 8px; }
+  .refs { grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 5px; }
+  .ref b { font-size: 1rem; }
+  .phrase { padding: 14px 10px; gap: 12px 12px; border-radius: 20px; }
+  .pw { gap: 2px; }
+}
+@media (max-width: 600px) {
+  .pill-txt { display: none; }
+  #levels { width: 40px; padding: 0; justify-content: center; }
+  .rung { grid-template-columns: 38px auto; gap: 6px; margin-left: -20px; }
+  .rung .rn { display: none; }
+  .rl { font-size: 8.5px; letter-spacing: .03em; }
+  .st { width: 40px; height: 44px; border-radius: 10px; font-size: 1.3rem; }
+  .st.match::after { left: 10px; right: 10px; bottom: 5px; }
+  .tiles { gap: 5px; }
+  .steps-btns { gap: 6px; }
+  .steps-btns .btn { padding: 9px 13px; font-size: .9rem; }
+  .steps-btns .btn span { display: none; }
+  .lvgrid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+  .lv { min-height: 84px; border-radius: 16px; }
+}
+@media (max-width: 360px) {
+  .st { width: 35px; height: 42px; font-size: 1.15rem; }
+  .tiles { gap: 4px; }
+  .rung { grid-template-columns: 34px auto; gap: 5px; margin-left: -18px; }
+}
+@media (prefers-reduced-motion: reduce) { .rung.current.shake, .phrase.shake, .st.edit.changed { animation: none !important; transform: none; } }
+html.calm .rung.current.shake, html.calm .phrase.shake { animation: none !important; }
+html.calm .st.edit.changed { transform: none; }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 65; }
 @media (prefers-reduced-motion: reduce) {
   .screen, .sheet, .overlay, .tile.hinted, .timer.low, .wtile.found.new, .ft.typed, .done-art span { animation: none !important; }
@@ -805,6 +907,8 @@ html.calm .screen, html.calm .sheet, html.calm .overlay, html.calm .tile.hinted,
 <div class="app" id="app"></div>
 <script src="puzzles.js"></script>
 <script src="words.js"></script>
+<script src="steps.js"></script>
+<script src="locks.js"></script>
 <script>
 const GROUP_COLOURS = ["#FF5A3C", "#3E7BFA", "var(--green)", "#F5A300", "var(--purple)", "#00B2C9", "#FF7A1A", "#EC4899", "#5B6CFF", "#7CB82F", "#0EA5A0", "#E8456B", "#2E86DE", "#D97706", "#6366F1", "#16A34A"];
 const WALL_COLOURS = ["#3E7BFA", "var(--green)", "#F5A300", "#FF5A3C"];
@@ -887,7 +991,7 @@ const cloud = {
         Object.keys({ ...local, ...remote }).filter(k => k.startsWith("done-")).forEach(k => { if (local[k] || remote[k]) merged[k] = true; });
         storeData = merged;
         try { localStorage.setItem(STORE_KEY, JSON.stringify(merged)); } catch {}
-        if (!B && !W && !D && !H) showHome();
+        if (!B && !W && !D && !H && !S && !K) showHome();
       }
       this.push();
     } catch {}
@@ -1051,8 +1155,8 @@ const GAMES = {
   five: { name: "Daily Five", c: "#20B583", ci: "#0E7F5A", icon: "cal", art: "linear-gradient(160deg,#DDF5EA,#BDE8D5)", badge: "linear-gradient(160deg,#35C894,#0E8F63)" },
   wheel: { name: "Letter Wheel", c: "#A552E8", ci: "#7B2FC0", icon: "wheel", art: "linear-gradient(160deg,#F1E4FD,#DDC5F8)", badge: "linear-gradient(160deg,#B66CF2,#8336D6)" },
   wall: { name: "The Wall", c: "#477EF0", ci: "#2856C2", icon: "wall", art: "linear-gradient(160deg,#E2EBFE,#C5D6FB)", badge: "linear-gradient(160deg,#6A98F5,#2F64D6)" },
-  steps: { name: "Word Steps", c: "#F1AA3C", icon: "steps", art: "linear-gradient(160deg,#FFF0D6,#FCDCA6)", badge: "linear-gradient(160deg,#F6BE5C,#D98C17)" },
-  lock: { name: "Letter Lock", c: "#E86B9D", icon: "lock", art: "linear-gradient(160deg,#FDE3EE,#F8C6DA)", badge: "linear-gradient(160deg,#F08AB4,#CF4C82)" },
+  steps: { name: "Word Steps", c: "#F1AA3C", ci: "#B9780F", icon: "steps", art: "linear-gradient(160deg,#FFF0D6,#FCDCA6)", badge: "linear-gradient(160deg,#F6BE5C,#D98C17)" },
+  lock: { name: "Letter Lock", c: "#E86B9D", ci: "#B83A6E", icon: "lock", art: "linear-gradient(160deg,#FDE3EE,#F8C6DA)", badge: "linear-gradient(160deg,#F08AB4,#CF4C82)" },
 };
 const applyCalm = () => document.documentElement.classList.toggle("calm", !!(profile() || {}).calm);
 
@@ -1085,6 +1189,15 @@ function showHelp(g) {
     wall: ["Sixteen clues are hiding four groups of four.", "Tap four clues that belong together to make a group.",
       "You have three minutes. Once you've found two groups, you only get three more wrong guesses.",
       "At the end, score a point for each group, and a point for each link you knew. Get all eight for 2 bonus points."],
+    steps: ["Change one letter at a time to turn the start word into the target word.", "Every step must be a real word. Any route that works counts.",
+      "Tap a letter in your word, type the new letter, then tap Submit step. Undo takes back a step.",
+      "Reach the target in the shortest number of moves, without hints, for three stars.",
+      "Hints show which letter to change, then name a good next word. You have 3 per level."],
+    lock: ["Every letter in the phrase has been swapped for a number. The same number always means the same letter.",
+      "Tap a number, then type the letter you think it stands for. It fills in everywhere that number appears.",
+      "Each letter can only be used once. Letters shown with a lock were revealed for you and can't be changed.",
+      "When every number has a letter, tap Check answer. Crack it first time without hints for three stars.",
+      "Hints reveal a letter, then another, then give a clue to the subject. You have 3 per level."],
   }[g];
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle(g)}>
@@ -1164,7 +1277,7 @@ const isDone = key => !!store.get()["done-" + key];
 const trackColour = d => (TRACKS.find(t => t.key === d) || TRACKS[0]).colour;
 
 function leaveGame() {
-  stopTicking(); B = null; W = null; D = null; H = null;
+  stopTicking(); B = null; W = null; D = null; H = null; S = null; K = null;
   document.querySelectorAll(".overlay,.toast,#confetti").forEach(o => o.remove());
 }
 
@@ -1241,8 +1354,13 @@ function showHome(first = false) {
     `<b>${nw != null ? `Level ${nw + 1}` : "Every wall solved"}</b>${meter(walls, WALLS.length)}`,
     nw == null ? "Play again" : s["save-wall-" + nw] ? "Continue" : "Play", artWall, "", "feature")
     : gameCard("wall", "modeWall", "", "", "", artWall, soon, "feature");
-  const stepsCard = gameCard("steps", "modeSteps", tr("Change one letter at a time to reach the target."), `<b>${tr("New daily game")}</b>`, "", artSteps, tr("Coming soon"));
-  const lockCard = gameCard("lock", "modeLock", tr("Crack the code to reveal hidden words."), `<b>${tr("New daily game")}</b>`, "", artLock, tr("Coming soon"));
+  const lvCard = (g, id, desc, art) => {
+    const n = lvNext(g), L = LEVELLED[g].levels(), solved = lvSolved(g);
+    return gameCard(g, id, desc, `<b>${n != null ? `Level ${n + 1} · ${L[n].difficulty}` : "Every level solved"}</b>${meter(solved, L.length)}`,
+      n == null ? "Play again" : s["save-" + g + "-" + n] ? "Continue" : "Play", art);
+  };
+  const stepsCard = english ? lvCard("steps", "modeSteps", "Change one letter. Reach the target.", artSteps) : gameCard("steps", "modeSteps", "", "", "", artSteps, soon);
+  const lockCard = english ? lvCard("lock", "modeLock", "Crack the code. Reveal the words.", artLock) : gameCard("lock", "modeLock", "", "", "", artLock, soon);
 
   app.innerHTML = `
   <div class="screen scroll home">
@@ -1261,6 +1379,8 @@ function showHome(first = false) {
     $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
     $("#modeFive").onclick = startFive;
     $("#modeWheel").onclick = startWheel;
+    $("#modeSteps").onclick = () => { const n = lvNext("steps"); n == null ? showLevels("steps") : startSteps(n); };
+    $("#modeLock").onclick = () => { const n = lvNext("lock"); n == null ? showLevels("lock") : startLock(n); };
   }
 }
 
@@ -1290,6 +1410,13 @@ function showStats() {
     html += panel("wall", "Four groups of four", `
       <div class="nums">${num(`${solvedWalls()} / ${WALLS.length}`, "walls solved")}${num(bests.length ? (bests.reduce((a, b) => a + b, 0) / bests.length).toFixed(1) : "–", "average score out of 10")}${num(bests.filter(v => v >= 10).length, "perfect walls")}</div>
       ${bar("Solved", solvedWalls(), WALLS.length)}`);
+    for (const [g, sub] of [["steps", "One letter at a time"], ["lock", "Crack the code"]]) {
+      const L = LEVELLED[g].levels(), bs = L.map((_, i) => lvBest(g, i)).filter(Boolean);
+      const diffs = [...new Set(L.map(l => l.difficulty))].map(d => { const ids = L.map((l, i) => l.difficulty === d ? i : -1).filter(i => i >= 0); return bar(d, ids.filter(i => lvDone(g, i)).length, ids.length); });
+      html += panel(g, sub, `
+      <div class="nums">${num(`${lvSolved(g)} / ${L.length}`, "levels solved")}${num(bs.filter(b => b.stars === 3).length, "three-star levels")}${num(bs.reduce((a, b) => a + b.stars, 0), "stars earned")}</div>
+      <div class="bars">${diffs.join("")}</div>`);
+    }
   }
   app.innerHTML = `
   <div class="screen scroll home">
@@ -2059,9 +2186,14 @@ function dailyKeys(onKey) {
 }
 document.addEventListener("keydown", e => {
   if (e.metaKey || e.ctrlKey || e.altKey || document.querySelector(".overlay")) return;
-  const k = e.key === "Enter" || e.key === "Backspace" ? e.key : /^[a-zA-Z]$/.test(e.key) ? e.key.toLowerCase() : null;
+  if (e.target.closest && e.target.closest("input, textarea")) return;
+  const arrow = e.key === "ArrowLeft" || e.key === "ArrowRight";
+  const k = e.key === "Enter" || e.key === "Backspace" || arrow ? e.key : /^[a-zA-Z]$/.test(e.key) ? e.key.toLowerCase() : null;
   if (!k) return;
-  if (D) { e.preventDefault(); fiveKey(k); } else if (H) { e.preventDefault(); wheelKey(k); }
+  // Enter on a focused button should press that button, not submit.
+  if (k === "Enter" && (S || K) && e.target.closest && e.target.closest("button.btn, button.gpill, button.round")) return;
+  if (D && !arrow) { e.preventDefault(); fiveKey(k); } else if (H && !arrow) { e.preventDefault(); wheelKey(k); }
+  else if (S) { e.preventDefault(); stepsKey(k); } else if (K) { e.preventDefault(); lockKey(k); }
 });
 
 /* ---------- Daily Five: guess the five-letter word in six tries ---------- */
@@ -2344,6 +2476,351 @@ function wheelKey(k) {
     msg.textContent = say; H.typed = "";
   } else if (pz.letters.includes(k) && H.typed.length < 15) H.typed += k;
   renderWheel();
+}
+
+/* =====================================================================
+   SHARED: LEVELLED GAMES (Word Steps and Letter Lock)
+   Saved keys (new, nothing existing is touched):
+   save-steps-N / save-lock-N   the level in progress (v: 1)
+   done-steps-N / done-lock-N   solved
+   best-steps-N / best-lock-N   best result { stars, ..., date }
+   ===================================================================== */
+const LEVELLED = {
+  steps: { levels: () => STEPS_LEVELS, start: i => startSteps(i) },
+  lock: { levels: () => LOCK_LEVELS, start: i => startLock(i) },
+};
+const lvDone = (g, i) => isDone(g + "-" + i);
+const lvNext = g => { const n = LEVELLED[g].levels().findIndex((_, i) => !lvDone(g, i)); return n < 0 ? null : n; };
+const lvSolved = g => LEVELLED[g].levels().filter((_, i) => lvDone(g, i)).length;
+const lvOpen = (g, i) => i === 0 || lvDone(g, i) || lvDone(g, i - 1);
+const lvBest = (g, i) => store.get()["best-" + g + "-" + i] || null;
+const starRow = (n, of = 3) => `<span class="stars" aria-label="${n} of ${of} stars">${[0, 1, 2].map(k => `<i class="${k < n ? "on" : ""}">★</i>`).join("")}</span>`;
+function saveBest(g, i, res) {
+  const prev = lvBest(g, i);
+  if (!prev || res.stars > prev.stars || (res.stars === prev.stars && (res.moves ?? 0) < (prev.moves ?? 0))) store.set("best-" + g + "-" + i, { ...res, date: todayKey() });
+  store.set("done-" + g + "-" + i, true);
+}
+// A small on-screen keyboard. The Enter key is labelled for the game ("Submit" or "Check").
+function gameKeys(enter, marks = {}) {
+  return `<div class="keys">${["qwertyuiop", "asdfghjkl+", "zxcvbnm-"].map(row => `<div class="krow">${[...row].map(c =>
+    c === "+" ? `<button class="key wide" data-k="Enter">${enter}</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="Delete">${ic("del")}</button>` :
+    `<button class="key ${marks[c] || ""}" data-k="${c}">${c}</button>`).join("")}</div>`).join("")}</div>`;
+}
+function confirmSheet(g, title, text, yes, onYes) {
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet lvsheet" role="dialog" aria-modal="true" style="--c:${GAMES[g].c};--ci:${GAMES[g].ci}"><h2>${title}</h2><p>${text}</p>
+    <div class="actions"><button class="btn primary" id="cYes">${yes}</button><button class="btn" id="cNo">Cancel</button></div></div>`;
+  document.body.appendChild(ov);
+  $("#cYes", ov).onclick = () => { ov.remove(); onYes(); };
+  $("#cNo", ov).onclick = () => ov.remove();
+}
+// Shared results sheet: badge, title, text, stars, numbers, then Next level, Replay and Home.
+function levelResult(g, i, title, text, stars, nums, extra = "") {
+  const next = i + 1 < LEVELLED[g].levels().length ? i + 1 : null;
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet done-sheet lvsheet" role="dialog" aria-modal="true" style="--c:${GAMES[g].c};--ci:${GAMES[g].ci}">
+    ${sheetBadge("trophy")}<h2>${title}</h2>${starRow(stars)}<p>${text}</p>${extra}
+    <div class="stats" style="justify-content:center">${nums.map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="actions" style="justify-content:center">${next != null ? `<button class="btn primary" id="rNext">Level ${next + 1}${ic("chevr")}</button>` : ""}<button class="btn" id="rAgain">Replay</button><button class="btn" id="rHome">Home</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  if (next != null) $("#rNext", ov).onclick = () => LEVELLED[g].start(next);
+  $("#rAgain", ov).onclick = () => { store.set("save-" + g + "-" + i, undefined); LEVELLED[g].start(i); };
+  $("#rHome", ov).onclick = () => showHome();
+}
+// Level picker: every level with its difficulty, lock state and best stars.
+function showLevels(g) {
+  leaveGame();
+  const lv = LEVELLED[g].levels(), G = GAMES[g];
+  app.innerHTML = `
+  <div class="screen scroll home levels-screen">
+    ${gameHeader(g, `${lvSolved(g)} of ${lv.length} solved`)}
+    <div class="lvgrid" style="--c:${G.c};--ci:${G.ci}">${lv.map((l, i) => {
+      const open = lvOpen(g, i), done = lvDone(g, i), best = lvBest(g, i), saved = store.get()["save-" + g + "-" + i];
+      return `<button class="lv ${done ? "done" : ""} ${open ? "" : "locked"} ${i === lvNext(g) ? "next" : ""} ${saved && !done ? "saved" : ""}" data-i="${i}" ${open ? "" : 'aria-disabled="true"'} aria-label="Level ${i + 1}, ${l.difficulty}${done ? ", solved" : open ? "" : ", locked"}">
+        <b>${open ? i + 1 : ic("lock")}</b><small>${l.difficulty}</small>${done && best ? starRow(best.stars) : saved && !done ? `<em>In progress</em>` : ""}</button>`;
+    }).join("")}</div>
+  </div>`;
+  $("#back").onclick = () => showHome();
+  $("#help").onclick = () => showHelp(g);
+  app.querySelectorAll(".lv").forEach(b => b.onclick = () => { if (!b.classList.contains("locked")) LEVELLED[g].start(+b.dataset.i); });
+}
+const levelsPill = () => `<button class="gpill" id="levels" aria-label="All levels">${ic("grid")}<span class="pill-txt">Levels</span></button>`;
+
+/* =====================================================================
+   WORD STEPS
+   Change one letter at a time to turn the start word into the target.
+   Any route through real words counts. Routes and hints come from a
+   breadth-first search over the word list (steps.js).
+   ===================================================================== */
+let S = null;
+let stepsDict = null;
+function stepsWords() {
+  if (!stepsDict) {
+    const common = new Set(STEPS_COMMON), all = new Set(STEPS_COMMON.concat(STEPS_EXTRA)), buckets = new Map();
+    all.forEach(w => { for (let i = 0; i < w.length; i++) { const k = w.slice(0, i) + "_" + w.slice(i + 1); if (!buckets.has(k)) buckets.set(k, []); buckets.get(k).push(w); } });
+    const near = w => { const out = []; for (let i = 0; i < w.length; i++) for (const n of buckets.get(w.slice(0, i) + "_" + w.slice(i + 1)) || []) if (n !== w) out.push(n); return out; };
+    stepsDict = { common, all, near };
+  }
+  return stepsDict;
+}
+// Distance from every word to the target (cached per target).
+const stepsDistCache = new Map();
+function stepsDist(target) {
+  if (!stepsDistCache.has(target)) {
+    const { near } = stepsWords(), d = new Map([[target, 0]]), q = [target];
+    for (let i = 0; i < q.length; i++) for (const n of near(q[i])) if (!d.has(n)) { d.set(n, d.get(q[i]) + 1); q.push(n); }
+    stepsDistCache.set(target, d);
+  }
+  return stepsDistCache.get(target);
+}
+const stepsDiff = (a, b) => [...a].filter((c, i) => c !== b[i]).length;
+const stepsCur = () => S.words[S.words.length - 1];
+
+function startSteps(idx) {
+  leaveGame();
+  const level = STEPS_LEVELS[idx];
+  S = { idx, level, words: [level.start], hints: 0, edit: [...level.start], sel: 0, hintPos: null, msg: "", over: false };
+  const saved = store.get()["save-steps-" + idx];
+  if (saved && saved.v === 1 && saved.words && saved.words[0] === level.start) { S.words = saved.words; S.hints = saved.hints || 0; S.edit = [...stepsCur()]; S.msg = "Welcome back. Carrying on where you left off."; }
+  app.innerHTML = `
+  <div class="screen daily steps-screen" style="--c:${GAMES.steps.c}">
+    ${gameHeader("steps", `Level ${idx + 1} · ${level.difficulty}`, levelsPill())}
+    <div class="steps-body">
+      <div class="ladder" id="ladder" aria-live="polite"></div>
+      <p class="daily-msg" id="msg"></p>
+      <div class="steps-btns">
+        <button class="btn" id="sUndo">${ic("back")}Undo</button>
+        <button class="btn clue-btn" id="sHint">${ic("bulb")}Hint <span id="sHintN"></span></button>
+        <button class="btn" id="sRestart">Restart</button>
+        <button class="btn primary" id="sSubmit">Submit step</button>
+      </div>
+    </div>
+    <div id="keys"></div>
+  </div>`;
+  $("#back").onclick = () => showHome();
+  $("#help").onclick = () => showHelp("steps");
+  $("#levels").onclick = () => showLevels("steps");
+  $("#ladder").addEventListener("click", e => { const t = e.target.closest("[data-p]"); if (t && !S.over) { S.sel = +t.dataset.p; renderSteps(); } });
+  $("#keys").addEventListener("click", e => { const b = e.target.closest(".key"); if (b) stepsKey(b.dataset.k); });
+  $("#sUndo").onclick = stepsUndo;
+  $("#sHint").onclick = stepsHint;
+  $("#sSubmit").onclick = stepsSubmit;
+  $("#sRestart").onclick = () => confirmSheet("steps", "Restart this level?", "Your steps so far will be cleared and you'll start again from the first word.", "Restart", () => {
+    S.words = [S.level.start]; S.edit = [...S.level.start]; S.sel = 0; S.hintPos = null; S.msg = "Back to the start."; saveSteps(); renderSteps();
+  });
+  if (!S.msg) S.msg = `Change one letter at a time to turn ${level.start.toUpperCase()} into ${level.target.toUpperCase()}.`;
+  renderSteps();
+  if (lvDone("steps", idx) && !saved) S.msg = "You've solved this one before. Can you find a shorter route?";
+  $("#msg").textContent = S.msg;
+}
+function saveSteps() { if (S && !S.over) store.set("save-steps-" + S.idx, { v: 1, words: S.words, hints: S.hints }); }
+function renderSteps() {
+  const cur = stepsCur(), tgt = S.level.target;
+  const tiles = (w, cls = "", mark = false) => [...w].map((c, i) => `<i class="st ${cls} ${mark && c === tgt[i] ? "match" : ""}">${c}</i>`).join("");
+  const trail = S.words.slice(1, S.over ? undefined : -1);
+  const editRow = S.edit.map((c, i) => `<button class="st edit ${i === S.sel ? "sel" : ""} ${c !== cur[i] ? "changed" : ""} ${S.hintPos === i ? "hinted" : ""} ${c === tgt[i] ? "match" : ""}" data-p="${i}" aria-label="Letter ${i + 1}: ${c}${i === S.sel ? ", selected" : ""}">${c}</button>`).join("");
+  $("#ladder").innerHTML = `
+    <div class="rung start"><span class="rl">Start</span><span class="tiles">${tiles(S.level.start, "", true)}</span><span class="rn"></span></div>
+    ${trail.map((w, k) => `<div class="rung"><span class="rl">Step ${k + 1}</span><span class="tiles">${tiles(w, "", true)}</span><span class="rn"></span></div>`).join("")}
+    ${S.over ? "" : `<div class="rung current"><span class="rl">Step ${S.words.length}</span><span class="tiles">${editRow}</span><span class="rn"></span></div>`}
+    <div class="rung target"><span class="rl">Target</span><span class="tiles">${tiles(tgt, "tgt")}</span><span class="rn"></span></div>
+    <p class="ladder-note">${S.words.length - 1} step${S.words.length === 2 ? "" : "s"} so far · shortest route ${S.level.min}</p>`;
+  const cr = $("#ladder .current"); if (cr) cr.scrollIntoView({ block: "nearest" });
+  $("#msg").textContent = S.msg;
+  $("#sUndo").disabled = S.words.length < 2 || S.over;
+  $("#sHintN").textContent = `(${3 - S.hints} left)`;
+  $("#sHint").disabled = S.hints >= 3 || S.over;
+  $("#keys").innerHTML = gameKeys("Submit");
+}
+function stepsKey(k) {
+  if (!S || S.over) return;
+  const cur = stepsCur();
+  if (k === "Enter") return stepsSubmit();
+  if (k === "Backspace") { S.edit = [...cur]; S.msg = "Changes cleared."; return renderSteps(); }
+  if (k === "ArrowLeft" || k === "ArrowRight") { S.sel = (S.sel + (k === "ArrowLeft" ? -1 : 1) + cur.length) % cur.length; return renderSteps(); }
+  if (!/^[a-z]$/.test(k)) return;
+  // Only one letter can change per step: changing a different letter puts the earlier change back.
+  S.edit = [...cur]; S.edit[S.sel] = k;
+  S.msg = k === cur[S.sel] ? "That's the same letter. Pick a different one." : `${S.edit.join("").toUpperCase()}? Tap Submit step when you're ready.`;
+  renderSteps();
+}
+function stepsSubmit() {
+  if (!S || S.over) return;
+  const cur = stepsCur(), w = S.edit.join(""), { all } = stepsWords();
+  const n = stepsDiff(cur, w);
+  if (w.length !== cur.length) S.msg = "Keep the same number of letters.";
+  else if (n === 0) S.msg = "Change just one letter.";
+  else if (n > 1) S.msg = "Change just one letter.";
+  else if (!all.has(w)) S.msg = `"${w.toUpperCase()}" isn't in our dictionary.`;
+  else if (S.words.includes(w)) S.msg = "You've already used that word. Use Undo to go back instead.";
+  else {
+    S.words.push(w); S.hintPos = null;
+    if (w === S.level.target) return stepsComplete();
+    S.msg = pick(["Nice move.", "Good step.", "Lovely.", "That works."]);
+    saveSteps();
+  }
+  renderSteps();
+  if (!/Nice|Good|Lovely|works/.test(S.msg)) { const r = $("#ladder .current"); if (r) { r.classList.add("shake"); setTimeout(() => r.classList.remove("shake"), 450); } }
+}
+function stepsUndo() {
+  if (!S || S.over || S.words.length < 2) return;
+  S.words.pop(); S.edit = [...stepsCur()]; S.hintPos = null; S.msg = "Step undone."; saveSteps(); renderSteps();
+}
+// Hints come from the current word: the first shows which letter to change, later ones name a next word on a shortest route.
+function stepsHint() {
+  if (!S || S.over || S.hints >= 3) return;
+  const cur = stepsCur(), dist = stepsDist(S.level.target), d = dist.get(cur), { near, common } = stepsWords();
+  if (d == null) { S.msg = "This word can't reach the target. Use Undo to go back a step."; return renderSteps(); }
+  const next = near(cur).filter(n => dist.get(n) === d - 1 && !S.words.includes(n)).sort((a, b) => common.has(b) - common.has(a));
+  if (!next.length) { S.msg = "Try Undo: the way forward goes through a word you've already used."; return renderSteps(); }
+  S.hints++;
+  const w = next[0], pos = [...w].findIndex((c, i) => c !== cur[i]);
+  if (S.hints === 1) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = `Hint: try changing letter ${pos + 1}.`; }
+  else if (S.hints === 2) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = `Hint: ${w.toUpperCase()} is on a shortest route from here.`; }
+  else { S.hintPos = pos; S.sel = pos; S.edit = [...w]; S.msg = `Hint: ${w.toUpperCase()} is filled in for you. Tap Submit step.`; }
+  saveSteps(); renderSteps();
+}
+function stepsComplete() {
+  S.over = true;
+  const moves = S.words.length - 1, min = S.level.min, h = S.hints;
+  const stars = moves === min && h === 0 ? 3 : (moves <= min + 2 && h === 0) || (moves === min && h <= 1) ? 2 : 1;
+  store.set("save-steps-" + S.idx, undefined);
+  saveBest("steps", S.idx, { stars, moves, min, hints: h });
+  S.msg = "You reached the target!";
+  renderSteps(); confetti();
+  const tgt = S.level.target.toUpperCase(), i = S.idx;
+  setTimeout(() => S && S.idx === i && levelResult("steps", i, stars === 3 ? "Perfect route!" : "Well done!",
+    moves === min ? `You reached ${tgt} in ${moves} steps. That's the shortest possible route.` : `Completed in ${moves} steps. The shortest route is ${min}.`,
+    stars, [[moves, "Moves taken"], [min, "Shortest route"], [h, "Hints used"]]), 700);
+}
+
+/* =====================================================================
+   LETTER LOCK
+   A phrase where every letter is swapped for a number. Same number,
+   same letter. The key is fixed per level (locks.js), so a level always
+   shows the same code. Guesses are only checked when the player asks.
+   ===================================================================== */
+let K = null;
+const lockNum = (lv, ch) => lv.key.charCodeAt(ch.charCodeAt(0) - 65) - 64;
+const pad2 = n => String(n).padStart(2, "0");
+function startLock(idx) {
+  leaveGame();
+  const level = LOCK_LEVELS[idx], text = level.text.toUpperCase();
+  const nums = [...new Set([...text].filter(c => /[A-Z]/.test(c)).map(c => lockNum(level, c)))];
+  const answer = {}; [...text].forEach(c => { if (/[A-Z]/.test(c)) answer[lockNum(level, c)] = c; });
+  K = { idx, level, text, nums, answer, guess: {}, revealed: new Set(), hints: 0, checks: 0, clue: false, sel: null, over: false, msg: "" };
+  [...level.reveal].forEach(c => { const n = lockNum(level, c); K.revealed.add(n); K.guess[n] = c; });
+  const saved = store.get()["save-lock-" + idx];
+  if (saved && saved.v === 1) {
+    Object.assign(K, { guess: { ...K.guess, ...saved.guess }, hints: saved.hints || 0, checks: saved.checks || 0, clue: !!saved.clue });
+    (saved.revealed || []).forEach(n => { K.revealed.add(n); K.guess[n] = K.answer[n]; });
+    K.msg = "Welcome back. Carrying on where you left off.";
+  }
+  K.sel = K.nums.find(n => !K.guess[n]) ?? null;
+  app.innerHTML = `
+  <div class="screen daily lock-screen" style="--c:${GAMES.lock.c}">
+    ${gameHeader("lock", `Level ${idx + 1} · ${level.difficulty}`, levelsPill())}
+    <div class="lock-body">
+      <div class="lock-main">
+        <div class="phrase" id="phrase" role="group" aria-label="The coded phrase"></div>
+        <p class="lock-clue" id="clue" hidden></p>
+        <p class="daily-msg" id="msg"></p>
+        <div class="steps-btns">
+          <button class="btn" id="kClear">Clear letter</button>
+          <button class="btn clue-btn" id="kHint">${ic("bulb")}Hint <span id="kHintN"></span></button>
+          <button class="btn primary" id="kCheck">Check answer</button>
+          <button class="btn" id="kReset">Reset</button>
+        </div>
+      </div>
+      <aside class="lock-ref" id="ref" aria-label="Your letters so far"></aside>
+    </div>
+    <div id="keys"></div>
+  </div>`;
+  $("#back").onclick = () => showHome();
+  $("#help").onclick = () => showHelp("lock");
+  $("#levels").onclick = () => showLevels("lock");
+  $("#phrase").addEventListener("click", e => { const t = e.target.closest("[data-n]"); if (t && !K.over) { K.sel = +t.dataset.n; renderLock(); } });
+  $("#ref").addEventListener("click", e => { const t = e.target.closest("[data-n]"); if (t && !K.over) { K.sel = +t.dataset.n; renderLock(); } });
+  $("#keys").addEventListener("click", e => { const b = e.target.closest(".key"); if (b) lockKey(b.dataset.k); });
+  $("#kClear").onclick = () => lockKey("Backspace");
+  $("#kHint").onclick = lockHint;
+  $("#kCheck").onclick = lockCheck;
+  $("#kReset").onclick = () => confirmSheet("lock", "Reset this puzzle?", "Your guessed letters will be cleared. Letters revealed by hints stay.", "Reset", () => {
+    Object.keys(K.guess).forEach(n => { if (!K.revealed.has(+n)) delete K.guess[n]; });
+    K.sel = K.nums.find(n => !K.guess[n]) ?? null; K.msg = "Guesses cleared."; saveLock(); renderLock();
+  });
+  if (!K.msg) K.msg = "Tap a number, then type the letter you think it stands for.";
+  renderLock();
+}
+function saveLock() { if (K && !K.over) store.set("save-lock-" + K.idx, { v: 1, guess: K.guess, revealed: [...K.revealed], hints: K.hints, checks: K.checks, clue: K.clue }); }
+function renderLock() {
+  const words = K.text.split(" ");
+  $("#phrase").innerHTML = words.map(w => `<span class="pw">${[...w].map(c => {
+    if (!/[A-Z]/.test(c)) return `<span class="pc punct" aria-hidden="true"><b>${esc(c)}</b><small></small></span>`;
+    const n = lockNum(K.level, c), g = K.guess[n] || "", locked = K.revealed.has(n);
+    return `<button class="pc ${locked ? "locked" : g ? "guessed" : ""} ${K.sel === n ? "sel" : ""}" data-n="${n}" aria-label="Number ${n}${g ? ", " + (locked ? "revealed " : "your guess ") + g : ", blank"}${K.over ? "" : ""}"><b>${g}</b><small>${locked ? ic("lock") : ""}${pad2(n)}</small></button>`;
+  }).join("")}</span>`).join(" ");
+  const used = Object.entries(K.guess).sort((a, b) => a[1].localeCompare(b[1]));
+  $("#ref").innerHTML = `<h4>Your letters <span>${Object.keys(K.guess).length} of ${K.nums.length}</span></h4>
+    <div class="refs">${K.nums.slice().sort((a, b) => a - b).map(n => `<button class="ref ${K.revealed.has(n) ? "locked" : K.guess[n] ? "guessed" : ""} ${K.sel === n ? "sel" : ""}" data-n="${n}"><small>${pad2(n)}</small><b>${K.guess[n] || "·"}</b></button>`).join("")}</div>`;
+  const clue = $("#clue"); clue.hidden = !K.clue; clue.innerHTML = `${ic("bulb")} Clue: ${esc(K.level.clue)}`;
+  $("#msg").textContent = K.msg;
+  const full = K.nums.every(n => K.guess[n]);
+  $("#kCheck").disabled = !full || K.over;
+  $("#kHint").disabled = K.hints >= 3 || K.over;
+  $("#kHintN").textContent = `(${3 - K.hints} left)`;
+  const marks = {}; Object.entries(K.guess).forEach(([n, c]) => marks[c.toLowerCase()] = K.revealed.has(+n) ? "a" : "used");
+  $("#keys").innerHTML = gameKeys("Check", marks);
+}
+function lockKey(k) {
+  if (!K || K.over) return;
+  if (k === "Enter") return lockCheck();
+  if (k === "ArrowLeft" || k === "ArrowRight") { const i = K.nums.indexOf(K.sel); K.sel = K.nums[(i + (k === "ArrowLeft" ? -1 : 1) + K.nums.length) % K.nums.length]; return renderLock(); }
+  const n = K.sel;
+  if (n == null) { K.msg = "Tap a number first."; return renderLock(); }
+  if (K.revealed.has(n)) { K.msg = "That letter is locked in."; return renderLock(); }
+  if (k === "Backspace") { delete K.guess[n]; K.msg = "Letter cleared."; saveLock(); return renderLock(); }
+  if (!/^[a-z]$/.test(k)) return;
+  const L = k.toUpperCase(), owner = Object.keys(K.guess).find(x => +x !== n && K.guess[x] === L);
+  if (owner) { K.msg = `You've already used ${L} for ${pad2(owner)}. Change that one first.`; return renderLock(); }
+  K.guess[n] = L; K.msg = "";
+  // Move on to the next blank number, in phrase order.
+  const i = K.nums.indexOf(n), rest = K.nums.slice(i + 1).concat(K.nums.slice(0, i));
+  K.sel = rest.find(x => !K.guess[x]) ?? n;
+  if (K.nums.every(x => K.guess[x])) K.msg = "Every letter is filled in. Tap Check answer when you're ready.";
+  saveLock(); renderLock();
+}
+function lockCheck() {
+  if (!K || K.over) return;
+  if (!K.nums.every(n => K.guess[n])) { K.msg = "Fill in every letter first."; return renderLock(); }
+  K.checks++;
+  if (K.nums.every(n => K.guess[n] === K.answer[n])) return lockComplete();
+  K.msg = "Not quite. Some letters still need changing."; saveLock(); renderLock();
+  const p = $("#phrase"); p.classList.add("shake"); setTimeout(() => p.classList.remove("shake"), 450);
+}
+// Hints: reveal the most useful letter (the one that appears most), and the third hint gives a clue to the subject.
+function lockHint() {
+  if (!K || K.over || K.hints >= 3) return;
+  if (K.hints === 2 && !K.clue) { K.hints++; K.clue = true; K.msg = "Here's a clue to the subject."; saveLock(); return renderLock(); }
+  const count = n => [...K.text].filter(c => /[A-Z]/.test(c) && lockNum(K.level, c) === n).length;
+  const todo = K.nums.filter(n => !K.revealed.has(n) && K.guess[n] !== K.answer[n]).sort((a, b) => count(b) - count(a));
+  if (!todo.length) { K.msg = "Your letters are all right. Tap Check answer."; return renderLock(); }
+  const n = todo[0], L = K.answer[n];
+  Object.keys(K.guess).forEach(x => { if (K.guess[x] === L && +x !== n) delete K.guess[x]; });
+  K.hints++; K.revealed.add(n); K.guess[n] = L; K.sel = K.nums.find(x => !K.guess[x]) ?? null;
+  K.msg = `${pad2(n)} is ${L}. It's locked in for you.`;
+  saveLock(); renderLock();
+}
+function lockComplete() {
+  K.over = true;
+  const h = K.hints, c = K.checks, stars = h === 0 && c === 1 ? 3 : h <= 2 ? 2 : 1;
+  store.set("save-lock-" + K.idx, undefined);
+  saveBest("lock", K.idx, { stars, hints: h, checks: c });
+  K.sel = null; K.msg = "Code cracked!"; renderLock(); confetti();
+  const i = K.idx;
+  setTimeout(() => K && K.idx === i && levelResult("lock", i, "Code cracked!", "Here's the hidden phrase:", stars, [[h, "Hints used"], [c, "Answer checks"]],
+    `<p class="cracked">“${esc(K.level.text)}”</p>`), 700);
 }
 
 // Save on the way out, so closing the app or switching away never loses progress.

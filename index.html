@@ -3046,7 +3046,10 @@ const LOCK_US = [[/\bgrey\b/gi, "gray"], [/\bneighbour/gi, "neighbor"], [/\bautu
   [/\bqueued\b/gi, "lined up"], [/\bqueue\b/gi, "line up"], [/\bharbour/gi, "harbor"], [/\barmour/gi, "armor"], [/\bflavours/gi, "flavors"],
   [/\bpractised/gi, "practiced"], [/\bcentre/gi, "center"], [/\bholidays\b/gi, "vacations"], [/\bholiday\b/gi, "vacation"],
   [/\bwellies\b/gi, "rain boots"], [/\bcaravan\b/gi, "camper"], [/\bsweets\b/gi, "candy"], [/\bbiscuits\b/gi, "cookies"],
-  [/\bthe chips are hot\b/gi, "the fries are hot"], [/\bcrispy chips\b/gi, "crispy fries"], [/\bpostman\b/gi, "mailman"]];
+  [/\bthe chips are hot\b/gi, "the fries are hot"], [/\bcrispy chips\b/gi, "crispy fries"], [/\bpostman\b/gi, "mailman"],
+  [/\bbiscuit\b/gi, "cookie"], [/\bmum\b/gi, "mom"], [/\bcolour/gi, "color"], [/\bfavourite/gi, "favorite"], [/\bjumpers\b/gi, "sweaters"],
+  [/\bfizzy pop\b/gi, "soda pop"], [/\btorch\b/gi, "flashlight"], [/\bpostbox\b/gi, "mailbox"], [/\bpostwoman\b/gi, "mailwoman"], [/\bmarrow\b/gi, "squash"],
+  [/\bfootball match\b/gi, "soccer game"], [/\bwashing up\b/gi, "dishes"], [/\btheatre/gi, "theater"], [/\btravelled\b/gi, "traveled"]];
 function lockText(level) {
   if (!isUS()) return level.text;
   return LOCK_US.reduce((t, [re, us]) => t.replace(re, m => m[0] === m[0].toUpperCase() ? us[0].toUpperCase() + us.slice(1) : us), level.text);

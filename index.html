@@ -3041,19 +3041,31 @@ function stepsComplete() {
 let K = null;
 const lockNum = (lv, ch) => lv.key.charCodeAt(ch.charCodeAt(0) - 65) - 64;
 const pad2 = n => String(n).padStart(2, "0");
+// American spelling and words for Letter Lock phrases (the cipher key covers all 26 letters, so any text works).
+const LOCK_US = [[/\bgrey\b/gi, "gray"], [/\bneighbour/gi, "neighbor"], [/\bautumn\b/gi, "fall"], [/\bcrisps\b/gi, "chips"],
+  [/\bqueued\b/gi, "lined up"], [/\bqueue\b/gi, "line up"], [/\bharbour/gi, "harbor"], [/\barmour/gi, "armor"], [/\bflavours/gi, "flavors"],
+  [/\bpractised/gi, "practiced"], [/\bcentre/gi, "center"], [/\bholidays\b/gi, "vacations"], [/\bholiday\b/gi, "vacation"],
+  [/\bwellies\b/gi, "rain boots"], [/\bcaravan\b/gi, "camper"], [/\bsweets\b/gi, "candy"], [/\bbiscuits\b/gi, "cookies"],
+  [/\bthe chips are hot\b/gi, "the fries are hot"], [/\bcrispy chips\b/gi, "crispy fries"], [/\bpostman\b/gi, "mailman"]];
+function lockText(level) {
+  if (!isUS()) return level.text;
+  return LOCK_US.reduce((t, [re, us]) => t.replace(re, m => m[0] === m[0].toUpperCase() ? us[0].toUpperCase() + us.slice(1) : us), level.text);
+}
 function startLock(idx, daily = false) {
   leaveGame();
   markPlayed();
-  const level = daily ? dailyPuzzle("lock", idx) : LOCK_LEVELS[idx], text = level.text.toUpperCase();
+  const level = daily ? dailyPuzzle("lock", idx) : LOCK_LEVELS[idx], text = lockText(level).toUpperCase();
   const nums = [...new Set([...text].filter(c => /[A-Z]/.test(c)).map(c => lockNum(level, c)))];
   const answer = {}; [...text].forEach(c => { if (/[A-Z]/.test(c)) answer[lockNum(level, c)] = c; });
   K = { idx, daily, level, text, nums, answer, guess: {}, revealed: new Set(), hints: 0, checks: 0, clue: false, sel: null, over: false, msg: "" };
-  [...level.reveal].forEach(c => { const n = lockNum(level, c); K.revealed.add(n); K.guess[n] = c; });
+  [...level.reveal].forEach(c => { const n = lockNum(level, c); if (!nums.includes(n)) return; K.revealed.add(n); K.guess[n] = c; });
   const dcur = dayState("lock").cur;
   const saved = daily ? (dcur && dcur.k === idx ? dcur : null) : store.get()["save-lock-" + idx];
-  if (saved && saved.v === 1) {
-    Object.assign(K, { guess: { ...K.guess, ...saved.guess }, hints: saved.hints || 0, checks: saved.checks || 0, clue: !!saved.clue });
-    (saved.revealed || []).forEach(n => { K.revealed.add(n); K.guess[n] = K.answer[n]; });
+  // A half-played phrase only resumes if it is the same text (UK and US spellings can differ).
+  if (saved && saved.v === 1 && (saved.t || level.text.toUpperCase()) === text) {
+    const keep = Object.fromEntries(Object.entries(saved.guess || {}).filter(([n]) => nums.includes(+n)));
+    Object.assign(K, { guess: { ...K.guess, ...keep }, hints: saved.hints || 0, checks: saved.checks || 0, clue: !!saved.clue });
+    (saved.revealed || []).filter(n => nums.includes(n)).forEach(n => { K.revealed.add(n); K.guess[n] = K.answer[n]; });
     K.msg = "Welcome back. Carrying on where you left off.";
   }
   K.sel = K.nums.find(n => !K.guess[n]) ?? null;
@@ -3094,7 +3106,7 @@ function startLock(idx, daily = false) {
 }
 function saveLock() {
   if (!K || K.over) return;
-  const rec = { v: 1, guess: K.guess, revealed: [...K.revealed], hints: K.hints, checks: K.checks, clue: K.clue };
+  const rec = { v: 1, t: K.text, guess: K.guess, revealed: [...K.revealed], hints: K.hints, checks: K.checks, clue: K.clue };
   if (K.daily) { const st = dayState("lock"); st.cur = { k: K.idx, ...rec }; daySet("lock", st); } else store.set("save-lock-" + K.idx, rec);
 }
 function renderLock() {
@@ -3165,7 +3177,7 @@ function lockComplete() {
   const i = K.idx;
   const show = K.daily ? dailyResult : levelResult;
   setTimeout(() => K && K.idx === i && show("lock", i, "Code cracked!", "Here's the hidden phrase:", stars, [[h, "Hints used"], [c, "Answer checks"]],
-    `<p class="cracked">“${esc(K.level.text)}”</p>`), 700);
+    `<p class="cracked">“${esc(lockText(K.level))}”</p>`), 700);
 }
 
 // Save on the way out, so closing the app or switching away never loses progress.

@@ -61,7 +61,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
       ok(fs.played === 1 && fs.dist.length === 6 && fs.dist[1] === 1, 'fiveStats ' + JSON.stringify(fs));
       await pg.click('#menu'); await pg.waitForTimeout(300);
       await pg.screenshot({ path: out + 'f-home.png' });
-      const card = await pg.evaluate(() => document.body.innerText.match(/Daily Five[\s\S]{0,140}/)[0]);
+      const card = await pg.evaluate(() => document.body.innerText.match(/Sussed[\s\S]{0,140}/)[0]);
       console.log('home card:', JSON.stringify(card));
     }
     if (tag === 'phone') await pg.screenshot({ path: out + 'f-hard-phone.png' });

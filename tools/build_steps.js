@@ -44,6 +44,25 @@ for (const band of BANDS) {
     if (a !== b && tryPair(a, b, band)) n++;
   }
 }
+// Daily challenge: one Easy, one Medium and one Hard a day for a year, then it cycles. Separate seed, so levels never change.
+seed = 20261103;
+const DAILY_DAYS = 365, DAILY = [["Easy", [4], 3, 4], ["Medium", [4, 5], 4, 6], ["Hard", [5, 6], 5, 8]];
+const levelPairs = new Set(levels.map(l => l.start + ">" + l.target)), dailyPairs = new Set(), daily = [];
+// Daily starts and targets: only the most familiar words, minus word forms and anything unsuitable for a family game.
+const DAILY_SKIP = new Set("fries flied flies copies copied buries buried tries tried bitten gotten saki putt leach logged eaten given taken driven spoken shown flown known grown drawn worn misled fitted dealt meant sold paid lost kept felt held went wore wrote threw drew grew knew chose broke stood took gave said sent spent stuck bought dumb damn hell kill kills nasty crazy crisis danger dump junk hack".split(" "));
+const daybase = lists(["english", "british"], [10]).filter(w => ok(w) && !isInflect(w) && !DAILY_SKIP.has(w));
+for (let day = 0; day < DAILY_DAYS; day++) for (const [diff, lens, lo, hi] of DAILY) {
+  for (let guard = 0; guard < 5000; guard++) {
+    const len = lens[Math.floor(rnd() * lens.length)], pool = daybase.filter(w => w.length === len);
+    const a = pool[Math.floor(rnd() * pool.length)];
+    const dA = bfs(nbAll, a), dC = bfs(nbCommon, a);
+    const cands = pool.filter(b => b !== a && dA.get(b) >= lo && dA.get(b) <= hi && dA.get(b) === dC.get(b) && !levelPairs.has(a + ">" + b) && !dailyPairs.has(a + ">" + b));
+    if (!cands.length) continue;
+    const b = cands[Math.floor(rnd() * cands.length)];
+    dailyPairs.add(a + ">" + b); daily.push(`${a}.${b}.${dA.get(b)}`); break;
+  }
+}
+if (daily.length !== DAILY_DAYS * 3) throw new Error("daily short: " + daily.length);
 const extra = [...accept].filter(w => !common.has(w));
 const out = `/* Word Steps data. Built by tools/build_steps.js from SCOWL (wordlist-english, MIT licence). Do not edit by hand:
    add or remove words in the build script (or tools/blocklist.txt) and run it again. */
@@ -52,7 +71,10 @@ const STEPS_EXTRA = "${extra.sort().join(" ")}".split(" ");
 const STEPS_LEVELS = [
 ${levels.map(l => `  { start: "${l.start}", target: "${l.target}", min: ${l.min}, difficulty: "${l.difficulty}" },`).join("\n")}
 ];
+// Daily challenge: three puzzles a day (Easy, Medium, Hard) as start.target.moves, cycling after a year.
+const STEPS_DAILY = "${daily.join(" ")}".split(" ").map(x => { const [start, target, min] = x.split("."); return { start, target, min: +min }; });
 `;
 require("fs").writeFileSync(require("path").join(__dirname, "..", "steps.js"), out);
 console.log("common", common.size, "accept", accept.size, "levels", levels.length, "bytes", out.length);
-console.log(levels.map(l => `${l.difficulty} ${l.start}->${l.target} ${l.min}`).join("\n"));
+console.log(daily.slice(0, 12).join(" "));
+if (0) console.log(levels.map(l => `${l.difficulty} ${l.start}->${l.target} ${l.min}`).join("\n"));

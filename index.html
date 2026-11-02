@@ -843,6 +843,10 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .stars { display: inline-flex; gap: 2px; justify-content: center; }
 .stars i { font-style: normal; color: #DCD2D7; font-size: 14px; line-height: 1; }
 .stars i.on { color: #E9A12E; }
+.dayres { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.dayres div { background: var(--bg); border-radius: 14px; padding: 8px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.dayres span { font: 800 11px var(--head); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.dayres .stars i { font-size: 18px; }
 .lvgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; padding: 4px 0 24px; }
 .lv { border: 0; background: var(--surface); border-radius: 18px; box-shadow: var(--lift); padding: 12px 6px 10px; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: var(--ink); }
 .lv b { font: 800 1.5rem var(--head); }
@@ -1192,12 +1196,14 @@ function showHelp(g) {
     steps: ["Change one letter at a time to turn the start word into the target word.", "Every step must be a real word. Any route that works counts.",
       "Tap a letter in your word, type the new letter, then tap Submit step. Undo takes back a step.",
       "Reach the target in the shortest number of moves, without hints, for three stars.",
-      "Hints show which letter to change, then name a good next word. You have 3 per level."],
+      "Every day there's an Easy, a Medium and a Hard puzzle. Finish all three to complete the day's challenge.",
+      "Hints show which letter to change, then name a good next word. You get 3 a day, shared across all your puzzles."],
     lock: ["Every letter in the phrase has been swapped for a number. The same number always means the same letter.",
       "Tap a number, then type the letter you think it stands for. It fills in everywhere that number appears.",
       "Each letter can only be used once. Letters shown with a lock were revealed for you and can't be changed.",
       "When every number has a letter, tap Check answer. Crack it first time without hints for three stars.",
-      "Hints reveal a letter, then another, then give a clue to the subject. You have 3 per level."],
+      "Every day there's an Easy, a Medium and a Hard phrase. Crack all three to complete the day's challenge.",
+      "Hints reveal a letter, then another, then give a clue to the subject. You get 3 a day, shared across all your puzzles."],
   }[g];
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle(g)}>
@@ -1297,11 +1303,11 @@ function greeting(first) {
 
 function helloLine() {
   if (isFR()) return "Vos jeux de mots vous attendent.";
-  const five = fiveState(), wheel = wheelState(), a = five.over, b = wheelDone(wheel);
-  const started = five.guesses.length > 0 || wheel.found.length > 0;
-  if (a && b) return "Both dailies completed today. Lovely work.";
-  if (a) return `Daily Five done. ${wheel.words.size - wheel.found.length} words still hiding in the Letter Wheel.`;
-  if (b) return "Letter Wheel cracked. Daily Five is still waiting for you.";
+  const five = fiveState(), wheel = wheelState(), st = dayState("steps"), lk = dayState("lock");
+  const done = [five.over, wheelDone(wheel), st.stage >= 3, lk.stage >= 3].filter(Boolean).length;
+  const started = five.guesses.length || wheel.found.length || st.stage || st.cur || lk.stage || lk.cur;
+  if (done === 4) return "All four dailies completed today. Lovely work.";
+  if (done) return `${done} of 4 dailies completed today. Can you finish the set?`;
   if (started) return "You've made a start. Come back and finish today's dailies.";
   return "Your daily word games are ready.";
 }
@@ -1326,11 +1332,11 @@ function showHome(first = false) {
   const nb = nextBoard(), nw = nextWall(), nbL = nb != null ? LEVELS()[nb] : null;
   const five = fiveState(), fs = fiveStats(), wheel = wheelState();
   const boards = solvedBoards(), walls = solvedWalls();
-  const dailies = (five.over ? 1 : 0) + (wheelDone(wheel) ? 1 : 0);
+  const dailies = [five.over, wheelDone(wheel), dayDone("steps"), dayDone("lock")].filter(Boolean).length;
   const stat = (icon, bg, col, big, small) => `<div><span class="dotico" style="background:${bg};color:${col}">${ic(icon)}</span><span><b>${big}</b><span>${small}</span></span></div>`;
   const strip = english
     ? stat("flame", "#FFE9DC", "#E8642F", `${fs.streak} day${fs.streak === 1 ? "" : "s"}`, "Five streak") +
-      stat("check", "#D9F3E8", "#13996D", `${dailies} / 2`, "dailies completed today") +
+      stat("check", "#D9F3E8", "#13996D", `${dailies} / 4`, "dailies completed today") +
       stat("trophy", "#FCEFCF", "#C88A12", boards + walls, "levels and walls solved")
     : stat("trophy", "#FCEFCF", "#C88A12", boards, tr("levels solved"));
   const tiles = (cols, rows) => rows.map(c => `<i class="mt" style="background:${c}"></i>`.repeat(cols)).join("");
@@ -1357,9 +1363,9 @@ function showHome(first = false) {
     nw == null ? "Play again" : s["save-wall-" + nw] ? "Continue" : "Play", artWall, "", "feature")
     : gameCard("wall", "modeWall", "", "", "", artWall, soon, "feature");
   const lvCard = (g, id, desc, art) => {
-    const n = lvNext(g), L = LEVELLED[g].levels(), solved = lvSolved(g);
-    return gameCard(g, id, desc, `<b>${n != null ? `Level ${n + 1} · ${L[n].difficulty}` : "Every level solved"}</b>${meter(solved, L.length)}`,
-      n == null ? "Play again" : s["save-" + g + "-" + n] ? "Continue" : "Play", art);
+    const st = dayState(g), k = st.stage;
+    return gameCard(g, id, desc, `<b>${k >= 3 ? "Today's challenge complete" : k || st.cur ? `${DAY_DIFFS[k]} next · ${k} of 3 done` : "Easy, Medium and Hard"}</b>${meter(k, 3)}`,
+      k >= 3 ? "See results" : k || st.cur ? "Continue" : "Play", art);
   };
   const stepsCard = english ? lvCard("steps", "modeSteps", "Change one letter. Reach the target.", artSteps) : gameCard("steps", "modeSteps", "", "", "", artSteps, soon);
   const lockCard = english ? lvCard("lock", "modeLock", "Crack the code. Reveal the words.", artLock) : gameCard("lock", "modeLock", "", "", "", artLock, soon);
@@ -1381,8 +1387,8 @@ function showHome(first = false) {
     $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
     $("#modeFive").onclick = startFive;
     $("#modeWheel").onclick = startWheel;
-    $("#modeSteps").onclick = () => { const n = lvNext("steps"); n == null ? showLevels("steps") : startSteps(n); };
-    $("#modeLock").onclick = () => { const n = lvNext("lock"); n == null ? showLevels("lock") : startLock(n); };
+    $("#modeSteps").onclick = () => startDaily("steps");
+    $("#modeLock").onclick = () => startDaily("lock");
   }
 }
 
@@ -2488,8 +2494,8 @@ function wheelKey(k) {
    best-steps-N / best-lock-N   best result { stars, ..., date }
    ===================================================================== */
 const LEVELLED = {
-  steps: { levels: () => STEPS_LEVELS, start: i => startSteps(i) },
-  lock: { levels: () => LOCK_LEVELS, start: i => startLock(i) },
+  steps: { levels: () => STEPS_LEVELS, start: (i, daily) => startSteps(i, daily) },
+  lock: { levels: () => LOCK_LEVELS, start: (i, daily) => startLock(i, daily) },
 };
 const lvDone = (g, i) => isDone(g + "-" + i);
 const lvNext = g => { const n = LEVELLED[g].levels().findIndex((_, i) => !lvDone(g, i)); return n < 0 ? null : n; };
@@ -2547,6 +2553,48 @@ function showLevels(g) {
   $("#help").onclick = () => showHelp(g);
   app.querySelectorAll(".lv").forEach(b => b.onclick = () => { if (!b.classList.contains("locked")) LEVELLED[g].start(+b.dataset.i); });
 }
+/* Daily challenge for Word Steps and Letter Lock: an Easy, a Medium and a Hard puzzle each day, played in order.
+   Hints come from one pot of 3 per game per day, shared by the daily puzzles and the levels.
+   Saved as steps-day-YYYY-MM-DD / lock-day-YYYY-MM-DD: { v, stage (0 to 3), hints, res: [results], cur: puzzle in progress }. */
+const DAY_DIFFS = ["Easy", "Medium", "Hard"], HINT_POT = 3;
+const dayKey = g => g + "-day-" + todayKey();
+const dayState = g => ({ v: 1, stage: 0, hints: 0, res: [], cur: null, ...(store.get()[dayKey(g)] || {}) });
+const daySet = (g, st) => store.set(dayKey(g), st);
+const potLeft = g => Math.max(0, HINT_POT - dayState(g).hints);
+const usePot = g => { const st = dayState(g); st.hints++; daySet(g, st); };
+const dayDone = g => dayState(g).stage >= 3;
+function dailyPuzzle(g, k) {
+  const list = g === "steps" ? STEPS_DAILY : LOCK_DAILY, p = list[(dayNumber() * 3 + k) % list.length];
+  return { ...p, difficulty: DAY_DIFFS[k] };
+}
+const startDaily = g => { const st = dayState(g); st.stage >= 3 ? dailySummary(g) : LEVELLED[g].start(st.stage, true); };
+// After each daily puzzle: the next one, or the day's summary once the Hard is done.
+function dailyResult(g, k, title, text, stars, nums, extra = "") {
+  if (k >= 2) return dailySummary(g, extra);
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet done-sheet lvsheet" role="dialog" aria-modal="true" style="--c:${GAMES[g].c};--ci:${GAMES[g].ci}">
+    ${sheetBadge("check")}<h2>${title}</h2>${starRow(stars)}<p>${text}</p>${extra}
+    <div class="stats" style="justify-content:center">${nums.map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("")}</div>
+    <div class="actions" style="justify-content:center"><button class="btn primary" id="rNext">Next: ${DAY_DIFFS[k + 1]}${ic("chevr")}</button><button class="btn" id="rHome">Home</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  $("#rNext", ov).onclick = () => LEVELLED[g].start(k + 1, true);
+  $("#rHome", ov).onclick = () => showHome();
+}
+function dailySummary(g, extra = "") {
+  const st = dayState(g), total = st.res.reduce((a, r) => a + ((r && r.stars) || 0), 0);
+  document.querySelectorAll(".overlay").forEach(o => o.remove());
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet done-sheet lvsheet" role="dialog" aria-modal="true" style="--c:${GAMES[g].c};--ci:${GAMES[g].ci}">
+    ${sheetBadge("trophy")}<h2>Today's challenge complete!</h2>
+    <p>You finished the Easy, Medium and Hard ${GAMES[g].name} puzzles, with ${total} of 9 stars. A new set arrives tomorrow.</p>${extra}
+    <div class="dayres">${DAY_DIFFS.map((d, k) => `<div><span>${d}</span>${starRow((st.res[k] || {}).stars || 0)}</div>`).join("")}</div>
+    <div class="actions" style="justify-content:center"><button class="btn primary" id="rLevels">Play more levels${ic("chevr")}</button><button class="btn" id="rHome">Home</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  $("#rLevels", ov).onclick = () => { const n = lvNext(g); n == null ? showLevels(g) : LEVELLED[g].start(n); };
+  $("#rHome", ov).onclick = () => showHome();
+}
 const levelsPill = () => `<button class="gpill" id="levels" aria-label="All levels">${ic("grid")}<span class="pill-txt">Levels</span></button>`;
 
 /* =====================================================================
@@ -2579,15 +2627,16 @@ function stepsDist(target) {
 const stepsDiff = (a, b) => [...a].filter((c, i) => c !== b[i]).length;
 const stepsCur = () => S.words[S.words.length - 1];
 
-function startSteps(idx) {
+function startSteps(idx, daily = false) {
   leaveGame();
-  const level = STEPS_LEVELS[idx];
-  S = { idx, level, words: [level.start], hints: 0, edit: [...level.start], sel: 0, hintPos: null, msg: "", over: false };
-  const saved = store.get()["save-steps-" + idx];
+  const level = daily ? dailyPuzzle("steps", idx) : STEPS_LEVELS[idx];
+  S = { idx, daily, level, words: [level.start], hints: 0, edit: [...level.start], sel: 0, hintPos: null, msg: "", over: false };
+  const cur = dayState("steps").cur;
+  const saved = daily ? (cur && cur.k === idx ? cur : null) : store.get()["save-steps-" + idx];
   if (saved && saved.v === 1 && saved.words && saved.words[0] === level.start) { S.words = saved.words; S.hints = saved.hints || 0; S.edit = [...stepsCur()]; S.msg = "Welcome back. Carrying on where you left off."; }
   app.innerHTML = `
   <div class="screen daily steps-screen" style="--c:${GAMES.steps.c}">
-    ${gameHeader("steps", `Level ${idx + 1} · ${level.difficulty}`, levelsPill())}
+    ${gameHeader("steps", daily ? `Today · ${level.difficulty} · ${idx + 1} of 3` : `Level ${idx + 1} · ${level.difficulty}`, levelsPill())}
     <div class="steps-body">
       <div class="ladder" id="ladder" aria-live="polite"></div>
       <p class="daily-msg" id="msg"></p>
@@ -2613,10 +2662,14 @@ function startSteps(idx) {
   });
   if (!S.msg) S.msg = `Change one letter at a time to turn ${level.start.toUpperCase()} into ${level.target.toUpperCase()}.`;
   renderSteps();
-  if (lvDone("steps", idx) && !saved) S.msg = "You've solved this one before. Can you find a shorter route?";
+  if (!daily && lvDone("steps", idx) && !saved) S.msg = "You've solved this one before. Can you find a shorter route?";
   $("#msg").textContent = S.msg;
 }
-function saveSteps() { if (S && !S.over) store.set("save-steps-" + S.idx, { v: 1, words: S.words, hints: S.hints }); }
+function saveSteps() {
+  if (!S || S.over) return;
+  const rec = { v: 1, words: S.words, hints: S.hints };
+  if (S.daily) { const st = dayState("steps"); st.cur = { k: S.idx, ...rec }; daySet("steps", st); } else store.set("save-steps-" + S.idx, rec);
+}
 function renderSteps() {
   const cur = stepsCur(), tgt = S.level.target;
   const tiles = (w, cls = "", mark = false) => [...w].map((c, i) => `<i class="st ${cls} ${mark && c === tgt[i] ? "match" : ""}">${c}</i>`).join("");
@@ -2631,8 +2684,8 @@ function renderSteps() {
   const cr = $("#ladder .current"); if (cr) cr.scrollIntoView({ block: "nearest" });
   $("#msg").textContent = S.msg;
   $("#sUndo").disabled = S.words.length < 2 || S.over;
-  $("#sHintN").textContent = `(${3 - S.hints} left)`;
-  $("#sHint").disabled = S.hints >= 3 || S.over;
+  $("#sHintN").textContent = `(${potLeft("steps")} left today)`;
+  $("#sHint").disabled = !potLeft("steps") || S.over;
   $("#keys").innerHTML = gameKeys("Submit");
 }
 function stepsKey(k) {
@@ -2671,12 +2724,13 @@ function stepsUndo() {
 }
 // Hints come from the current word: the first shows which letter to change, later ones name a next word on a shortest route.
 function stepsHint() {
-  if (!S || S.over || S.hints >= 3) return;
+  if (!S || S.over) return;
+  if (!potLeft("steps")) { S.msg = "No hints left today. You get 3 more tomorrow."; return renderSteps(); }
   const cur = stepsCur(), dist = stepsDist(S.level.target), d = dist.get(cur), { near, common } = stepsWords();
   if (d == null) { S.msg = "This word can't reach the target. Use Undo to go back a step."; return renderSteps(); }
   const next = near(cur).filter(n => dist.get(n) === d - 1 && !S.words.includes(n)).sort((a, b) => common.has(b) - common.has(a));
   if (!next.length) { S.msg = "Try Undo: the way forward goes through a word you've already used."; return renderSteps(); }
-  S.hints++;
+  S.hints++; usePot("steps");
   const w = next[0], pos = [...w].findIndex((c, i) => c !== cur[i]);
   if (S.hints === 1) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = `Hint: try changing letter ${pos + 1}.`; }
   else if (S.hints === 2) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = `Hint: ${w.toUpperCase()} is on a shortest route from here.`; }
@@ -2687,12 +2741,13 @@ function stepsComplete() {
   S.over = true;
   const moves = S.words.length - 1, min = S.level.min, h = S.hints;
   const stars = moves === min && h === 0 ? 3 : (moves <= min + 2 && h === 0) || (moves === min && h <= 1) ? 2 : 1;
-  store.set("save-steps-" + S.idx, undefined);
-  saveBest("steps", S.idx, { stars, moves, min, hints: h });
+  if (S.daily) { const st = dayState("steps"); st.res[S.idx] = { stars, moves, min, hints: h }; st.stage = Math.max(st.stage, S.idx + 1); st.cur = null; daySet("steps", st); }
+  else { store.set("save-steps-" + S.idx, undefined); saveBest("steps", S.idx, { stars, moves, min, hints: h }); }
   S.msg = "You reached the target!";
   renderSteps(); confetti();
   const tgt = S.level.target.toUpperCase(), i = S.idx;
-  setTimeout(() => S && S.idx === i && levelResult("steps", i, stars === 3 ? "Perfect route!" : "Well done!",
+  const show = S.daily ? dailyResult : levelResult;
+  setTimeout(() => S && S.idx === i && show("steps", i, stars === 3 ? "Perfect route!" : "Well done!",
     moves === min ? `You reached ${tgt} in ${moves} steps. That's the shortest possible route.` : `Completed in ${moves} steps. The shortest route is ${min}.`,
     stars, [[moves, "Moves taken"], [min, "Shortest route"], [h, "Hints used"]]), 700);
 }
@@ -2706,14 +2761,15 @@ function stepsComplete() {
 let K = null;
 const lockNum = (lv, ch) => lv.key.charCodeAt(ch.charCodeAt(0) - 65) - 64;
 const pad2 = n => String(n).padStart(2, "0");
-function startLock(idx) {
+function startLock(idx, daily = false) {
   leaveGame();
-  const level = LOCK_LEVELS[idx], text = level.text.toUpperCase();
+  const level = daily ? dailyPuzzle("lock", idx) : LOCK_LEVELS[idx], text = level.text.toUpperCase();
   const nums = [...new Set([...text].filter(c => /[A-Z]/.test(c)).map(c => lockNum(level, c)))];
   const answer = {}; [...text].forEach(c => { if (/[A-Z]/.test(c)) answer[lockNum(level, c)] = c; });
-  K = { idx, level, text, nums, answer, guess: {}, revealed: new Set(), hints: 0, checks: 0, clue: false, sel: null, over: false, msg: "" };
+  K = { idx, daily, level, text, nums, answer, guess: {}, revealed: new Set(), hints: 0, checks: 0, clue: false, sel: null, over: false, msg: "" };
   [...level.reveal].forEach(c => { const n = lockNum(level, c); K.revealed.add(n); K.guess[n] = c; });
-  const saved = store.get()["save-lock-" + idx];
+  const dcur = dayState("lock").cur;
+  const saved = daily ? (dcur && dcur.k === idx ? dcur : null) : store.get()["save-lock-" + idx];
   if (saved && saved.v === 1) {
     Object.assign(K, { guess: { ...K.guess, ...saved.guess }, hints: saved.hints || 0, checks: saved.checks || 0, clue: !!saved.clue });
     (saved.revealed || []).forEach(n => { K.revealed.add(n); K.guess[n] = K.answer[n]; });
@@ -2722,7 +2778,7 @@ function startLock(idx) {
   K.sel = K.nums.find(n => !K.guess[n]) ?? null;
   app.innerHTML = `
   <div class="screen daily lock-screen" style="--c:${GAMES.lock.c}">
-    ${gameHeader("lock", `Level ${idx + 1} · ${level.difficulty}`, levelsPill())}
+    ${gameHeader("lock", daily ? `Today · ${level.difficulty} · ${idx + 1} of 3` : `Level ${idx + 1} · ${level.difficulty}`, levelsPill())}
     <div class="lock-body">
       <div class="lock-main">
         <div class="phrase" id="phrase" role="group" aria-label="The coded phrase"></div>
@@ -2755,7 +2811,11 @@ function startLock(idx) {
   if (!K.msg) K.msg = "Tap a number, then type the letter you think it stands for.";
   renderLock();
 }
-function saveLock() { if (K && !K.over) store.set("save-lock-" + K.idx, { v: 1, guess: K.guess, revealed: [...K.revealed], hints: K.hints, checks: K.checks, clue: K.clue }); }
+function saveLock() {
+  if (!K || K.over) return;
+  const rec = { v: 1, guess: K.guess, revealed: [...K.revealed], hints: K.hints, checks: K.checks, clue: K.clue };
+  if (K.daily) { const st = dayState("lock"); st.cur = { k: K.idx, ...rec }; daySet("lock", st); } else store.set("save-lock-" + K.idx, rec);
+}
 function renderLock() {
   const words = K.text.split(" ");
   $("#phrase").innerHTML = words.map(w => `<span class="pw">${[...w].map(c => {
@@ -2770,8 +2830,8 @@ function renderLock() {
   $("#msg").textContent = K.msg;
   const full = K.nums.every(n => K.guess[n]);
   $("#kCheck").disabled = !full || K.over;
-  $("#kHint").disabled = K.hints >= 3 || K.over;
-  $("#kHintN").textContent = `(${3 - K.hints} left)`;
+  $("#kHint").disabled = !potLeft("lock") || K.over;
+  $("#kHintN").textContent = `(${potLeft("lock")} left today)`;
   const marks = {}; Object.entries(K.guess).forEach(([n, c]) => marks[c.toLowerCase()] = K.revealed.has(+n) ? "a" : "used");
   $("#keys").innerHTML = gameKeys("Check", marks);
 }
@@ -2803,25 +2863,27 @@ function lockCheck() {
 }
 // Hints: reveal the most useful letter (the one that appears most), and the third hint gives a clue to the subject.
 function lockHint() {
-  if (!K || K.over || K.hints >= 3) return;
-  if (K.hints === 2 && !K.clue) { K.hints++; K.clue = true; K.msg = "Here's a clue to the subject."; saveLock(); return renderLock(); }
+  if (!K || K.over) return;
+  if (!potLeft("lock")) { K.msg = "No hints left today. You get 3 more tomorrow."; return renderLock(); }
+  if (K.hints === 2 && !K.clue) { K.hints++; usePot("lock"); K.clue = true; K.msg = "Here's a clue to the subject."; saveLock(); return renderLock(); }
   const count = n => [...K.text].filter(c => /[A-Z]/.test(c) && lockNum(K.level, c) === n).length;
   const todo = K.nums.filter(n => !K.revealed.has(n) && K.guess[n] !== K.answer[n]).sort((a, b) => count(b) - count(a));
   if (!todo.length) { K.msg = "Your letters are all right. Tap Check answer."; return renderLock(); }
   const n = todo[0], L = K.answer[n];
   Object.keys(K.guess).forEach(x => { if (K.guess[x] === L && +x !== n) delete K.guess[x]; });
-  K.hints++; K.revealed.add(n); K.guess[n] = L; K.sel = K.nums.find(x => !K.guess[x]) ?? null;
+  K.hints++; usePot("lock"); K.revealed.add(n); K.guess[n] = L; K.sel = K.nums.find(x => !K.guess[x]) ?? null;
   K.msg = `${pad2(n)} is ${L}. It's locked in for you.`;
   saveLock(); renderLock();
 }
 function lockComplete() {
   K.over = true;
   const h = K.hints, c = K.checks, stars = h === 0 && c === 1 ? 3 : h <= 2 ? 2 : 1;
-  store.set("save-lock-" + K.idx, undefined);
-  saveBest("lock", K.idx, { stars, hints: h, checks: c });
+  if (K.daily) { const st = dayState("lock"); st.res[K.idx] = { stars, hints: h, checks: c }; st.stage = Math.max(st.stage, K.idx + 1); st.cur = null; daySet("lock", st); }
+  else { store.set("save-lock-" + K.idx, undefined); saveBest("lock", K.idx, { stars, hints: h, checks: c }); }
   K.sel = null; K.msg = "Code cracked!"; renderLock(); confetti();
   const i = K.idx;
-  setTimeout(() => K && K.idx === i && levelResult("lock", i, "Code cracked!", "Here's the hidden phrase:", stars, [[h, "Hints used"], [c, "Answer checks"]],
+  const show = K.daily ? dailyResult : levelResult;
+  setTimeout(() => K && K.idx === i && show("lock", i, "Code cracked!", "Here's the hidden phrase:", stars, [[h, "Hints used"], [c, "Answer checks"]],
     `<p class="cracked">“${esc(K.level.text)}”</p>`), 700);
 }
 

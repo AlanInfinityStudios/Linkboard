@@ -1,4 +1,4 @@
-// Acceptance tests for Word Steps and Letter Lock. Serve the repo on port 8765 (python3 -m http.server 8765), then run: node tests/new_games.js
+// Acceptance tests for Word Steps and Letter Lock levels. Serve the repo on port 8765 (python3 -m http.server 8765), then run: node tests/new_games.js
 // Acceptance tests for Word Steps and Letter Lock.
 const { chromium } = require('playwright');
 const out = require('os').tmpdir() + '/wordolio-shots/';
@@ -24,7 +24,7 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
     await pg.click('#sSubmit');
   };
   // ---------- Word Steps ----------
-  await pg.click('#modeSteps'); await pg.waitForTimeout(400);
+  await pg.evaluate(() => startSteps(0)); await pg.waitForTimeout(400);
   ok((await pg.textContent('.ghead-c small')).includes('Level 1'), 'steps opens level 1');
   // Two letters changed in one go is impossible through the UI (a new change resets the edit); check the rule directly.
   await pg.evaluate(() => { S.edit = [..."wald"]; }); await pg.click('#sSubmit');
@@ -39,7 +39,7 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
   await step('word');
   // reload restores
   await pg.reload(); await pg.waitForTimeout(600);
-  await pg.click('#modeSteps'); await pg.waitForTimeout(300);
+  await pg.evaluate(() => startSteps(0)); await pg.waitForTimeout(300);
   ok(await pg.evaluate(() => S.words.join()) === 'cold,cord,word', 'progress restored after reload');
   await step('cord');
   ok((await msg()).includes('already used'), 'repeat word rejected');
@@ -66,7 +66,7 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
   const b2 = await pg.evaluate(() => store.get()['best-steps-1']);
   ok(b2 && b2.stars === 3, 'perfect route, no hints = 3 stars ' + JSON.stringify(b2));
   await pg.click('#rHome'); await pg.waitForTimeout(300);
-  ok((await pg.textContent('#modeSteps')).includes('Level 3'), 'home card moves on to level 3');
+  
   // levels grid
   await pg.click('#modeSteps'); await pg.click('#levels'); await pg.waitForTimeout(300);
   const lv = await pg.evaluate(() => [...document.querySelectorAll('.lv')].slice(0, 5).map(x => x.className.replace(/\s+/g, ' ').trim()));
@@ -78,7 +78,7 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
   await pg.click('#back');
 
   // ---------- Letter Lock ----------
-  await pg.click('#modeLock'); await pg.waitForTimeout(400);
+  await pg.evaluate(() => startLock(0)); await pg.waitForTimeout(400);
   const info = await pg.evaluate(() => {
     const L = LOCK_LEVELS, onetoone = L.every(l => new Set(l.key).size === 26 && [...l.key].every((c, i) => c.charCodeAt(0) - 65 !== i));
     return { onetoone, lens: L.map(l => l.text.replace(/[^A-Za-z]/g, '').length) };
@@ -105,7 +105,7 @@ const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++
   ok((await msg()) === 'Not quite. Some letters still need changing.', 'wrong check message');
   ok(await pg.evaluate(() => Object.keys(K.guess).length === K.nums.length), 'wrong check keeps progress');
   await pg.click('#kHint'); await pg.waitForTimeout(100);
-  await pg.reload(); await pg.waitForTimeout(600); await pg.click('#modeLock'); await pg.waitForTimeout(300);
+  await pg.reload(); await pg.waitForTimeout(600); await pg.evaluate(() => startLock(0)); await pg.waitForTimeout(300);
   const key2 = await pg.evaluate(() => [...document.querySelectorAll('.pc small')].map(x => x.textContent).join());
   ok(key1 === key2, 'same key after reload');
   ok(await pg.evaluate(() => K.hints === 1 && K.checks === 1), 'hints and checks restored');

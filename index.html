@@ -991,6 +991,7 @@ html.calm .screen, html.calm .sheet, html.calm .overlay, html.calm .tile.hinted,
 <script src="steps.js"></script>
 <script src="locks.js"></script>
 <script src="six.js"></script>
+<script src="walls_us.js"></script>
 <script>
 const GROUP_COLOURS = ["#FF5A3C", "#3E7BFA", "var(--green)", "#F5A300", "var(--purple)", "#00B2C9", "#FF7A1A", "#EC4899", "#5B6CFF", "#7CB82F", "#0EA5A0", "#E8456B", "#2E86DE", "#D97706", "#6366F1", "#16A34A"];
 const WALL_COLOURS = ["#3E7BFA", "var(--green)", "#F5A300", "#FF5A3C"];
@@ -2227,16 +2228,20 @@ function bindDrag(board) {
    ===================================================================== */
 let W = null;
 
+// US English players get an American wall wherever the UK one needs British knowledge. Same level numbers either way.
+const wallFor = i => (isUS() && typeof WALLS_US !== "undefined" && WALLS_US[i]) || WALLS[i];
+const wallSig = i => WALLS[i].name + (wallFor(i) === WALLS[i] ? ":uk" : ":us");
 function startWall(idx) {
   leaveGame();
   markPlayed();
-  const wall = WALLS[idx];
+  const wall = wallFor(idx);
   const clues = [];
   wall.groups.forEach((g, gi) => g.tiles.forEach(text => clues.push({ id: clues.length, group: gi, text: locWall(text) })));
   W = { idx, wall, clues, order: shuffle(clues.map(c => c.id)), found: [], sel: [], lives: null,
         timeLeft: 180, over: false, busy: false, revealed: new Set(), credited: new Set(), endReason: "" };
+  // A half-played wall only resumes in the same version (UK or US); after a language switch it starts fresh.
   const saved = store.get()["save-wall-" + idx];
-  if (saved && saved.order.length === clues.length) {
+  if (saved && saved.order.length === clues.length && (saved.sig || WALLS[idx].name + ":uk") === wallSig(idx)) {
     Object.assign(W, { order: saved.order, found: saved.found, lives: saved.lives, timeLeft: saved.timeLeft });
     toast("Welcome back. Carrying on where you left off.");
   }
@@ -2246,7 +2251,7 @@ function startWall(idx) {
 }
 function saveWall() {
   if (!W || W.over) return;
-  store.set("save-wall-" + W.idx, { order: W.order, found: W.found, lives: W.lives, timeLeft: W.timeLeft });
+  store.set("save-wall-" + W.idx, { order: W.order, found: W.found, lives: W.lives, timeLeft: W.timeLeft, sig: wallSig(W.idx) });
 }
 
 function wallTick(dt) {

@@ -1,0 +1,452 @@
+# American walls. "W n" replaces wall number n (1-based) for US English players.
+# Each group: Name | four tiles | herrings (other tiles on this wall that also fit; optional)
+W 2
+TV detectives | Columbo, Magnum, Kojak, Monk |
+Jack ___ | Frost, Sprat, Daniels, Rabbit |
+Pool terms | Rail, Break, Bank, Kiss |
+Puzzles | Sudoku, Crossword, Jigsaw, Word search |
+W 3
+Names for grandma | Nana, Grandma, Granny, Mimi |
+Knots | Bowline, Sheepshank, Square, Hitch | Granny
+Apple varieties | Honeycrisp, Gala, Fuji, McIntosh |
+Volcanoes | Etna, Vesuvius, Krakatoa, St Helens |
+W 4
+Famous Toms | Hanks, Cruise, Brady, Petty |
+Talk show hosts | Fallon, Kimmel, Colbert, Leno |
+Surnames from old jobs | Fletcher, Cooper, Taylor, Carpenter |
+US vice presidents | Pence, Biden, Gore, Cheney |
+W 5
+___fly | Butter, Fire, House, Horse |
+State birds | Cardinal, Mockingbird, Bluebird, Robin |
+Great Lakes | Superior, Michigan, Huron, Erie |
+Muppets | Kermit, Gonzo, Animal, Beaker |
+W 7
+Bond actors | Connery, Dalton, Brosnan, Lazenby | Moore, Craig
+Famous Daniels | Radcliffe, Kaluuya, Day-Lewis, Craig |
+Famous Patricks | Swayze, Moore, Mahomes, Ewing | Stewart
+Famous Jimmys | Fallon, Carter, Buffett, Stewart |
+W 8
+Ice cream flavors | Vanilla, Rocky road, Pistachio, Neapolitan |
+Hawaiian islands | Maui, Oahu, Kauai, Lanai |
+Think deeply | Muse, Ponder, Brood, Reflect |
+Parts of a church | Nave, Aisle, Transept, Crypt |
+W 9
+New York boroughs | Brooklyn, Queens, Bronx, Staten Island |
+Famous Glenns | Close, Miller, Frey, Powell |
+Famous Bobbys | Flay, Fischer, Brown, Orr |
+NFL quarterbacks | Mahomes, Manning, Montana, Elway |
+W 10
+Pastry | Filo, Choux, Puff, Danish |
+Famous dragons | Smaug, Toothless, Mushu, Drogon |
+Bread rolls | Bun, Bagel, Kaiser, Biscuit |
+Hairstyles | Bob, Mullet, Pompadour, Beehive |
+W 11
+Famous Freds | Astaire, Flintstone, Rogers, Savage |
+Tennis players | Williams, Agassi, Sampras, Gauff |
+Horse races | Kentucky Derby, Preakness, Belmont, Breeders' Cup |
+___ salt | Epsom, Rock, Sea, Table |
+W 12
+Ford cars | Mustang, Bronco, Explorer, Taurus |
+Wild cats | Puma, Lynx, Ocelot, Cheetah | Jaguar
+Car makers | Tesla, Dodge, Buick, Jaguar |
+Yoga poses | Cobra, Tree, Warrior, Bridge |
+W 13
+Seinfeld characters | Jerry, George, Elaine, Kramer |
+Herbs | Sage, Thyme, Mint, Dill |
+Mojito ingredients | Rum, Soda, Sugar, Lime |
+Shades of green | Olive, Emerald, Jade, Forest |
+W 15
+Golden Girls | Rose, Dorothy, Blanche, Sophia |
+March sisters in Little Women | Meg, Jo, Beth, Amy |
+Flowers | Lily, Iris, Poppy, Daisy | Rose
+Pixar films | Up, Cars, Coco, Brave |
+W 16
+The Beatles | John, Paul, George, Ringo |
+Popes | Francis, Benedict, Pius, Leo | John, Paul
+Presidents' first names | Abraham, Theodore, Franklin, Dwight |
+Star signs | Aries, Virgo, Libra, Pisces |
+W 17
+Card games | Go Fish, Rummy, Hearts, Solitaire |
+Virtues | Hope, Faith, Charity, Prudence |
+New York bridges | Brooklyn, Queensboro, Verrazzano, Williamsburg |
+Manhattan avenues | Park, Madison, Lexington, Fifth |
+W 18
+Famous bears | Baloo, Paddington, Yogi, Pooh |
+___sticks | Drum, Chop, Lip, Joy |
+Hundred Acre Wood | Eeyore, Piglet, Owl, Kanga |
+Instruments | Harp, Banjo, Oboe, Fife |
+W 20
+Shakespeare title characters | Romeo, Juliet, Macbeth, Othello |
+NATO alphabet | Victor, Hotel, Kilo, Oscar |
+Awards | Emmy, Golden Globe, Grammy, Tony | Oscar
+Settlements | Village, Town, City, Hamlet |
+W 21
+Famous Freddies | Mercury, Krueger, Prinze, Highmore |
+Planets | Saturn, Uranus, Earth, Venus |
+Candy bars | Twix, Snickers, Milky Way, Butterfinger |
+Roman gods | Bacchus, Juno, Minerva, Vulcan |
+W 22
+US islands | Nantucket, Maui, Catalina, Key West |
+Knitwear | Sweater, Cardigan, Fleece, Turtleneck |
+Texas cities | Austin, Dallas, Houston, El Paso |
+Cattle breeds | Hereford, Holstein, Angus, Jersey |
+W 24
+Clue weapons | Candlestick, Revolver, Lead pipe, Knife |
+Tools | Hammer, Chisel, Saw, Wrench |
+Climbing gear | Harness, Carabiner, Crampons, Rope |
+Keyboard symbols | Asterisk, Hashtag, Ampersand, Tilde |
+W 25
+US rivers | Mississippi, Missouri, Colorado, Hudson |
+Makeup brands | Revlon, Maybelline, Max Factor, Avon |
+Banks | Chase, Wells Fargo, Citi, Ally |
+Pharmacies | CVS, Walgreens, Rite Aid, Duane Reade |
+W 27
+Chess pieces | Rook, Pawn, Bishop, Knight |
+Backyard birds | Robin, Wren, Blue jay, Cardinal |
+Batman villains and friends | Joker, Riddler, Alfred, Catwoman |
+Cheeses | Brie, Feta, Swiss, Cheddar |
+W 28
+Disney princesses | Ariel, Belle, Jasmine, Mulan |
+Burger chains | Wendy's, Sonic, Arby's, Culver's |
+First ladies | Michelle, Hillary, Melania, Jill |
+Shapes | Square, Oval, Triangle, Circle |
+W 29
+___cake | Cup, Pan, Cheese, Carrot |
+___board | Skate, Surf, Card, Key | Cheese, Cup
+Vegetables | Kale, Pea, Turnip, Parsnip |
+Bowling words | Strike, Spare, Gutter, Frame |
+W 30
+Tom Hanks films | Big, Splash, Cast Away, Sully |
+US cities | Boston, Denver, Seattle, Philadelphia |
+Mythical creatures | Griffin, Unicorn, Kraken, Phoenix |
+Mountains | Everest, Denali, Kilimanjaro, Rainier |
+W 31
+Board games | Monopoly, Scrabble, Risk, Clue |
+Candy | Fudge, Taffy, Nougat, Licorice |
+Nonsense | Baloney, Drivel, Bunk, Hogwash |
+Place a bet | Wager, Gamble, Stake, Ante |
+W 32
+Famous Johns | Lennon, Wayne, Travolta, Legend |
+Saturday Night Live stars | Fey, Murphy, Belushi, Sandler |
+Lazy | Slothful, Indolent, Sluggish, Shiftless |
+Snakes | Adder, Viper, Mamba, Boa |
+W 33
+Ways to cook eggs | Poached, Scrambled, Fried, Deviled |
+Stolen | Swiped, Pinched, Lifted, Snatched |
+Ways to say hello | Hiya, Howdy, Greetings, Ahoy |
+Weather | Drizzle, Sleet, Mist, Hail |
+W 34
+Famous Kates | Hudson, Winslet, Middleton, McKinnon |
+US presidents | Lincoln, Nixon, Bush, Grant |
+Famous Hughs | Dancy, Jackman, Hefner, Laurie | Grant
+Girls' names from plants | Ivy, Heather, Holly, Hazel |
+W 35
+Olympic sports | Judo, Archery, Diving, Fencing |
+Arguing | Bickering, Squabbling, Feuding, Quarreling |
+Backyard features | Deck, Patio, Pond, Pergola |
+Dog breeds | Boxer, Pug, Beagle, Poodle |
+W 36
+Spice Girls | Posh, Scary, Baby, Sporty |
+Spices | Nutmeg, Cumin, Paprika, Saffron |
+Hair colors | Blonde, Brunette, Auburn, Ginger |
+Famous Jacks | Nicholson, Black, Kerouac, Lemmon |
+W 37
+Lord of the Rings | Frodo, Gandalf, Gollum, Aragorn |
+Famous Pauls | McCartney, Rudd, Simon, Newman |
+Places in California | Malibu, Pasadena, Fresno, Hollywood |
+Famous Amys | Schumer, Adams, Poehler, Winehouse |
+W 38
+Peanuts characters | Snoopy, Linus, Lucy, Schroeder |
+Seven dwarfs | Sleepy, Dopey, Bashful, Happy |
+Football positions | Quarterback, Linebacker, Tight end, Safety |
+Cleaning kit | Mop, Duster, Sponge, Bucket |
+W 39
+Greek islands | Crete, Corfu, Rhodes, Kos |
+Lettuces | Iceberg, Romaine, Butterhead, Arugula |
+Ice | Glacier, Icicle, Floe, Cube | Iceberg
+Famous Michaels | Jordan, Jackson, Phelps, Keaton |
+W 41
+Famous Alans | Alda, Arkin, Rickman, Jackson |
+Sweeteners | Honey, Syrup, Stevia, Molasses |
+Game birds | Pheasant, Quail, Woodcock, Turkey |
+Complain | Moan, Whine, Gripe, Grouse |
+W 42
+Famous Emmas | Thompson, Watson, Stone, Roberts |
+Sherlock Holmes characters | Moriarty, Lestrade, Adler, Hudson | Watson
+American rivers | Mississippi, Missouri, Colorado, Ohio |
+Weights | Pound, Ounce, Gram, Ton |
+W 43
+Hats | Fedora, Trilby, Beret, Stetson |
+Baseball words | Inning, Shortstop, Bunt, Dugout |
+Unmarried woman | Spinster, Miss, Damsel, Maiden |
+Ducks | Mallard, Teal, Eider, Pintail |
+W 44
+Shades of yellow | Lemon, Canary, Gold, Butter | Mustard
+Condiments | Relish, Ketchup, Mayo, Mustard |
+Pet birds | Parakeet, Parrot, Cockatiel, Finch | Canary
+Very happy | Elated, Thrilled, Delighted, Ecstatic |
+W 45
+Famous Stephens | Hawking, King, Colbert, Curry |
+Ways to cook | Bake, Roast, Grill, Steam |
+Young animals | Cub, Foal, Kid, Fry |
+The Lion King | Simba, Nala, Pumbaa, Timon |
+W 46
+Famous Tims | Allen, Burton, Cook, McGraw |
+Vacations | Safari, Road trip, Staycation, Cruise |
+Common surnames | Johnson, Garcia, Williams, Jones |
+Famous horses | Seabiscuit, Black Beauty, Secretariat, Mister Ed |
+W 47
+Christmas decorations | Tinsel, Ornament, Mistletoe, Wreath |
+Cookies | Oreo, Snickerdoodle, Macaroon, Biscotti |
+Whiskey | Bourbon, Scotch, Malt, Rye |
+Breads | Sourdough, Focaccia, Cornbread, Ciabatta |
+W 48
+Famous Jamies | Foxx, Farr, Oliver, Dornan |
+Dickens characters | Fagin, Scrooge, Magwitch, Pip |
+A tiny amount | Jot, Iota, Smidgen, Tad |
+Cartoon cats | Tom, Garfield, Sylvester, Felix |
+W 49
+Famous Annes | Hathaway, Boleyn, Rice, Frank |
+Honest | Candid, Direct, Sincere, Upfront | Frank
+Famous Jameses | Corden, Dean, Franco, Gandolfini | Bond
+Savings and investments | Share, Stock, Bond, Annuity |
+W 51
+Clue suspects | Mustard, Scarlet, Peacock, Plum |
+Shades of purple | Lilac, Mauve, Violet, Lavender | Plum
+Stone fruits | Peach, Apricot, Cherry, Nectarine |
+Pool balls | Cue, Eight, Stripe, Solid |
+W 52
+___ball | Base, Snow, Meat, Basket |
+Imperial measures | Yard, Mile, Inch, Foot |
+Parts of a ship | Mast, Deck, Bow, Stern |
+Florida cities | Miami, Tampa, Orlando, Naples |
+W 53
+Famous Elizabeths | Taylor, Banks, Warren, Olsen |
+Pride and Prejudice surnames | Darcy, Bingley, Wickham, Bennet |
+Jane Austen heroines | Emma, Fanny, Elinor, Marianne |
+Football terms | Snap, Huddle, Sack, Blitz |
+W 54
+Breakfast | Oatmeal, Waffles, Pancakes, Toast |
+American painters | Warhol, Pollock, Hopper, Rockwell |
+Police ranks | Sergeant, Lieutenant, Captain, Detective |
+Speeches | Address, Lecture, Sermon, Eulogy |
+W 55
+Famous Ronalds | Reagan, McDonald, Howard, Weasley |
+Golfers | Woods, Nicklaus, Palmer, Mickelson |
+Card game words | Trick, Suit, Deal, Trump |
+Birds of prey | Hawk, Kite, Eagle, Falcon |
+W 56
+Cakes | Angel food, Red velvet, Bundt, Pound |
+Wines | Sherry, Merlot, Rioja, Port |
+Computer kit | Mouse, Monitor, Keyboard, Webcam |
+Cartoon mice | Jerry, Mickey, Minnie, Speedy |
+W 57
+Capital cities | Rome, Berlin, Madrid, Oslo |
+Beans | Kidney, Pinto, Navy, Lima |
+The Trojan War | Achilles, Hector, Helen, Paris |
+Spreads | Jam, Peanut butter, Jelly, Nutella |
+W 58
+NFL team nicknames | Packers, Steelers, Bears, Saints |
+Inside a piano | Keys, Strings, Pedals, Hammers |
+Parts of a guitar | Frets, Neck, Bridge, Capo |
+US state nicknames | Empire, Sunshine, Lone Star, Golden |
+W 59
+Famous Bens | Stiller, Affleck, Franklin, Platt |
+You can draw them | Curtains, Breath, Lots, Blood |
+The toilet | John, Restroom, Can, Head |
+Crown Jewels | Crown, Scepter, Orb, Throne |
+W 60
+Shades of white | Ivory, Pearl, Eggshell, Cream |
+Dairy | Milk, Yogurt, Cheese, Kefir |
+Rock bands | Queen, Nirvana, Kiss, Journey |
+At the diner | Pie, Shake, Fries, Hash browns |
+W 61
+Rivers of the West | Snake, Columbia, Platte, Rio Grande |
+Famous bridges | Golden Gate, Brooklyn, Mackinac, Bay |
+Cartoon dogs | Snoopy, Scooby, Goofy, Odie | Pluto
+Gods of the underworld | Hades, Osiris, Anubis, Pluto |
+W 62
+Racket sports | Tennis, Badminton, Pickleball, Squash |
+Soft drinks | Soda, Lemonade, Root beer, Iced tea |
+Gourds | Zucchini, Pumpkin, Cucumber, Butternut | Squash
+Dutch things | Clogs, Tulips, Windmills, Canals |
+W 63
+Famous Harrys | Styles, Houdini, Potter, Truman |
+Magicians | Copperfield, Blaine, Penn, Teller | Houdini
+National parks | Yosemite, Zion, Acadia, Glacier |
+New York neighborhoods | Harlem, SoHo, Chelsea, Tribeca |
+W 65
+Football positions | Center, Guard, Tackle, Kicker |
+Theater words | Stage, Curtain, Wings, Footlights |
+Famous Peters | Parker, Pan, Falk, Dinklage |
+Kitchen kit | Wok, Kettle, Toaster, Colander |
+W 66
+Things with teeth | Saw, Zipper, Cog, Rake |
+Bees | Hive, Drone, Pollen, Comb |
+Famous Jeffs | Bezos, Bridges, Goldblum, Gordon |
+Sea creatures | Squid, Octopus, Dolphin, Shark |
+W 67
+___cup | Egg, Hic, Butter, World |
+Thanksgiving dinner | Turkey, Stuffing, Cranberry, Gravy | Cornbread
+Southern food | Grits, Gumbo, Biscuits, Cornbread |
+Swiss things | Cheese, Watches, Army knife, Chocolate |
+W 68
+Famous doctors | Phil, Dolittle, Frankenstein, Seuss |
+Weird | Odd, Peculiar, Bizarre, Strange |
+Spirits | Gin, Vodka, Brandy, Rum |
+Question words | What, Where, When, Why |
+W 70
+Famous Morgans | Freeman, Wallen, Spurlock, Fairchild |
+Ohio cities | Akron, Dayton, Toledo, Columbus |
+Australian cities | Sydney, Adelaide, Brisbane, Darwin |
+Scientists | Newton, Curie, Einstein, Hawking |
+W 71
+Night___ | Club, Owl, Shift, Cap |
+Horses | Stallion, Colt, Filly, Mare |
+At the dentist | Crown, Filling, Braces, Implant |
+Diner food | Meatloaf, Pot roast, Chili, Club sandwich |
+W 72
+Famous Lauras | Dern, Linney, Bush, Ingalls |
+Fabrics | Silk, Denim, Satin, Velvet |
+Red ___ | Carpet, Card, Wood, Kite |
+Wedding anniversaries | Paper, Cotton, Tin, Crystal |
+W 73
+Famous Sams | Jackson, Elliott, Adams, Walton |
+Guitar makers | Gibson, Fender, Gretsch, Martin |
+Motorbikes | Honda, Suzuki, Ducati, Harley |
+Success | Win, Victory, Conquest, Glory |
+W 74
+Famous Brians | Wilson, Williams, Cranston, Setzer |
+Rowing | Stroke, Oar, Scull, Blade |
+Months | June, March, April, August |
+Moving slowly | Crawl, Creep, Amble, Stroll |
+W 75
+Famous Steves | Martin, Jobs, Carell, Irwin |
+Famous brothers | Marx, Grimm, Jonas, Wright |
+Philosophers | Kant, Hume, Locke, Hobbes |
+Things with locks | Door, Canal, Safe, Diary |
+W 76
+Famous Bills | Murray, Gates, Clinton, Nye |
+Rolling Stones | Jagger, Richards, Watts, Wood |
+Golf clubs | Iron, Driver, Putter, Wedge | Wood
+Beers | Lager, Pilsner, Stout, Porter |
+W 77
+Famous Olivias | Rodrigo, Newton-John, Wilde, Munn |
+Mustards | Dijon, Yellow, Honey, Spicy brown |
+Languages | Dutch, Greek, Danish, Polish |
+Shoe ___ | Horn, Lace, Box, Tree |
+W 78
+Famous Dereks | Jeter, Zoolander, Shepherd, Hough |
+Cheers characters | Sam, Diane, Norm, Cliff |
+Parts of a gun | Barrel, Hammer, Stock, Sight |
+Soups | Broth, Bisque, Chowder, Gumbo |
+W 79
+Famous Lindas | Ronstadt, Evangelista, Carter, Blair |
+F1 champions | Senna, Prost, Lauda, Hamilton |
+Treasure ___ | Hunt, Island, Chest, Map |
+___side | Hill, Sea, Fire, Bed |
+W 80
+Shades of gray | Slate, Ash, Charcoal, Pewter |
+Trees | Oak, Elm, Birch, Maple | Ash
+Drawing materials | Pastel, Crayon, Ink, Chalk |
+Bar games | Darts, Pool, Shuffleboard, Cornhole |
+W 81
+Famous Jessicas | Alba, Biel, Chastain, Simpson |
+Founding Fathers | Washington, Adams, Jefferson, Madison |
+American Gladiators | Nitro, Laser, Zap, Ice |
+___fish | Cat, Sword, Gold, Star |
+W 82
+Famous Leonards | Cohen, Nimoy, Bernstein, Hofstadter |
+Vacuum cleaners | Hoover, Dyson, Bissell, Shark |
+Sharks | Great white, Hammerhead, Tiger, Mako |
+Star Trek | Spock, Kirk, Uhura, Sulu |
+W 83
+Famous Bettys | White, Boop, Crocker, Rubble |
+Hotel staff | Concierge, Bellhop, Receptionist, Housekeeper |
+Kisses | Eskimo, Butterfly, Air, Peck |
+Things with strings | Harp, Kite, Puppet, Violin |
+W 84
+Famous Carols | Burnett, Channing, Kane, Brady |
+Christmas ___ | Tree, Cookie, Card, Sweater |
+Fireworks | Rocket, Firecracker, Sparkler, Roman candle |
+Sausages | Bratwurst, Kielbasa, Frankfurter, Chorizo |
+W 85
+Famous Simons | Cowell, Pegg, Le Bon, Biles |
+Burger toppings | Pickle, Onion, Cheese, Lettuce | Relish
+Enjoy | Savor, Adore, Relish, Like | Delight
+Turkish ___ | Bath, Coffee, Carpet, Delight |
+W 86
+Sesame Street | Elmo, Bert, Ernie, Grover |
+Pen makers | Bic, Waterman, Sheaffer, Montblanc |
+Rocky Mountains | Elbert, Pikes Peak, Longs Peak, Grays Peak |
+Clever person | Genius, Whiz, Egghead, Brainiac |
+W 87
+Famous Garys | Oldman, Sinise, Busey, Coleman |
+Boy bands | NSYNC, Backstreet Boys, New Kids, Jonas Brothers |
+Phone carriers | Verizon, Sprint, AT&T, T-Mobile |
+Friends characters | Ross, Rachel, Monica, Chandler |
+W 88
+Famous Kevins | Bacon, Costner, Hart, Garnett |
+Breakfast sides | Sausage, Hash browns, Grits, Toast | Bacon
+Magic ___ | Wand, Carpet, Beans, Mushroom |
+___ timer | Kitchen, Two, Old, Egg |
+W 89
+Famous Wills | Smith, Ferrell, Arnett, Rogers |
+Beers | Coors, Miller, Budweiser, Pabst |
+Belgian things | Waffles, Tintin, Poirot, Chocolate |
+Black___ | Bird, Board, Berry, Jack |
+W 90
+Famous Bobs | Marley, Dylan, Ross, Barker |
+A Christmas Carol | Scrooge, Fezziwig, Cratchit, Tiny Tim |
+Peanuts | Charlie Brown, Peppermint Patty, Woodstock, Pig-Pen |
+Italian cities | Rome, Milan, Turin, Venice |
+W 91
+Famous Joans | Rivers, Jett, Baez, Crawford |
+American novelists | Hemingway, Steinbeck, Twain, Faulkner |
+Comedy double acts | Laurel, Abbott, Cheech, Key |
+Sex and the City | Carrie, Samantha, Charlotte, Miranda |
+W 92
+Famous Joes | Biden, DiMaggio, Pesci, Montana |
+Famous Russells | Crowe, Brand, Westbrook, Wilson |
+Money you are given | Loan, Grant, Pension, Allowance |
+Sidekicks | Robin, Sancho, Tonto, Chewbacca |
+W 93
+Famous Bruces | Springsteen, Willis, Wayne, Banner | Lee
+Dancing with the Stars judges | Inaba, Tonioli, Goodman, Hough |
+Jeans makers | Levi's, Wrangler, Lee, Gap | Diesel
+Fuels | Gasoline, Coal, Propane, Diesel |
+W 94
+Famous Jennifers | Aniston, Hudson, Lawrence, Lopez |
+Friends actors | Perry, LeBlanc, Kudrow, Schwimmer |
+Pears | Bartlett, Bosc, Anjou, Comice |
+Meetings | Summit, Seminar, Rally, Assembly |
+W 95
+Famous Erics | Clapton, Idle, Stonestreet, Roberts |
+Chicago things | Deep dish, Cubs, Bean, Loop |
+French footballers | Zidane, Henry, Platini, Mbappé |
+Monty Python | Cleese, Palin, Jones, Chapman |
+W 96
+Famous Graces | Kelly, Jones, Hopper, Slick |
+Peter Pan | Wendy, Tinker Bell, Hook, Smee |
+Fishing kit | Rod, Reel, Bait, Line |
+Dances | Waltz, Tango, Jive, Salsa |
+W 97
+Famous Shirleys | Temple, MacLaine, Jones, Chisholm |
+Bond theme singers | Adele, Eilish, Madonna, Keys |
+Places of worship | Church, Mosque, Synagogue, Chapel |
+Cards you send | Birthday, Christmas, Get well, Sympathy |
+W 98
+Famous Neils | Armstrong, Diamond, Young, Gaiman |
+Astronauts | Aldrin, Gagarin, Ride, Glenn | Armstrong
+Baseball | Pitcher, Mound, Homer, Bat |
+Ancient Greek writers | Plato, Sophocles, Aesop, Euripides |
+W 99
+Famous Phils | Collins, McGraw, Mickelson, Jackson |
+Sitcom families | Bundy, Brady, Tanner, Huxtable |
+Monopoly places | Boardwalk, Park Place, Reading, Baltic |
+Department stores | Macy's, Nordstrom, Bloomingdale's, Kohl's |
+W 100
+Baseball scores | Run, Strike, Out, Hit |
+Water birds | Swan, Heron, Coot, Loon |
+Iron ___ | Maiden, Man, Lady, Curtain |
+Finished | Done, Ended, Through, Complete |

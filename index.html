@@ -846,6 +846,40 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .stars i.on { color: #E9A12E; }
 .done-sheet .actions, .sheet .actions { flex-wrap: wrap; }
 .share-btn .ico { stroke: currentColor; }
+.walletbar { display: flex; align-items: center; gap: 12px; background: var(--surface); border-radius: 20px; padding: 10px 14px; box-shadow: var(--lift); }
+.wallet { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 999px; padding: 8px 14px; background: #FFF1D6; color: var(--ink); font-family: var(--head); }
+.wallet .ico { width: 18px; height: 18px; stroke: #B9780F; }
+.wallet b { font-weight: 800; font-size: 17px; }
+.wallet span { font-weight: 700; font-size: 13px; color: var(--muted); }
+.chest { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.chest-dots { display: flex; gap: 4px; flex: none; }
+.chest-dots i { width: 12px; height: 12px; border-radius: 4px; background: var(--border); }
+.chest-dots i.on { background: #F1AA3C; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .12); }
+.chest-txt { font-size: 13px; color: var(--muted); font-weight: 600; }
+.chest-txt b { color: var(--ink); font-family: var(--head); }
+.shop-row { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-radius: 16px; padding: 12px 14px; background: var(--bg); color: var(--ink); text-align: left; }
+.shop-row span { flex: 1; display: flex; flex-direction: column; }
+.shop-row b { font-family: var(--head); }
+.shop-row small { color: var(--muted); font-weight: 600; }
+.shop-row em { font-style: normal; font: 800 18px var(--head); color: #B9780F; }
+.shop-row:disabled { opacity: .5; }
+.packs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.pack { border: 0; border-radius: 16px; padding: 12px 4px; background: #FFF1D6; color: var(--ink); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.pack b { font: 800 22px var(--head); }
+.pack span { font-size: 12px; font-weight: 700; color: var(--muted); }
+.pack em { font-style: normal; font-weight: 800; margin-top: 4px; }
+.pack small { font-size: 10.5px; font-weight: 700; color: #B9780F; }
+.video-ov { background: rgba(20, 16, 24, .92); }
+.video-box { position: relative; width: min(420px, 92vw); aspect-ratio: 9 / 12; border-radius: 24px; background: linear-gradient(160deg, #30243F, #5B3A8C); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; padding: 24px; }
+.video-box .round { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; }
+.video-tag { margin: 0; font: 800 12px var(--head); letter-spacing: .12em; text-transform: uppercase; opacity: .8; }
+.video-n { font: 800 64px var(--head); }
+@media (max-width: 600px) {
+  .walletbar { flex-direction: row; padding: 8px 10px; gap: 10px; }
+  .chest-txt { font-size: 12px; }
+  .chest-dots i { width: 9px; height: 9px; border-radius: 3px; }
+  .packs { grid-template-columns: repeat(2, 1fr); }
+}
 .dayres { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
 .dayres div { background: var(--bg); border-radius: 14px; padding: 8px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .dayres span { font: 800 11px var(--head); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
@@ -1098,22 +1132,112 @@ function nextWall() {
   return i >= 0 ? i : null;
 }
 
-/* Hints: up to 3 at a time. Using one starts a 6 hour wait, after which you are back to 3. They never stack up beyond 3. */
-const HINT_MAX = 3, HINT_REFILL_MS = 6 * 3600 * 1000;
-function hintWallet() {
-  const w = store.get().hints || { n: HINT_MAX, at: 0 };
-  return w.n < HINT_MAX && Date.now() >= w.at ? { n: HINT_MAX, at: 0 } : w;
+/* Hints. Every game with hints gives 1 free hint a day; after that, hints come from one shared wallet.
+   The wallet starts at 10 and is topped up by the weekly chest, short videos and the shop.
+   Saved as: wallet (number), free-<game>-<date>, videos-<date>, chest { start, days }, chestNote, tester, buys.
+   The old "hints" key (Linkology's 3 every 6 hours) is left in place but no longer used. */
+const WALLET_START = 10, VIDEO_CAP = 2, CHEST_DAYS = 7, CHEST_BONUS = 3;
+// Who sees the video button and the shop: "off", "testers" (players who entered the tester code) or "all".
+const SHOP_MODE = "testers", TESTER_CODE = "WORDOLIO-TEST";
+const SHOP_PACKS = [[10, "£0.99"], [30, "£1.99"], [100, "£4.99"], [250, "£9.99"]];
+const walletN = () => { const w = store.get().wallet; return w == null ? WALLET_START : w; };
+const walletAdd = n => store.set("wallet", walletN() + n);
+const freeKey = g => "free-" + g + "-" + todayKey();
+const freeLeft = g => !store.get()[freeKey(g)];
+const hintsAvail = g => (freeLeft(g) ? 1 : 0) + walletN();
+const hintNote = g => freeLeft(g) ? "1 free" : `${walletN()} in wallet`;
+const shopOn = () => SHOP_MODE === "all" || (SHOP_MODE === "testers" && !!store.get().tester);
+const videosToday = () => store.get()["videos-" + todayKey()] || 0;
+// Spend a hint for game g: today's free one first, then the wallet. With none left, offer ways to get more.
+function takeHint(g) {
+  if (freeLeft(g)) { store.set(freeKey(g), true); return true; }
+  if (walletN() > 0) { store.set("wallet", walletN() - 1); return true; }
+  showHintShop(); return false;
 }
-function spendHint() {
-  const w = hintWallet();
-  if (!w.n) return false;
-  store.set("hints", { n: w.n - 1, at: w.n === HINT_MAX ? Date.now() + HINT_REFILL_MS : w.at });
-  return true;
+// Old names kept for Linkology's code.
+const hintWallet = () => ({ n: hintsAvail("board") });
+const spendHint = () => takeHint("board");
+
+// Weekly chest: each day you play adds a hint to the chest; it opens after 7 days (+3 for a full week).
+function chestRoll() {
+  const d = dayNumber(); let c = store.get().chest;
+  if (!c) return null;
+  if (d >= c.start + CHEST_DAYS) {
+    const n = c.days.filter(x => x >= c.start && x < c.start + CHEST_DAYS).length, pay = n + (n === CHEST_DAYS ? CHEST_BONUS : 0);
+    if (pay) { walletAdd(pay); store.set("chestNote", { pay, full: n === CHEST_DAYS }); }
+    c = null; store.set("chest", null);
+  }
+  return c;
 }
-function hintWait() {
-  const mins = Math.ceil(Math.max(0, hintWallet().at - Date.now()) / 60000), h = Math.floor(mins / 60), m = mins % 60;
-  return h ? `${h}h ${m}m` : `${m}m`;
+function markPlayed() {
+  const d = dayNumber(); let c = chestRoll() || { start: d, days: [] };
+  if (!c.days.includes(d)) { c = { ...c, days: [...c.days, d] }; store.set("chest", c); }
 }
+function walletBar() {
+  const c = chestRoll(), d = dayNumber(), days = c ? c.days.length : 0, left = c ? c.start + CHEST_DAYS - d : CHEST_DAYS;
+  return `<div class="walletbar">
+    <button class="wallet" id="walletBtn" aria-label="Your hints: ${walletN()}">${ic("bulb")}<b>${walletN()}</b><span>hints</span></button>
+    <div class="chest" aria-label="Weekly chest: ${days} of ${CHEST_DAYS} days played">
+      <span class="chest-dots">${Array.from({ length: CHEST_DAYS }, (_, k) => `<i class="${k < days ? "on" : ""}"></i>`).join("")}</span>
+      <span class="chest-txt"><b>Weekly chest</b> ${c ? `${days} of ${CHEST_DAYS} days · opens in ${left} day${left === 1 ? "" : "s"}` : "Play today to start it"}</span>
+    </div>
+  </div>`;
+}
+function showHintShop() {
+  document.querySelectorAll(".overlay").forEach(o => o.remove());
+  const ov = document.createElement("div"); ov.className = "overlay";
+  const draw = () => {
+    const v = videosToday(), on = shopOn();
+    ov.innerHTML = `<div class="sheet shop" role="dialog" aria-modal="true" style="--c:#F1AA3C">
+      ${sheetBadge("bulb")}<h2>Hints</h2>
+      <p>You have <b>${walletN()}</b> hint${walletN() === 1 ? "" : "s"} in your wallet. Each game also gives you 1 free hint a day, and your weekly chest adds more.</p>
+      ${on ? `
+      <button class="shop-row" id="video" ${v >= VIDEO_CAP ? "disabled" : ""}>${ic("play")}<span><b>Watch a short video</b><small>${v >= VIDEO_CAP ? "That's today's videos. More tomorrow." : `${VIDEO_CAP - v} left today`}</small></span><em>+1</em></button>
+      <div class="packs">${SHOP_PACKS.map(([n, price], k) => `<button class="pack" data-k="${k}"><b>${n}</b><span>hints</span><em>${price}</em>${k >= 2 ? "<small>No adverts</small>" : ""}</button>`).join("")}</div>
+      <p class="note">Test shop for beta testers. No real money is taken.</p>` : ""}
+      <div class="actions"><button class="btn primary" id="shopClose">Done</button></div></div>`;
+    $("#shopClose", ov).onclick = () => { ov.remove(); refreshHints(); };
+    if (!on) return;
+    const vb = $("#video", ov); if (vb && v < VIDEO_CAP) vb.onclick = () => pretendVideo(() => { store.set("videos-" + todayKey(), videosToday() + 1); walletAdd(1); toast("+1 hint"); draw(); });
+    ov.querySelectorAll(".pack").forEach(b => b.onclick = () => {
+      const [n, price] = SHOP_PACKS[+b.dataset.k];
+      confirmBuy(n, price, () => { walletAdd(n); store.set("buys", [...(store.get().buys || []), { n, price, at: Date.now(), test: true }]); toast(`+${n} hints`); draw(); });
+    });
+  };
+  draw(); document.body.appendChild(ov);
+}
+function confirmBuy(n, price, done) {
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><h2>Test purchase</h2>
+    <p>${n} hints for ${price}. This is a pretend purchase for beta testers, so no money will be taken.</p>
+    <div class="actions"><button class="btn primary" id="bYes">Buy (test)</button><button class="btn" id="bNo">Cancel</button></div></div>`;
+  document.body.appendChild(ov);
+  $("#bYes", ov).onclick = () => { ov.remove(); done(); };
+  $("#bNo", ov).onclick = () => ov.remove();
+}
+// Stands in for a real rewarded video (AdMob) until the store apps exist. Closing early gives nothing.
+function pretendVideo(done) {
+  const ov = document.createElement("div"); ov.className = "overlay video-ov";
+  let t = 5;
+  ov.innerHTML = `<div class="video-box" role="dialog" aria-modal="true" aria-label="Pretend video">
+    <button class="round" id="vClose" aria-label="Close">${ic("close")}</button>
+    <p class="video-tag">Pretend advert for testing</p><b class="video-n" id="vN">5</b>
+    <p id="vMsg">Your hint arrives in a moment.</p><button class="btn primary" id="vClaim" hidden>Claim your hint</button></div>`;
+  document.body.appendChild(ov);
+  const tick = setInterval(() => { t--; const n = $("#vN", ov); if (n) n.textContent = Math.max(t, 0); if (t <= 0) { clearInterval(tick); $("#vClaim", ov).hidden = false; $("#vMsg", ov).textContent = "Thanks for watching."; } }, 1000);
+  $("#vClose", ov).onclick = () => { clearInterval(tick); ov.remove(); };
+  $("#vClaim", ov).onclick = () => { ov.remove(); done(); };
+}
+// After the wallet changes, redraw whichever hint counts are on screen.
+function refreshHints() {
+  if (B && $("#hintN")) { $("#hintN").textContent = hintWallet().n; $("#hintBtn").classList.toggle("empty", !hintWallet().n); }
+  if (H && $("#clue")) renderWheel();
+  if (S && $("#sHintN")) renderSteps();
+  if (K && $("#kHintN")) renderLock();
+  if (!B && !W && !D && !H && !S && !K && $(".walletbar")) showHome();
+}
+// A tester link (…?tester=WORDOLIO-TEST) or the code in Settings turns on the test shop for that player.
+try { const q = new URLSearchParams(location.search).get("tester"); if (q && q.toUpperCase() === TESTER_CODE) store.set("tester", true); } catch {}
 
 const ICONS = {
   back: `<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>`,
@@ -1146,6 +1270,8 @@ const PATHS = {
   bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
   snow: '<path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.5l3 2 3-2M9 20.5l3-2 3 2M3.6 10.6l3.2-1.1-.6-3.4M20.4 13.4l-3.2 1.1.6 3.4M3.6 13.4l3.2 1.1-.6 3.4M20.4 10.6l-3.2-1.1.6-3.4"/>',
   shuffle: '<path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+  play: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
   share: '<path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>',
   del: '<path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
@@ -1192,7 +1318,7 @@ function showHelp(g) {
       "Everyone gets the same word, and a new one arrives at midnight."],
     wheel: ["Make words of 4 or more letters from the seven letters.", "Every word must use the purple middle letter. Letters can be used more than once.",
       "4-letter words score 1 point. Longer words score a point for each letter.", "A word that uses all seven letters scores 7 bonus points.",
-      "You get 3 clues a day. Each clue fills in one more letter of every word."],
+      "Each clue fills in one more letter of every word. You get 1 free clue a day, then clues come from your hint wallet."],
     wall: ["Sixteen clues are hiding four groups of four.", "Tap four clues that belong together to make a group.",
       "You have three minutes. Once you've found two groups, you only get three more wrong guesses.",
       "At the end, score a point for each group, and a point for each link you knew. Get all eight for 2 bonus points."],
@@ -1200,13 +1326,13 @@ function showHelp(g) {
       "Tap a letter in your word, type the new letter, then tap Submit step. Undo takes back a step.",
       "Reach the target in the shortest number of moves, without hints, for three stars.",
       "Every day there's an Easy, a Medium and a Hard puzzle. Finish all three to complete the day's challenge.",
-      "Hints show which letter to change, then name a good next word. You get 3 a day, shared across all your puzzles."],
+      "Hints show which letter to change, then name a good next word. You get 1 free hint a day, then hints come from your hint wallet."],
     lock: ["Every letter in the phrase has been swapped for a number. The same number always means the same letter.",
       "Tap a number, then type the letter you think it stands for. It fills in everywhere that number appears.",
       "Each letter can only be used once. Letters shown with a lock were revealed for you and can't be changed.",
       "When every number has a letter, tap Check answer. Crack it first time without hints for three stars.",
       "Every day there's an Easy, a Medium and a Hard phrase. Crack all three to complete the day's challenge.",
-      "Hints reveal a letter, then another, then give a clue to the subject. You get 3 a day, shared across all your puzzles."],
+      "Hints reveal a letter, then another, then give a clue to the subject. You get 1 free hint a day, then hints come from your hint wallet."],
   }[g];
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle(g)}>
@@ -1381,6 +1507,7 @@ function showHome(first = false) {
       <div><h1>${isFR() ? `Bonjour${name ? ", " + name : ""} !` : `Hello${name ? ", " + name : ""}!`}</h1><p>${helloLine()}</p></div>
       <div class="statstrip" aria-label="${tr("Your progress")}">${strip}</div>
     </div>
+    ${english ? walletBar() : ""}
     <section class="games featured" aria-label="${tr("Featured games")}">${boardCard}${wallCard}</section>
     <div class="games-head"><h2>${tr("Daily games")}</h2><span class="chip">${ic("cal")}${tr("Today")}, ${esc(todayLabel())}</span></div>
     <section class="games dailies">${fiveCard}${wheelCard}${stepsCard}${lockCard}</section>
@@ -1391,6 +1518,9 @@ function showHome(first = false) {
     $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
     $("#modeFive").onclick = startFive;
     $("#modeWheel").onclick = startWheel;
+    $("#walletBtn").onclick = showHintShop;
+    const cn = store.get().chestNote;
+    if (cn) { store.set("chestNote", null); toast(cn.full ? `Weekly chest opened: a full week! +${cn.pay} hints` : `Weekly chest opened: +${cn.pay} hints`); }
     $("#modeSteps").onclick = () => startDaily("steps");
     $("#modeLock").onclick = () => startDaily("lock");
   }
@@ -1406,9 +1536,9 @@ function showStats() {
   const byDiff = DIFFS.map(d => { const ids = L.map((l, i) => l.difficulty === d ? i : -1).filter(i => i >= 0); return { d, n: ids.filter(i => isDone(bkey(i))).length, of: ids.length }; }).filter(x => x.of);
   const hw = hintWallet();
   let html = panel("board", tr("Your level path"), `
-    <div class="nums">${num(`${solvedBoards()} / ${L.length}`, tr("levels solved"))}${num(`${hw.n} / ${HINT_MAX}`, tr("hints left"))}</div>
+    <div class="nums">${num(`${solvedBoards()} / ${L.length}`, tr("levels solved"))}${num(walletN(), tr("hints in your wallet"))}</div>
     <div class="bars">${byDiff.map(x => bar(tr(x.d), x.n, x.of)).join("")}</div>
-    ${hw.n < HINT_MAX ? `<p class="note">${tr("All your hints come back in {t}.", { t: hintWait() })}</p>` : ""}`);
+    `);
   if (english) {
     const fs = fiveStats(), maxD = Math.max(1, ...fs.dist);
     html += panel("five", "A new word every day", `
@@ -1458,6 +1588,8 @@ function showSettings() {
       <section class="panel">${head("motion", GAMES.five.badge, tr("Motion"))}
         <div class="setting"><div class="txt"><b>${tr("Reduce motion")}</b><span>${tr("Turns off confetti, pulsing and bouncy screen changes.")}</span></div>
         <button class="switch" id="calm" role="switch" aria-checked="${!!p.calm}" aria-label="${tr("Reduce motion")}"></button></div></section>
+      ${isFR() ? "" : `<section class="panel">${head("bulb", GAMES.steps.badge, "Beta testers")}
+        ${store.get().tester ? `<p class="note">Test shop is on for this device. Purchases are pretend, so no money is taken.</p>` : `<label class="field"><input id="tCode" maxlength="24" autocapitalize="characters" placeholder="Tester code" aria-label="Tester code"></label>`}</section>`}
       <section class="panel">${head("info", GAMES.board.badge, tr("About"))}
         <div class="logo">${MARK(30)}<span class="wordmark" style="font-size:24px">${BRAND.first}<span>${BRAND.second}</span></span></div>
         <p class="note">${tr(BRAND.tagline)} ${tr("Free, with no adverts. Your progress is saved on this device.")}</p></section>
@@ -1470,6 +1602,8 @@ function showSettings() {
     save({ lang: b.dataset.lang }); showSettings(); toast(tr("Language changed"));
   });
   $("#calm").onclick = () => { const on = !(profile() || {}).calm; save({ calm: on }); applyCalm(); $("#calm").setAttribute("aria-checked", on); };
+  const tc = $("#tCode");
+  if (tc) tc.addEventListener("input", e => { if (e.target.value.trim().toUpperCase() === TESTER_CODE) { store.set("tester", true); toast("Test shop turned on"); showSettings(); } });
 }
 
 /* First launch: ask the player's name and language. Settings changes them later. */
@@ -1552,6 +1686,7 @@ function buildLevel(level, levelIdx) {
 
 function startBoard(levelIdx) {
   leaveGame();
+  markPlayed();
   const level = LEVELS()[levelIdx];
   const { groups, tiles } = buildLevel(level, levelIdx);
   B = {
@@ -1889,7 +2024,7 @@ function resolveRows(done) {
 // Hint: light up two tiles on the board that belong together.
 function useHint() {
   if (B.busy || B.over) return;
-  if (!hintWallet().n) return toast(tr("No hints left. More in {t}.", { t: hintWait() }));
+  if (!hintWallet().n) return showHintShop();
   const onBoard = new Set(B.board.filter(x => x != null));
   const full = B.groups.filter(g => !B.solved.has(g.id) && g.memberTiles.every(t => onBoard.has(t)));
   if (!full.length || !spendHint()) return;
@@ -2021,6 +2156,7 @@ let W = null;
 
 function startWall(idx) {
   leaveGame();
+  markPlayed();
   const wall = WALLS[idx];
   const clues = [];
   wall.groups.forEach((g, gi) => g.tiles.forEach(text => clues.push({ id: clues.length, group: gi, text: locWall(text) })));
@@ -2230,6 +2366,7 @@ function fiveScore(guess, answer) {
 }
 function startFive() {
   leaveGame();
+  markPlayed();
   D = { answer: fiveAnswer(), ...fiveState(), typed: "", busy: false };
   app.innerHTML = `
   <div class="screen daily">
@@ -2379,6 +2516,7 @@ function wheelArt(pz, big = false) {
 }
 function startWheel() {
   leaveGame();
+  markPlayed();
   const st = wheelState();
   H = { puzzle: st.puzzle, outer: shuffle([...st.puzzle.letters].filter(c => c !== st.puzzle.centre)), typed: "" };
   app.innerHTML = `
@@ -2432,7 +2570,7 @@ function renderWheel() {
     <span class="wb-words">${order.map(w => `<span class="wb ${got.has(w) ? "got" : ""} ${isPangram(w, pz) ? "pg" : ""}">${[...w].map((c, i) => `<i>${got.has(w) || i < st.clues ? c : ""}</i>`).join("")}</span>`).join("")}</span>
     <span class="wb-more">${tr("Tap to see the list")}</span>`;
   $("#clue").className = "btn clue-btn";
-  $("#clue").innerHTML = wheelDone(st) ? `${ic("check")}All found` : `${ic("bulb")}Clue <span id="clueN">(${WHEEL_CLUES - st.clues} left today)</span>`;
+  $("#clue").innerHTML = wheelDone(st) ? `${ic("check")}All found` : `${ic("bulb")}Clue <span id="clueN">(${hintNote("wheel")})</span>`;
   $("#wcount").textContent = `${st.found.length}/${st.words.size}`;
   if (wheelDone(st) && !$("#msg").textContent.includes("+")) $("#msg").textContent = "You've found every word! Bonus words still score points.";
 }
@@ -2467,7 +2605,7 @@ function wheelClue() {
   const btn = $("#clue");
   if (!btn.classList.contains("ask")) {
     const st = wheelState();
-    if (wheelDone(st) || st.clues >= WHEEL_CLUES) return wheelClueUse();
+    if (wheelDone(st)) return wheelClueUse();
     btn.classList.add("ask"); btn.innerHTML = "Tap again to use a clue";
     clearTimeout(H.clueTimer); H.clueTimer = setTimeout(() => H && $("#clue") && renderWheel(), 3000);
     return;
@@ -2479,7 +2617,7 @@ function wheelClueUse() {
   const st = wheelState(), missing = [...st.words].filter(w => !st.found.includes(w));
   if (!missing.length) return toast("You've found every word!");
   if (st.clues >= Math.max(...missing.map(w => w.length)) - 1) return toast("That's every clue for today.");
-  if (st.clues >= WHEEL_CLUES) return toast("That's all your clues for today. New letters and clues tomorrow.");
+  if (!takeHint("wheel")) return;
   store.set("wheel-" + todayKey(), { found: st.found.concat(st.bonus), clues: st.clues + 1 });
   $("#msg").textContent = st.clues === 0 ? "Clue: the first letter of every word is filled in." : `Clue: letter ${st.clues + 1} of every word is filled in.`;
   renderWheel();
@@ -2584,8 +2722,8 @@ const DAY_DIFFS = ["Easy", "Medium", "Hard"], HINT_POT = 3;
 const dayKey = g => g + "-day-" + todayKey();
 const dayState = g => ({ v: 1, stage: 0, hints: 0, res: [], cur: null, ...(store.get()[dayKey(g)] || {}) });
 const daySet = (g, st) => store.set(dayKey(g), st);
-const potLeft = g => Math.max(0, HINT_POT - dayState(g).hints);
-const usePot = g => { const st = dayState(g); st.hints++; daySet(g, st); };
+const potLeft = g => hintsAvail(g);
+const usePot = () => {};
 const dayDone = g => dayState(g).stage >= 3;
 function dailyPuzzle(g, k) {
   const list = g === "steps" ? STEPS_DAILY : LOCK_DAILY, p = list[(dayNumber() * 3 + k) % list.length];
@@ -2655,6 +2793,7 @@ const stepsCur = () => S.words[S.words.length - 1];
 
 function startSteps(idx, daily = false) {
   leaveGame();
+  markPlayed();
   const level = daily ? dailyPuzzle("steps", idx) : STEPS_LEVELS[idx];
   S = { idx, daily, level, words: [level.start], hints: 0, edit: [...level.start], sel: 0, hintPos: null, msg: "", over: false };
   const cur = dayState("steps").cur;
@@ -2710,8 +2849,8 @@ function renderSteps() {
   const cr = $("#ladder .current"); if (cr) cr.scrollIntoView({ block: "nearest" });
   $("#msg").textContent = S.msg;
   $("#sUndo").disabled = S.words.length < 2 || S.over;
-  $("#sHintN").textContent = `(${potLeft("steps")} left today)`;
-  $("#sHint").disabled = !potLeft("steps") || S.over;
+  $("#sHintN").textContent = `(${hintNote("steps")})`;
+  $("#sHint").disabled = S.over;
   $("#keys").innerHTML = gameKeys("Submit");
 }
 function stepsKey(k) {
@@ -2751,12 +2890,12 @@ function stepsUndo() {
 // Hints come from the current word: the first shows which letter to change, later ones name a next word on a shortest route.
 function stepsHint() {
   if (!S || S.over) return;
-  if (!potLeft("steps")) { S.msg = "No hints left today. You get 3 more tomorrow."; return renderSteps(); }
   const cur = stepsCur(), dist = stepsDist(S.level.target), d = dist.get(cur), { near, common } = stepsWords();
   if (d == null) { S.msg = "This word can't reach the target. Use Undo to go back a step."; return renderSteps(); }
   const next = near(cur).filter(n => dist.get(n) === d - 1 && !S.words.includes(n)).sort((a, b) => common.has(b) - common.has(a));
   if (!next.length) { S.msg = "Try Undo: the way forward goes through a word you've already used."; return renderSteps(); }
-  S.hints++; usePot("steps");
+  if (!takeHint("steps")) return;
+  S.hints++;
   const w = next[0], pos = [...w].findIndex((c, i) => c !== cur[i]);
   if (S.hints === 1) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = `Hint: try changing letter ${pos + 1}.`; }
   else if (S.hints === 2) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = `Hint: ${w.toUpperCase()} is on a shortest route from here.`; }
@@ -2789,6 +2928,7 @@ const lockNum = (lv, ch) => lv.key.charCodeAt(ch.charCodeAt(0) - 65) - 64;
 const pad2 = n => String(n).padStart(2, "0");
 function startLock(idx, daily = false) {
   leaveGame();
+  markPlayed();
   const level = daily ? dailyPuzzle("lock", idx) : LOCK_LEVELS[idx], text = level.text.toUpperCase();
   const nums = [...new Set([...text].filter(c => /[A-Z]/.test(c)).map(c => lockNum(level, c)))];
   const answer = {}; [...text].forEach(c => { if (/[A-Z]/.test(c)) answer[lockNum(level, c)] = c; });
@@ -2856,8 +2996,8 @@ function renderLock() {
   $("#msg").textContent = K.msg;
   const full = K.nums.every(n => K.guess[n]);
   $("#kCheck").disabled = !full || K.over;
-  $("#kHint").disabled = !potLeft("lock") || K.over;
-  $("#kHintN").textContent = `(${potLeft("lock")} left today)`;
+  $("#kHint").disabled = K.over;
+  $("#kHintN").textContent = `(${hintNote("lock")})`;
   const marks = {}; Object.entries(K.guess).forEach(([n, c]) => marks[c.toLowerCase()] = K.revealed.has(+n) ? "a" : "used");
   $("#keys").innerHTML = gameKeys("Check", marks);
 }
@@ -2890,14 +3030,14 @@ function lockCheck() {
 // Hints: reveal the most useful letter (the one that appears most), and the third hint gives a clue to the subject.
 function lockHint() {
   if (!K || K.over) return;
-  if (!potLeft("lock")) { K.msg = "No hints left today. You get 3 more tomorrow."; return renderLock(); }
-  if (K.hints === 2 && !K.clue) { K.hints++; usePot("lock"); K.clue = true; K.msg = "Here's a clue to the subject."; saveLock(); return renderLock(); }
+  if (K.hints === 2 && !K.clue) { if (!takeHint("lock")) return; K.hints++; K.clue = true; K.msg = "Here's a clue to the subject."; saveLock(); return renderLock(); }
   const count = n => [...K.text].filter(c => /[A-Z]/.test(c) && lockNum(K.level, c) === n).length;
   const todo = K.nums.filter(n => !K.revealed.has(n) && K.guess[n] !== K.answer[n]).sort((a, b) => count(b) - count(a));
   if (!todo.length) { K.msg = "Your letters are all right. Tap Check answer."; return renderLock(); }
   const n = todo[0], L = K.answer[n];
   Object.keys(K.guess).forEach(x => { if (K.guess[x] === L && +x !== n) delete K.guess[x]; });
-  K.hints++; usePot("lock"); K.revealed.add(n); K.guess[n] = L; K.sel = K.nums.find(x => !K.guess[x]) ?? null;
+  if (!takeHint("lock")) return;
+  K.hints++; K.revealed.add(n); K.guess[n] = L; K.sel = K.nums.find(x => !K.guess[x]) ?? null;
   K.msg = `${pad2(n)} is ${L}. It's locked in for you.`;
   saveLock(); renderLock();
 }

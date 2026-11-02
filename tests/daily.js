@@ -1,4 +1,4 @@
-// Daily challenge tests (Word Steps and Letter Lock). Serve the repo on port 8765, then run from a scratch folder with a shots/ subfolder: node tests/daily.js
+// Run from a scratch folder with a shots/ subfolder while the repo is served on port 8765.
 // Daily challenge: Easy, Medium, Hard in order; shared pot of 3 hints per game per day.
 const { chromium } = require('playwright');
 let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++; };
@@ -15,15 +15,16 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
   await pg.click('#modeSteps'); await pg.waitForTimeout(300);
   ok((await pg.textContent('.ghead-c small')).includes('Easy · 1 of 3'), 'opens Easy first: ' + await pg.textContent('.ghead-c small'));
   await pg.click('#sHint'); await pg.click('#sHint');
-  ok((await pg.textContent('#sHintN')).includes('1 left today'), 'pot down to 1');
+  ok((await pg.textContent('#sHintN')).includes('9 in wallet'), 'free hint then wallet: ' + await pg.textContent('#sHintN'));
   for (const w of await solveSteps()) await submit(w);
   await pg.waitForTimeout(1000);
   ok((await pg.textContent('.done-sheet')).includes('Next: Medium'), 'offers Medium next');
   await pg.click('#rNext'); await pg.waitForTimeout(300);
   ok((await pg.textContent('.ghead-c small')).includes('Medium · 2 of 3'), 'Medium opens');
-  ok((await pg.textContent('#sHintN')).includes('1 left today'), 'pot is shared (still 1 left)');
-  await pg.click('#sHint');
-  ok(await pg.isDisabled('#sHint'), 'hint button disabled when pot empty');
+  ok((await pg.textContent('#sHintN')).includes('9 in wallet'), 'wallet carries over to Medium');
+  await pg.evaluate(() => store.set('wallet', 0)); await pg.evaluate(() => renderSteps()); await pg.click('#sHint'); await pg.waitForTimeout(200);
+  ok(await pg.isVisible('.sheet.shop'), 'empty wallet opens the hints sheet');
+  ok(!(await pg.$('.pack')), 'shop hidden for non-testers'); await pg.click('#shopClose');
   // leave mid-puzzle, come back via home
   await pg.evaluate(w => { S.edit = [...w]; }, (await solveSteps())[0]); await pg.click('#sSubmit');
   await pg.click('#back'); await pg.waitForTimeout(300);

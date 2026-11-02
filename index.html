@@ -581,7 +581,8 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 
 /* ---------- The Wall ---------- */
 .wall { background: var(--tray); box-shadow: inset 0 0.3cqw 1cqw rgba(80, 50, 40, .10); }
-.wtile { font-family: var(--head); font-weight: 700; }
+.wtile { font-family: var(--head); font-weight: 700; padding: 0 .3em; overflow: hidden; }
+.wtile .tx { display: inline-block; max-width: 100%; overflow-wrap: normal; word-break: keep-all; hyphens: none; }
 .wtile.sel { box-shadow: 0 0 0 0.45cqw var(--blue), 0 1cqw 2cqw rgba(41, 36, 45, .18); }
 
 /* ---------- Daily Five ---------- */
@@ -1112,6 +1113,18 @@ function bindNav() {
   $("#nav-stats").onclick = showStats;
   $("#nav-settings").onclick = showSettings;
 }
+
+/* Shrinks a tile's text until the longest word fits, so long clues never spill out on small screens. */
+function fitText(root, sel) {
+  root.querySelectorAll(sel).forEach(el => {
+    const tx = el.querySelector(".tx"); if (!tx) return;
+    tx.style.fontSize = "";
+    let size = parseFloat(getComputedStyle(tx).fontSize), n = 0;
+    const room = () => el.clientWidth - parseFloat(getComputedStyle(el).paddingLeft) * 2;
+    while ((tx.scrollWidth > room() + 0.5 || tx.offsetHeight > el.clientHeight * 0.92) && n++ < 14) { size *= 0.92; tx.style.fontSize = size + "px"; }
+  });
+}
+addEventListener("resize", () => { const w = $("#wall"); if (w) fitText(w, ".wtile"); });
 
 /* ---------- timer (shared) ---------- */
 let tickHandle = null, lastTick = 0, onTick = null;
@@ -1910,11 +1923,12 @@ function renderWall() {
   let html = "";
   W.found.forEach((g, k) => W.clues.filter(c => c.group === g).forEach(c => {
     const auto = W.revealedGroups && W.revealedGroups.includes(g);
-    html += `<button class="wtile found ${auto ? "revealed" : ""} ${g === W.justFound ? "new" : ""}" style="--c:${WALL_COLOURS[k]}" data-id="${c.id}" aria-disabled="true">${esc(c.text)}</button>`;
+    html += `<button class="wtile found ${auto ? "revealed" : ""} ${g === W.justFound ? "new" : ""}" style="--c:${WALL_COLOURS[k]}" data-id="${c.id}" aria-disabled="true"><span class="tx">${esc(c.text)}</span></button>`;
   }));
   W.justFound = null;
-  rest.forEach(id => html += `<button class="wtile ${W.sel.includes(id) ? "sel" : ""}" data-id="${id}" aria-pressed="${W.sel.includes(id)}">${esc(W.clues[id].text)}</button>`);
+  rest.forEach(id => html += `<button class="wtile ${W.sel.includes(id) ? "sel" : ""}" data-id="${id}" aria-pressed="${W.sel.includes(id)}"><span class="tx">${esc(W.clues[id].text)}</span></button>`);
   el.innerHTML = html;
+  fitText(el, ".wtile");
   const msg = $("#wallMsg");
   if (W.over) msg.textContent = W.endReason;
   else if (W.lives == null) msg.textContent = W.found.length ? `Nice! ${W.found.length} group${W.found.length > 1 ? "s" : ""} found. Keep going.` : "Tap four clues that belong together.";

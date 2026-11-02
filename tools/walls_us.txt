@@ -450,3 +450,13 @@ Baseball scores | Run, Strike, Out, Hit |
 Water birds | Swan, Heron, Coot, Loon |
 Iron ___ | Maiden, Man, Lady, Curtain |
 Finished | Done, Ended, Through, Complete |
+W 111
+Musicals | Wicked, Grease, Cats, Hamilton | Oliver
+Cool! | Rad, Sick, Awesome, Epic | Wicked
+Kitchen fats | Lard, Butter, Shortening, Ghee | Grease
+Orphans in stories | Heidi, Pip, Pollyanna, Oliver |
+W 146
+Sports grounds | Court, Rink, Track, Field |
+Throw | Hurl, Toss, Fling, Pitch |
+Woo | Romance, Pursue, Serenade, Charm | Court
+Ice ___ | Cube, Berg, Age, Skate | Rink

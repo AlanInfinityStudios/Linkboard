@@ -1,0 +1,252 @@
+# Walls 101 to 150, shared by UK and US players unless walls_us.txt replaces one.
+# Same format as walls_us.txt. tools/add_walls.py checks each wall, then appends it to puzzles.js and check_walls.py.
+W 101
+Chess terms | Castle, Check, Fork, Pin |
+Bowling terms | Strike, Spare, Gutter, Lane | Pin
+Cutlery | Knife, Spoon, Spork, Chopsticks | Fork
+Patterns | Tartan, Paisley, Polka dot, Houndstooth | Check
+W 102
+Greek letters | Alpha, Delta, Sigma, Omega |
+Airlines | Emirates, Qantas, Lufthansa, KLM | Delta
+Watch makers | Rolex, Casio, Swatch, Seiko | Omega
+African rivers | Nile, Congo, Niger, Zambezi |
+W 103
+Fruits | Date, Fig, Lime, Kiwi |
+Calendar words | Day, Week, Month, Year | Date
+Trees | Ash, Elm, Birch, Maple | Lime, Fig
+Flightless birds | Emu, Ostrich, Penguin, Dodo | Kiwi
+W 104
+Superheroes | Thor, Hulk, Flash, Storm |
+Norse gods | Odin, Loki, Freya, Baldur | Thor
+Camera words | Lens, Shutter, Zoom, Aperture | Flash
+Wild weather | Gale, Blizzard, Tornado, Hail | Storm
+W 105
+Olympic hosts | Tokyo, Sydney, Atlanta, Beijing | Athens, Paris
+Texas cities | Austin, Dallas, Houston, Paris |
+Ancient Greek cities | Athens, Sparta, Corinth, Thebes |
+Greek heroes | Jason, Hercules, Perseus, Achilles |
+W 106
+Poker hands | Flush, Straight, Pair, Full house |
+Hair types | Curly, Wavy, Frizzy, Afro | Straight
+Plumbing | Pipe, Valve, Drain, Tap | Flush
+Dance styles | Ballet, Hip hop, Ballroom, Jazz | Tap
+W 107
+Santa's reindeer | Dasher, Prancer, Comet, Cupid |
+In space | Asteroid, Meteor, Nebula, Quasar | Comet
+Famous elves | Legolas, Elrond, Buddy, Dobby |
+Harry Potter characters | Hagrid, Snape, Hermione, Dumbledore | Dobby
+W 108
+Parts of a shoe | Sole, Heel, Tongue, Lace |
+Fish | Cod, Plaice, Haddock, Trout | Sole
+Bad person | Rogue, Cad, Rotter, Scoundrel | Heel
+Mother ___ | Nature, Earth, Ship, Superior | Tongue
+W 109
+Grand ___ | Piano, Canyon, Slam, Prix |
+F1 teams | Ferrari, McLaren, Williams, Red Bull |
+Tennis words | Love, Deuce, Volley, Ace |
+Expert | Pro, Whizz, Maestro, Dab hand | Ace
+W 110
+Constellations | Orion, Cassiopeia, Lyra, Pegasus | Draco, Scorpius
+The Malfoys | Draco, Lucius, Narcissa, Scorpius |
+Winged beasts | Griffin, Roc, Wyvern, Harpy | Pegasus
+Famous hunters | Artemis, Diana, Elmer Fudd, Nimrod | Orion
+W 111
+Musicals | Wicked, Grease, Cats, Hamilton | Oliver
+Cool! | Rad, Sick, Awesome, Epic | Wicked
+Kitchen fats | Lard, Butter, Dripping, Ghee | Grease
+Orphans in stories | Heidi, Pip, Pollyanna, Oliver |
+W 112
+Things with bridges | Violin, Ship, Spectacles, Nose |
+On your face | Brow, Chin, Jaw, Lip | Cheek, Nose
+Nerve | Cheek, Gall, Neck, Brass |
+Played with a bow | Cello, Viola, Double bass, Fiddle | Violin
+W 113
+Gold ___ | Fish, Leaf, Medal, Mine | Rush
+Hurry | Rush, Dash, Hasten, Scurry |
+Star ___ | Light, Ship, Gazer, Struck | Fish
+Rock bands | Blur, Queen, Oasis, Genesis | Rush
+W 114
+Things with shells | Snail, Crab, Oyster, Tortoise |
+Aesop's animals | Hare, Fox, Crow, Ant | Tortoise
+Oil companies | Shell, BP, Exxon, Texaco | Total
+Sum | Total, Tally, Aggregate, Amount |
+W 115
+___line | Dead, Punch, Life, Sky |
+Boxing punches | Jab, Uppercut, Cross, Hook |
+Pirates | Blackbeard, Kidd, Morgan, Silver | Hook, Flint
+Rocks | Granite, Slate, Chalk, Flint |
+W 116
+Hit a ball with it | Bat, Club, Cue, Paddle | Racket
+Halloween | Witch, Ghost, Zombie, Pumpkin | Bat
+Noise | Racket, Din, Uproar, Hubbub |
+Organisations | Society, Union, League, Guild | Club
+W 117
+Disney princesses | Ariel, Belle, Mulan, Jasmine |
+Rice | Basmati, Arborio, Wild, Brown | Jasmine
+Teas | Earl Grey, Chamomile, Peppermint, Darjeeling | Jasmine
+Disney villains | Ursula, Jafar, Scar, Gaston |
+W 118
+Pies | Apple, Pecan, Pumpkin, Cherry |
+Tech giants | Intel, Microsoft, Amazon, Samsung | Apple, Google
+Rivers | Nile, Thames, Danube, Ganges | Amazon
+Search engines | Bing, Yahoo, DuckDuckGo, Google |
+W 119
+Sun___ | Flower, Shine, Glasses, Rise | Burn
+___pot | Tea, Jack, Hot, Crack | Flower
+Injuries | Bruise, Sprain, Graze, Burn |
+Hot drinks | Cocoa, Coffee, Chai, Mocha | Tea
+W 120
+Archangels | Gabriel, Raphael, Uriel, Michael |
+Famous Jacksons | Janet, Samuel, Jesse, Peter | Michael
+Apostles | Andrew, Thomas, Judas, Simon | Peter, Matthew, John
+Gospels | Mark, Luke, John, Matthew |
+W 121
+Golf scores | Birdie, Eagle, Albatross, Par | Bogey
+___man | Snow, Super, Spider, Bogey |
+Seabirds | Gull, Puffin, Gannet, Tern | Albatross
+Averages | Norm, Mean, Median, Mode | Par
+W 122
+Brand new | Pristine, Unused, Fresh, Mint |
+Workplaces | Brewery, Factory, Mill, Forge | Mint
+Pepper ___ | Pot, Spray, Corn, Grinder | Mill, Mint
+Fake | Sham, Bogus, Fraud, Counterfeit |
+W 123
+Singers | Adele, Madonna, Sting, Seal |
+Sea mammals | Walrus, Otter, Dolphin, Manatee | Seal
+Con trick | Scam, Swindle, Hustle, Grift | Sting
+On an envelope | Flap, Stamp, Address, Window | Seal
+W 124
+Fonts | Arial, Helvetica, Calibri, Comic Sans | Times
+Newspaper names | Times, Herald, Gazette, Chronicle | Post
+Parts of a goal | Net, Crossbar, Upright, Post |
+Tennis words | Lob, Smash, Volley, Let | Net
+W 125
+Dog commands | Sit, Fetch, Roll over, Stay | Beg
+Plead | Beg, Implore, Beseech, Entreat |
+Remain | Linger, Dwell, Abide, Persist | Stay
+Famous rabbits | Thumper, Bugs, Roger, Peter |
+W 126
+Nothing | Nil, Zilch, Nada, Love |
+Romance | Passion, Devotion, Desire, Adoration | Love
+Rappers | Eminem, Jay-Z, Nas, Drake |
+Male animals | Stallion, Boar, Gander, Ram | Drake
+W 127
+Toy Story | Woody, Buzz, Rex, Bo Peep |
+Dog names | Fido, Rover, Spot, Lassie | Rex
+Low noises | Hum, Drone, Whirr, Murmur | Buzz
+Nursery rhymes | Humpty Dumpty, Jack Horner, Miss Muffet, Simple Simon | Bo Peep
+W 128
+Casino games | Blackjack, Craps, Baccarat, Poker | Roulette
+Russian ___ | Roulette, Doll, Salad, Bear |
+Salad dressings | Ranch, Caesar, Vinaigrette, Blue cheese |
+French ___ | Toast, Kiss, Horn, Polish |
+W 129
+Game of Thrones houses | Lannister, Targaryen, Baratheon, Tully | Stark
+Austere | Bleak, Severe, Plain, Stark | Spartan
+Warriors | Samurai, Viking, Centurion, Spartan |
+Japanese words | Sushi, Karaoke, Tsunami, Origami | Samurai
+W 130
+Composers | Bach, Mozart, Verdi, Wagner | Holst
+Famous Gustavs | Klimt, Eiffel, Holst, Flaubert |
+Operas | Aida, Tosca, Carmen, Rigoletto |
+Paris sights | Louvre, Pompidou, Notre-Dame, Moulin Rouge | Eiffel
+W 131
+Famous Charlies | Chaplin, Sheen, Watts, Brown |
+Shine | Gloss, Glow, Gleam, Glint | Sheen
+Units | Volts, Amps, Ohms, Joules | Watts
+Peanuts | Snoopy, Linus, Lucy, Woodstock | Brown
+W 132
+Units of time | Second, Minute, Hour, Decade |
+Tiny | Wee, Mini, Teeny, Microscopic | Minute
+Back a cause | Endorse, Uphold, Champion, Advocate | Second
+Winners | Victor, Winner, Champ, Conqueror | Champion
+W 133
+Cars | Mustang, Beetle, Impala, Viper |
+Antelopes | Gazelle, Kudu, Gnu, Eland | Impala
+Snakes | Boa, Python, Mamba, Adder | Viper
+Insects | Ant, Wasp, Moth, Cricket | Beetle
+W 134
+Money | Bread, Moolah, Loot, Dough |
+On a pizza | Crust, Base, Topping, Sauce | Dough
+Stolen goods | Swag, Booty, Haul, Spoils | Loot
+Breads | Rye, Sourdough, Naan, Brioche |
+W 135
+Musical terms | Allegro, Crescendo, Forte, Largo | Piano
+Talent | Knack, Flair, Aptitude, Gift | Forte
+Keyboards | Organ, Harpsichord, Accordion, Piano |
+Body organs | Heart, Liver, Lung, Kidney | Organ
+W 136
+Blue___ | Whale, Print, Bird, Grass |
+Tooth___ | Paste, Brush, Ache, Fairy |
+Fairies | Tinker Bell, Titania, Oberon, Puck |
+Ice hockey | Stick, Rink, Goalie, Face-off | Puck
+W 137
+Fictional spies | Bourne, Smiley, Bauer, Bond |
+Investments | Share, Stock, Fund, Pension | Bond
+Chicken ___ | Nugget, Wing, Kiev, Fingers | Stock
+Parts of a plane | Tail, Cockpit, Fuselage, Rudder | Wing
+W 138
+In a rainbow | Red, Orange, Indigo, Violet |
+Dyes | Henna, Woad, Saffron, Madder | Indigo
+Citrus fruits | Lemon, Lime, Grapefruit, Clementine | Orange
+Flowers | Rose, Tulip, Daisy, Pansy | Violet
+W 139
+Harry Potter brooms | Firebolt, Cleansweep, Comet, Nimbus |
+Clouds | Cumulus, Cirrus, Stratus, Cumulonimbus | Nimbus
+Roman emperors | Nero, Caligula, Augustus, Trajan |
+Things with tails | Kite, Tadpole, Fox, Peacock | Comet
+W 140
+Famous Adams | Sandler, Driver, Ant, Levine |
+Golf kit | Tee, Wedge, Putter, Iron | Driver
+Insects | Wasp, Moth, Termite, Weevil | Ant
+Shoes | Brogue, Loafer, Mule, Clog | Wedge
+W 141
+Elements | Carbon, Oxygen, Neon, Mercury |
+Planets | Mars, Venus, Jupiter, Saturn | Mercury
+Lights | LED, Halogen, Strobe, Spotlight | Neon
+Rockets | Atlas, Falcon, Soyuz, Ariane | Saturn
+W 142
+Wizard of Oz | Dorothy, Toto, Tin Man, Lion | Scarecrow
+Big cats | Tiger, Leopard, Jaguar, Cheetah | Lion
+On a farm | Tractor, Barn, Silo, Scarecrow |
+Car makers | Ford, Honda, Volvo, Fiat | Jaguar
+W 143
+Things you crack | Joke, Knuckles, Whip, Egg | Safe, Code
+Dress ___ | Sense, Shirt, Rehearsal, Code |
+Unharmed | Unhurt, Intact, Sound, Safe |
+Easter | Bunny, Bonnet, Chick, Hot cross bun | Egg
+W 144
+Sandwiches | Club, Reuben, Panini, BLT | Sub
+Stand-in | Understudy, Reserve, Replacement, Sub |
+Nights out | Bar, Disco, Pub, Casino | Club
+Chocolate ___ | Cake, Chip, Fountain, Mousse | Bar
+W 145
+Parts of the ear | Lobe, Canal, Cochlea, Drum |
+Drum kit | Cymbal, Hi-hat, Tom, Snare | Drum
+Traps | Net, Lure, Pitfall, Noose | Snare
+Waterways | Strait, Channel, Fjord, Estuary | Canal
+W 146
+Sports grounds | Court, Rink, Track, Pitch |
+Throw | Hurl, Toss, Fling, Chuck | Pitch
+Woo | Romance, Pursue, Serenade, Charm | Court
+Ice ___ | Cube, Berg, Age, Skate | Rink
+W 147
+Stationery | Stapler, Pencil, Ruler, Compass |
+Rulers | Monarch, Sovereign, Emperor, Tsar | Ruler
+Find your way | Map, Sextant, GPS, Chart | Compass
+Things you sharpen | Knife, Axe, Sword, Scissors | Pencil
+W 148
+Golden ___ | Retriever, Gate, Goose, Globe |
+Round things | Orb, Ball, Bauble, Pearl | Globe
+Titans | Cronus, Rhea, Prometheus, Hyperion | Atlas
+Navigation aids | Atlas, GPS, Signpost, Map | Globe
+W 149
+Animal sounds | Moo, Oink, Neigh, Bark |
+Parts of a tree | Root, Branch, Leaf, Trunk | Bark
+Luggage | Suitcase, Backpack, Duffel, Briefcase | Trunk
+Square ___ | Dance, Meal, Deal, One | Root
+W 150
+Famous Kings | Stephen, Larry, BB, Martin Luther |
+Biblical kings | Saul, Solomon, Herod, Ahab | David
+Michelangelo works | Pietà, Bacchus, David, Moses |
+Prophets | Elijah, Isaiah, Jonah, Jeremiah | Moses

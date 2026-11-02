@@ -992,6 +992,7 @@ html.calm .screen, html.calm .sheet, html.calm .overlay, html.calm .tile.hinted,
 <script src="locks.js"></script>
 <script src="six.js"></script>
 <script src="walls_us.js"></script>
+<script src="boards_us.js"></script>
 <script>
 const GROUP_COLOURS = ["#FF5A3C", "#3E7BFA", "var(--green)", "#F5A300", "var(--purple)", "#00B2C9", "#FF7A1A", "#EC4899", "#5B6CFF", "#7CB82F", "#0EA5A0", "#E8456B", "#2E86DE", "#D97706", "#6366F1", "#16A34A"];
 const WALL_COLOURS = ["#3E7BFA", "var(--green)", "#F5A300", "#FF5A3C"];
@@ -1161,7 +1162,9 @@ function tr(text, vars = {}) {
 
 /* Players work through one path: every Easy level, then Medium, then Hard. French players have their own levels. */
 const DIFFS = ["Easy", "Medium", "Hard"];
-const LEVELS = () => isFR() ? BOARD_LEVELS_FR : BOARD_LEVELS;
+// US English players get American levels where the British one would not work, keeping the same place in the path.
+const US_BOARDS = () => BOARD_LEVELS.map((l, i) => typeof BOARD_US_LEVELS !== "undefined" && BOARD_US_LEVELS[i] ? { ...l, ...BOARD_US_LEVELS[i], us: true } : l);
+const LEVELS = () => isFR() ? BOARD_LEVELS_FR : isUS() ? US_BOARDS() : BOARD_LEVELS;
 const bkey = i => (isFR() ? "fr-board-" : "board-") + i;
 const PATH = () => LEVELS().map((_, i) => i).sort((a, b) => DIFFS.indexOf(LEVELS()[a].difficulty) - DIFFS.indexOf(LEVELS()[b].difficulty) || a - b);
 const levelNo = idx => PATH().indexOf(idx) + 1;
@@ -1699,12 +1702,15 @@ let B = null;
 
 function buildLevel(level, levelIdx) {
   const groups = [], tiles = [];
+  const swaps = isUS() && typeof BOARD_US_SWAPS !== "undefined" && !level.us && BOARD_US_SWAPS[levelIdx] || {};
+  // Each tile is swapped once, on its original text, so chains like Guard > Conductor > Bus pass can't happen.
+  const sw = t => swaps[t] ?? t, loc = t => swaps[t] ?? window.loc(t);
   function addGroup(spec, parent) {
     const g = { id: groups.length, name: loc(spec.name), pic: spec.pic || null, parent, memberTiles: [] };
     groups.push(g);
     spec.tiles.forEach(t => {
       if (typeof t === "object") g.memberTiles.push(addGroup(t, g.id));
-      else { const raw = parseTile(t), tile = { id: tiles.length, ...raw, label: loc(raw.label), parent: g.id, symbolOf: null }; tiles.push(tile); g.memberTiles.push(tile.id); }
+      else { const raw = parseTile(sw(t)), tile = { id: tiles.length, ...raw, label: swaps[t] != null ? raw.label : window.loc(raw.label), parent: g.id, symbolOf: null }; tiles.push(tile); g.memberTiles.push(tile.id); }
     });
     return g;
   }
@@ -1745,7 +1751,8 @@ function startBoard(levelIdx) {
     unravelled: new Set(),
   };
   const saved = store.get()["save-" + bkey(levelIdx)];
-  if (saved && saved.sig === tiles.length + ":" + groups.length) {
+  // A half-played level resumes only in the version it was started in (an American level has its own signature).
+  if (saved && saved.sig === tiles.length + ":" + groups.length + (level.us ? ":us" : "")) {
     Object.assign(B, { board: saved.board, lockedList: saved.lockedList, solved: new Set(saved.solved), pool: saved.pool,
       timeLeft: saved.timeLeft, elapsed: saved.elapsed, hintsUsed: saved.hintsUsed || 0, freezes: saved.freezes, hints: loadHints(saved) });
     syncHints();
@@ -1777,7 +1784,7 @@ function startBoard(levelIdx) {
 function saveBoard() {
   if (!B || B.over || B.busy) return;
   store.set("save-" + bkey(B.levelIdx), {
-    sig: B.tiles.length + ":" + B.groups.length, board: B.board, lockedList: B.lockedList, solved: [...B.solved], pool: B.pool,
+    sig: B.tiles.length + ":" + B.groups.length + (B.level.us ? ":us" : ""), board: B.board, lockedList: B.lockedList, solved: [...B.solved], pool: B.pool,
     timeLeft: B.timeLeft, elapsed: B.elapsed, hintsUsed: B.hintsUsed, freezes: B.freezes, hints: B.hints, hintTiles: B.hintTiles,
   });
 }

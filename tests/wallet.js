@@ -1,4 +1,3 @@
-// Run from a scratch folder with a shots/ subfolder while the repo is served on port 8765.
 // Wallet, weekly chest, pretend video and test shop.
 const { chromium } = require('playwright');
 let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++; };
@@ -12,9 +11,9 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
   ok((await pg.textContent('.chest-txt')).includes('Play today'), 'chest not started');
   await pg.click('#modeWheel'); await pg.waitForTimeout(300);
   ok((await pg.textContent('#clueN')).includes('1 free'), 'wheel shows 1 free');
-  await pg.click('#clue'); await pg.click('#clue'); await pg.waitForTimeout(200);
+  await pg.click('#clue'); await pg.waitForTimeout(200);
   ok((await pg.textContent('#clueN')).includes('10 in wallet'), 'after free clue: wallet 10');
-  await pg.click('#clue'); await pg.click('#clue'); await pg.waitForTimeout(200);
+  await pg.click('#clue'); await pg.waitForTimeout(200);
   ok((await pg.textContent('#clueN')).includes('9 in wallet'), 'second clue from wallet');
   await pg.click('#back'); await pg.waitForTimeout(300);
   ok((await pg.textContent('.chest-txt')).includes('1 of 7'), 'chest has 1 day: ' + await pg.textContent('.chest-txt'));

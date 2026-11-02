@@ -1363,7 +1363,7 @@ function showHelp(g) {
       "Fancy more of a challenge? Hard mode is a six-letter word in seven tries, with its own streak."],
     wheel: ["Make words of 4 or more letters from the seven letters.", "Every word must use the purple middle letter. Letters can be used more than once.",
       "4-letter words score 1 point. Longer words score a point for each letter.", "A word that uses all seven letters scores 7 bonus points.",
-      "Each clue fills in one more letter of every word. You get 1 free clue a day, then clues come from your hint wallet."],
+      "Each clue fills in one more letter of every word, up to 3 clues a day. The first is free, then clues come from your hint wallet."],
     wall: ["Sixteen clues are hiding four groups of four.", "Tap four clues that belong together to make a group.",
       "You have three minutes. Once you've found two groups, you only get three more wrong guesses.",
       "At the end, score a point for each group, and a point for each link you knew. Get all eight for 2 bonus points."],
@@ -2577,7 +2577,7 @@ const bindShare = (ov, make) => { const b = $("#shareRes", ov); if (b) b.onclick
 /* ---------- Letter Wheel: make words from seven letters, always using the middle one ---------- */
 let H = null;
 const WHEEL_RANKS = [["Just starting", 0], ["Warming up", 5], ["Good", 15], ["Great", 30], ["Brilliant", 50], ["Superstar", 70], ["Word wizard", 100]];
-// The wheel is a once-a-day challenge, so it has its own clues: 3 per day, no top-ups.
+// At most 3 clues a day: a fourth would fill in every four-letter word, so it is never offered.
 const WHEEL_CLUES = 3;
 let wheelCache = null;
 function wheelDay(n) {
@@ -2681,7 +2681,9 @@ function renderWheel() {
     <span class="wb-words">${order.map(w => `<span class="wb ${got.has(w) ? "got" : ""} ${isPangram(w, pz) ? "pg" : ""}">${[...w].map((c, i) => `<i>${got.has(w) || i < st.clues ? c : ""}</i>`).join("")}</span>`).join("")}</span>
     <span class="wb-more">${tr("Tap to see the list")}</span>`;
   $("#clue").className = "btn clue-btn";
-  $("#clue").innerHTML = wheelDone(st) ? `${ic("check")}All found` : `${ic("bulb")}Clue <span id="clueN">(${hintNote("wheel")})</span>`;
+  const cluesOut = st.clues >= WHEEL_CLUES;
+  $("#clue").innerHTML = wheelDone(st) ? `${ic("check")}All found` : cluesOut ? `${ic("bulb")}All ${WHEEL_CLUES} clues used` : `${ic("bulb")}Clue ${st.clues + 1} of ${WHEEL_CLUES} <span id="clueN">(${hintNote("wheel")})</span>`;
+  $("#clue").disabled = !wheelDone(st) && cluesOut;
   $("#wcount").textContent = `${st.found.length}/${st.words.size}`;
   if (wheelDone(st) && !$("#msg").textContent.includes("+")) $("#msg").textContent = "You've found every word! Bonus words still score points.";
 }
@@ -2712,22 +2714,12 @@ function wheelYesterday() {
   ov.querySelector("#ydayClose").onclick = close;
   ov.addEventListener("click", e => { if (e.target === ov) close(); });
 }
-function wheelClue() {
-  const btn = $("#clue");
-  if (!btn.classList.contains("ask")) {
-    const st = wheelState();
-    if (wheelDone(st)) return wheelClueUse();
-    btn.classList.add("ask"); btn.innerHTML = "Tap again to use a clue";
-    clearTimeout(H.clueTimer); H.clueTimer = setTimeout(() => H && $("#clue") && renderWheel(), 3000);
-    return;
-  }
-  clearTimeout(H.clueTimer);
-  wheelClueUse();
-}
+// One tap uses a clue (the buttons are spaced well apart, so no second confirming tap).
+function wheelClue() { wheelClueUse(); }
 function wheelClueUse() {
   const st = wheelState(), missing = [...st.words].filter(w => !st.found.includes(w));
   if (!missing.length) return toast("You've found every word!");
-  if (st.clues >= Math.max(...missing.map(w => w.length)) - 1) return toast("That's every clue for today.");
+  if (st.clues >= Math.min(WHEEL_CLUES, Math.max(...missing.map(w => w.length)) - 1)) return toast(`That's all ${WHEEL_CLUES} clues for today.`);
   if (!takeHint("wheel")) return;
   store.set("wheel-" + todayKey(), { found: st.found.concat(st.bonus), clues: st.clues + 1 });
   $("#msg").textContent = st.clues === 0 ? "Clue: the first letter of every word is filled in." : `Clue: letter ${st.clues + 1} of every word is filled in.`;

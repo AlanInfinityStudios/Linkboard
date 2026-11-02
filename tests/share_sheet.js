@@ -1,0 +1,21 @@
+// Invite card and share sheet.
+const { chromium, devices } = require('playwright');
+let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++; };
+(async () => { const b = await chromium.launch(); const errs = [];
+  const ctx = await b.newContext({ ...devices['iPad (gen 7)'] }); const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+  await pg.addInitScript(() => localStorage.setItem('linkboard-v3', JSON.stringify({ profile: { name: 'Alan', lang: 'en-GB' }, 'install-asked': true, updatedAt: 1 })));
+  await pg.goto('http://localhost:8765/index.html'); await pg.waitForTimeout(1200);
+  ok(!(await pg.textContent('body')).includes('no adverts'), 'no "no adverts" promise on home');
+  ok(await pg.isVisible('#invite'), 'invite card on home');
+  await pg.locator('#invite').scrollIntoViewIfNeeded(); await pg.screenshot({ path: 'shots/invite-card.png' });
+  await pg.click('#invite'); await pg.waitForTimeout(400);
+  const hrefs = await pg.evaluate(() => [...document.querySelectorAll('.share-ov a.share-opt')].map(a => a.dataset.k + ' ' + a.href));
+  ok(hrefs.some(h => h.startsWith('wa https://wa.me/?text=')) && hrefs.some(h => h.startsWith('mail mailto:')) && hrefs.some(h => h.startsWith('sms sms:')) && hrefs.some(h => h.startsWith('fb https://www.facebook.com/sharer')), 'WhatsApp, text, email and Facebook links');
+  ok(hrefs.every(h => h.includes('wordolio.app')), 'every option carries the wordolio.app link');
+  ok((await pg.textContent('.share-preview')).includes('Alan'), 'invite signed with the name');
+  await pg.screenshot({ path: 'shots/share-sheet.png' });
+  await pg.click('#shareClose'); ok(!(await pg.isVisible('.share-ov')), 'closes');
+  await pg.evaluate(() => { const p = profile(); p.lang = 'fr'; store.set('profile', p); showHome(); }); await pg.waitForTimeout(300);
+  ok(!(await pg.isVisible('#invite')), 'French players do not see the English invite');
+  await pg.evaluate(() => showWelcome && 0);
+  console.log(errs.length ? 'ERRORS\n' + errs.join('\n') : 'no page errors'); console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); await b.close(); })();

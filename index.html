@@ -537,7 +537,7 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .share-opt { display: grid; justify-items: center; gap: 6px; font: 600 13px inherit; font-family: inherit; color: var(--ink); background: none; border: 0; padding: 4px 0; text-decoration: none; cursor: pointer; }
 .share-opt span { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; color: #fff; }
 .share-opt svg { width: 24px; height: 24px; }
-.invite-card { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 18px; padding: 16px 18px; border: 0; border-radius: 22px; background: var(--card-bg, #fff); box-shadow: var(--card); text-align: left; font: inherit; color: var(--ink); cursor: pointer; }
+.invite-card { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 14px; padding: 16px 18px; border: 0; border-radius: 22px; background: var(--card-bg, #fff); box-shadow: var(--card); text-align: left; font: inherit; color: var(--ink); cursor: pointer; }
 .invite-card > span:nth-child(2) { flex: 1; display: grid; gap: 2px; }
 .invite-card b { font-size: 16px; } .invite-card span span { color: var(--muted); font-size: 14px; }
 .invite-card .ico { width: 20px; height: 20px; color: var(--muted); }
@@ -1574,10 +1574,12 @@ function showHome(first = false) {
     <section class="games featured" aria-label="${tr("Featured games")}">${boardCard}${wallCard}</section>
     <div class="games-head"><h2>${tr("Daily games")}</h2><span class="chip">${ic("cal")}${tr("Today")}, ${esc(todayLabel())}</span></div>
     <section class="games dailies">${fiveCard}${wheelCard}${stepsCard}${lockCard}</section>
-    ${english ? `<button class="invite-card" id="invite"><span class="dotico" style="background:#EFE7FB;color:#A552E8">${ic("share")}</span><span><b>Invite friends</b><span>Send Wordolio by WhatsApp, text, email or social media.</span></span>${ic("chevr")}</button>` : ""}
+    ${english ? `<button class="invite-card" id="invite"><span class="dotico" style="background:#EFE7FB;color:#A552E8">${ic("share")}</span><span><b>Invite friends</b><span>Send Wordolio by WhatsApp, text, email or social media.</span></span>${ic("chevr")}</button>
+    <button class="invite-card" id="feedback"><span class="dotico" style="background:#E3F6EE;color:#20B583">${ic("help")}</span><span><b>Send feedback</b><span>Tell us what you love, what went wrong, or what you'd like next.</span></span>${ic("chevr")}</button>` : ""}
   </div>${adSlot()}`;
   bindNav();
   if ($("#invite")) $("#invite").onclick = inviteFriends;
+  if ($("#feedback")) $("#feedback").onclick = sendFeedback;
   $("#modeBoard").onclick = () => startBoard(nb ?? pick(PATH()));
   if (english) {
     $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
@@ -1656,6 +1658,9 @@ function showSettings() {
         <button class="switch" id="calm" role="switch" aria-checked="${!!p.calm}" aria-label="${tr("Reduce motion")}"></button></div></section>
       ${isFR() ? "" : `<section class="panel">${head("bulb", GAMES.steps.badge, "Beta testers")}
         ${store.get().tester ? `<p class="note">Test shop is on for this device. Purchases are pretend, so no money is taken.</p>` : `<label class="field"><input id="tCode" maxlength="24" autocapitalize="characters" placeholder="Tester code" aria-label="Tester code"></label>`}</section>`}
+      ${isFR() ? "" : `<section class="panel">${head("help", GAMES.five.badge, "Feedback", "You're one of our first players, so we'd love to hear from you.")}
+        <div class="actions"><button class="btn primary" id="fbSend">Send feedback</button><button class="btn" id="fbInvite">Invite friends</button></div>
+        <p class="note">Opens your email app, addressed to ${FEEDBACK_EMAIL}.</p></section>`}
       <section class="panel">${head("share", GAMES.lock.badge, tr("Move your progress"), tr("Copy a code here, then paste it on another device or app."))}
         <div class="actions"><button class="btn" id="mvCopy">${tr("Copy progress code")}</button></div>
         <label class="field"><input id="mvPaste" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${tr("Paste a progress code")}" aria-label="${tr("Paste a progress code")}"></label></section>
@@ -1672,6 +1677,7 @@ function showSettings() {
   });
   $("#calm").onclick = () => { const on = !(profile() || {}).calm; save({ calm: on }); applyCalm(); $("#calm").setAttribute("aria-checked", on); };
   $("#mvCopy").onclick = copyProgress;
+  if ($("#fbSend")) { $("#fbSend").onclick = sendFeedback; $("#fbInvite").onclick = inviteFriends; }
   $("#mvPaste").addEventListener("input", e => pasteProgress(e.target.value));
   const tc = $("#tCode");
   if (tc) tc.addEventListener("input", e => { if (e.target.value.trim().toUpperCase() === TESTER_CODE) { store.set("tester", true); toast("Test shop turned on"); showSettings(); } });
@@ -2639,6 +2645,14 @@ async function shareText(text, title = "Share your result") {
   const more = $('[data-k="more"]', ov);
   if (more) more.onclick = async () => { try { await navigator.share({ text: full }); close(); } catch (e) { if (!e || e.name !== "AbortError") toast("Sharing isn't available here."); } };
 }
+// Beta feedback by email: opens the tester's own mail app with prompts and the device details filled in.
+const FEEDBACK_EMAIL = "feedback@wordolio.app", APP_VERSION = "beta 3 Nov 2026";
+function feedbackLink() {
+  const ua = navigator.userAgent, dev = isApple() ? (/iPhone/.test(ua) ? "iPhone" : "iPad") : /Android/.test(ua) ? "Android" : /Mac/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : "Other";
+  const body = `What did you enjoy?\n\n\nWhat went wrong or felt confusing?\n\n\nAny ideas or wishes?\n\n\n---\nWordolio ${APP_VERSION} · ${dev} · ${innerWidth}x${innerHeight} · ${LANG_SHORT[lang()]}${isStandalone() ? " · home screen" : ""}`;
+  return `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent("Wordolio feedback" + (playerName() ? " from " + playerName() : ""))}&body=${encodeURIComponent(body)}`;
+}
+function sendFeedback() { stat("feedback", "Opened feedback email"); location.href = feedbackLink(); }
 const inviteFriends = () => shareText(`${playerName() ? `Hi, it's ${playerName()}! ` : ""}${INVITE_TEXT}`, "Invite friends");
 const bindShare = (ov, make) => { const b = $("#shareRes", ov); if (b) b.onclick = () => shareText(make()); };
 

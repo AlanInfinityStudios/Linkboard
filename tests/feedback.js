@@ -1,0 +1,15 @@
+const { chromium, devices } = require('playwright');
+let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++; };
+(async () => { const b = await chromium.launch(); const errs = [];
+  const ctx = await b.newContext({ ...devices['iPad (gen 7)'] }); const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+  await pg.addInitScript(() => localStorage.setItem('linkboard-v3', JSON.stringify({ profile: { name: 'Alan', lang: 'en-GB' }, 'install-asked': true, updatedAt: 1 })));
+  await pg.goto('http://localhost:8765/index.html'); await pg.waitForTimeout(1000);
+  ok(await pg.isVisible('#feedback') && await pg.isVisible('#invite'), 'home has feedback and invite');
+  await pg.locator('#feedback').scrollIntoViewIfNeeded(); await pg.screenshot({ path: 'shots/feedback-home.png' });
+  let url = null; pg.on('framenavigated', f => { url = f.url(); });
+  const href = await pg.evaluate(() => feedbackLink()); console.log(decodeURIComponent(href));
+  ok(/^mailto:feedback@wordolio\.app\?subject=Wordolio%20feedback%20from%20Alan&body=/.test(href) , 'mailto ' + href.slice(0, 90));
+  await pg.evaluate(() => showSettings()); await pg.waitForTimeout(300);
+  ok(await pg.isVisible('#fbSend') && await pg.isVisible('#fbInvite'), 'settings has feedback panel');
+  await pg.screenshot({ path: 'shots/feedback-settings.png', fullPage: true });
+  console.log(errs.length ? 'ERRORS\n' + errs.join('\n') : 'no page errors'); console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); await b.close(); })();

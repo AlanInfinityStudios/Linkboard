@@ -2015,7 +2015,7 @@ const dayNumber = () => { const d = new Date(); return Math.round((Date.UTC(d.ge
 const ofToday = list => ofDay(list, dayNumber());
 const todayLabel = () => new Date().toLocaleDateString(isUS() ? "en-US" : isFR() ? "fr-FR" : "en-GB", { weekday: "long", day: "numeric", month: "long" });
 function dailyKeys(onKey) {
-  return k => `<div class="keys">${["qwertyuiop", "asdfghjkl", "+zxcvbnm-"].map(row => `<div class="krow">${[...row].map(c =>
+  return k => `<div class="keys">${["qwertyuiop", "asdfghjkl+", "zxcvbnm-"].map(row => `<div class="krow">${[...row].map(c =>
     c === "+" ? `<button class="key wide" data-k="Enter">Enter</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="Delete">${ic("del")}</button>` :
     `<button class="key ${k[c] || ""}" data-k="${c}">${c}</button>`).join("")}</div>`).join("")}</div>`;
 }

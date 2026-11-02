@@ -1297,10 +1297,12 @@ function greeting(first) {
 
 function helloLine() {
   if (isFR()) return "Vos jeux de mots vous attendent.";
-  const five = fiveState(), wheel = wheelState(), a = five.guesses.length > 0, b = wheel.found.length > 0;
-  if (five.over && wheelDone(wheel)) return "Both dailies done today. Lovely work.";
-  if (a && b) return "You've played both dailies today. Nice work.";
-  if (a || b) return "One daily down, one to go.";
+  const five = fiveState(), wheel = wheelState(), a = five.over, b = wheelDone(wheel);
+  const started = five.guesses.length > 0 || wheel.found.length > 0;
+  if (a && b) return "Both dailies completed today. Lovely work.";
+  if (a) return `Daily Five done. ${wheel.words.size - wheel.found.length} words still hiding in the Letter Wheel.`;
+  if (b) return "Letter Wheel cracked. Daily Five is still waiting for you.";
+  if (started) return "You've made a start. Come back and finish today's dailies.";
   return "Your daily word games are ready.";
 }
 const meter = (n, of) => `<div class="meter"><i style="width:${of ? Math.round(100 * n / of) : 0}%"></i></div>`;
@@ -1324,11 +1326,11 @@ function showHome(first = false) {
   const nb = nextBoard(), nw = nextWall(), nbL = nb != null ? LEVELS()[nb] : null;
   const five = fiveState(), fs = fiveStats(), wheel = wheelState();
   const boards = solvedBoards(), walls = solvedWalls();
-  const dailies = (five.guesses.length ? 1 : 0) + (wheel.found.length ? 1 : 0);
+  const dailies = (five.over ? 1 : 0) + (wheelDone(wheel) ? 1 : 0);
   const stat = (icon, bg, col, big, small) => `<div><span class="dotico" style="background:${bg};color:${col}">${ic(icon)}</span><span><b>${big}</b><span>${small}</span></span></div>`;
   const strip = english
     ? stat("flame", "#FFE9DC", "#E8642F", `${fs.streak} day${fs.streak === 1 ? "" : "s"}`, "Five streak") +
-      stat("check", "#D9F3E8", "#13996D", `${dailies} / 2`, "dailies played today") +
+      stat("check", "#D9F3E8", "#13996D", `${dailies} / 2`, "dailies completed today") +
       stat("trophy", "#FCEFCF", "#C88A12", boards + walls, "levels and walls solved")
     : stat("trophy", "#FCEFCF", "#C88A12", boards, tr("levels solved"));
   const tiles = (cols, rows) => rows.map(c => `<i class="mt" style="background:${c}"></i>`.repeat(cols)).join("");

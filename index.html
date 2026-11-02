@@ -3,37 +3,49 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Linkboard</title>
-<meta name="description" content="An ad-free word connection game with a Board mode and an Only Connect style Wall mode.">
-<meta name="theme-color" content="#F5EFE4">
+<title>Wordolio</title>
+<meta name="description" content="Wordolio: a little world of word games. Free, with no adverts.">
+<meta name="theme-color" content="#F7F4EF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Linkboard">
+<meta name="apple-mobile-web-app-title" content="Wordolio">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap">
 <style>
 /* Layout: a calm cream app. Screens stack a header, then a stage that scales the board to fit. Colour comes only from the groups. */
 :root {
   color-scheme: light;
-  --bg: #F5EFE4;
-  --bg-deep: #ECE3D3;
-  --surface: #FFFCF6;
-  --tray: #E9DFCD;
+  --bg: #F7F4EF;
+  --bg-deep: #F0EAE3;
+  --surface: #FFFCF8;
+  --surface-2: #F0EAE3;
+  --tray: #EEE6DE;
   --tile: #FFFFFF;
-  --tile-edge: #E0D3BD;
-  --ink: #2A2420;
-  --muted: #8A7D6D;
-  --line: rgba(70, 50, 25, .10);
-  --accent: #FF5A3C;
+  --tile-edge: #E4D9D3;
+  --ink: #29242D;
+  --muted: #766D77;
+  --border: #E7DEE2;
+  --line: rgba(41, 36, 45, .10);
+  --brand: #30243F;
+  --hi: #A44CEC;
+  --accent: #FF6B57;
   --accent-ink: #FFFFFF;
-  --gold: #F5B42A;
-  --shadow: 0 1px 0 var(--tile-edge), 0 6px 16px rgba(90, 60, 25, .08);
-  --font: "Outfit", "Avenir Next", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --gold: #F1AA3C;
+  --coral: #FF6B57; --coral-ink: #C2402E;
+  --green: #20B583; --green-ink: #0E7F5A;
+  --purple: #A552E8; --purple-ink: #7B2FC0;
+  --blue: #477EF0; --blue-ink: #2856C2;
+  --amber: #F1AA3C; --pink: #E86B9D;
+  --shadow: 0 1px 1px rgba(41, 36, 45, .04), 0 6px 16px rgba(80, 50, 40, .08);
+  --lift: 0 1px 1px rgba(41, 36, 45, .05), 0 8px 20px rgba(41, 36, 45, .08);
+  --card: 0 1px 1px rgba(41, 36, 45, .04), 0 14px 34px rgba(80, 50, 40, .10);
+  --font: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --head: "Manrope", "Nunito Sans", system-ui, sans-serif;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   background: var(--bg);
@@ -63,7 +75,7 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .brand { display: flex; align-items: center; gap: 12px; }
 .mark { display: grid; grid-template-columns: repeat(3, 11px); gap: 3px; }
 .mark i { width: 11px; height: 11px; border-radius: 3.5px; background: var(--tile-edge); }
-.mark i:nth-child(4) { background: #FF5A3C; } .mark i:nth-child(5) { background: #3E7BFA; } .mark i:nth-child(6) { background: #1FB57A; }
+.mark i:nth-child(4) { background: #FF5A3C; } .mark i:nth-child(5) { background: #3E7BFA; } .mark i:nth-child(6) { background: var(--green); }
 .brand h1 { margin: 0; font-size: 2rem; font-weight: 800; letter-spacing: -.02em; }
 .lede { margin: -10px 0 0; color: var(--muted); font-size: 1.02rem; }
 .section-label { margin: 0; font-size: .78rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
@@ -170,7 +182,7 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .counter { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.05rem; font-variant-numeric: tabular-nums; background: var(--surface); border-radius: 99px; padding: 6px 14px 6px 10px; box-shadow: var(--shadow); }
 .stack { position: relative; width: 22px; height: 18px; }
 .stack i { position: absolute; left: 0; width: 22px; height: 8px; border-radius: 3px; }
-.stack i:nth-child(1) { top: 10px; background: #1FB57A; }
+.stack i:nth-child(1) { top: 10px; background: var(--green); }
 .stack i:nth-child(2) { top: 5px; background: #3E7BFA; }
 .stack i:nth-child(3) { top: 0; background: #FF5A3C; }
 
@@ -282,7 +294,7 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .conn .name { font-weight: 700; }
 .conn .name.hidden { color: var(--muted); font-weight: 500; font-style: italic; }
 .pill-btn { border: 0; border-radius: 99px; padding: 8px 12px; font-size: .82rem; font-weight: 700; background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
-.pill-btn.on { background: #1FB57A; color: #fff; }
+.pill-btn.on { background: var(--green); color: #fff; }
 .toast {
   position: fixed; left: 50%; top: calc(66px + env(safe-area-inset-top, 0px)); transform: translateX(-50%);
   background: var(--ink); color: var(--surface); padding: 10px 18px; border-radius: 99px; font-weight: 600; z-index: 70;
@@ -295,7 +307,7 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .mini.f i { height: 18px; }
 .mwheel { position: relative; width: 84px; height: 84px; }
 .mwheel b, .mwheel i { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: .8rem; text-transform: uppercase; }
-.mwheel b { background: #A855F7; color: #fff; }
+.mwheel b { background: var(--purple); color: #fff; }
 .mwheel i { background: var(--tile); box-shadow: 0 1px 0 var(--tile-edge); transform: rotate(var(--a)) translateY(-29px) rotate(calc(-1 * var(--a))); }
 .daily { align-items: center; }
 .daily .bar { width: 100%; }
@@ -305,9 +317,9 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .frow.shake { animation: shake .45s; }
 .ft { aspect-ratio: 1; border-radius: 10px; display: grid; place-items: center; font-size: 1.7rem; font-weight: 800; text-transform: uppercase; background: var(--surface); box-shadow: inset 0 0 0 2px var(--tile-edge); }
 .ft.typed { box-shadow: inset 0 0 0 2px var(--ink); animation: pop .15s; }
-.ft.c, .key.c { background: #1FB57A; color: #fff; box-shadow: none; }
-.ft.p, .key.p { background: #F5A300; color: #fff; box-shadow: none; }
-.ft.a, .key.a { background: #A99C8A; color: #fff; box-shadow: none; }
+.ft.c, .key.c { background: var(--green); color: #fff; box-shadow: none; }
+.ft.p, .key.p { background: var(--amber); color: #fff; box-shadow: none; }
+.ft.a, .key.a { background: #A79FA5; color: #fff; box-shadow: none; }
 .ft.flip { animation: fflip .5s ease both; animation-delay: var(--d); }
 @keyframes fflip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
 #keys { width: 100%; display: flex; justify-content: center; margin-top: auto; padding-bottom: 6px; }
@@ -318,23 +330,23 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .dist { display: flex; flex-direction: column; gap: 5px; }
 .dist div { display: flex; align-items: center; gap: 8px; font-weight: 700; }
 .dist i { font-style: normal; background: var(--tile-edge); color: var(--ink); border-radius: 5px; padding: 2px 8px; text-align: right; font-size: .85rem; }
-.dist i.on { background: #1FB57A; color: #fff; }
+.dist i.on { background: var(--green); color: #fff; }
 .wheel-top { width: min(640px, 100%); }
 .rank-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-.rank-head b { font-size: 1.2rem; color: #A855F7; }
+.rank-head b { font-size: 1.2rem; color: var(--purple); }
 .rank-head span { color: var(--muted); font-weight: 600; font-size: .9rem; }
 .rank-bar { display: flex; gap: 4px; margin-top: 6px; }
-.rank-bar i { flex: 1; height: 8px; border-radius: 4px; background: color-mix(in srgb, #A855F7 15%, var(--bg)); }
-.rank-bar i.on { background: #A855F7; }
+.rank-bar i { flex: 1; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--purple) 15%, var(--bg)); }
+.rank-bar i.on { background: var(--purple); }
 .wheel-body { flex: 1; min-height: 0; width: min(900px, 100%); display: flex; gap: 24px; align-items: stretch; }
 .wheel-play { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .typed { min-height: 46px; font-size: 2rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.typed .mid { color: #A855F7; }
+.typed .mid { color: var(--purple); }
 .typed .ph, .words .ph { font-size: 1rem; letter-spacing: 0; text-transform: none; color: var(--muted); font-weight: 500; }
 .wheel { position: relative; width: min(280px, 68vw); aspect-ratio: 1; }
 .wl { position: absolute; left: 50%; top: 50%; width: 27%; aspect-ratio: 1; margin: -13.5%; border: 0; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow); font-size: 1.7rem; font-weight: 800; text-transform: uppercase;
   transform: rotate(var(--a)) translateY(-118%) rotate(calc(-1 * var(--a))); }
-.wl.centre { transform: none; background: #A855F7; color: #fff; }
+.wl.centre { transform: none; background: var(--purple); color: #fff; }
 .wl:active { filter: brightness(.92); }
 .wheel-btns { display: flex; gap: 10px; }
 .wheel-btns.extra { margin-top: 28px; padding-top: 18px; border-top: 1px dashed var(--tile-edge); }
@@ -346,11 +358,11 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .wgroup h4 span { color: var(--muted); font-weight: 600; }
 .ans { display: flex; gap: 2px; }
 .ans i { width: 19px; height: 24px; border-bottom: 2px solid var(--tile-edge); display: grid; place-items: center; font-style: normal; font-weight: 700; text-transform: uppercase; font-size: .9rem; color: var(--muted); }
-.ans.got i { color: var(--ink); border-color: #A855F7; }
-.ans.pg.got i { color: #A855F7; }
+.ans.got i { color: var(--ink); border-color: var(--purple); }
+.ans.pg.got i { color: var(--purple); }
 .words { display: flex; flex-wrap: wrap; gap: 6px; }
 .words span { background: var(--bg); border-radius: 8px; padding: 4px 9px; font-weight: 600; text-transform: capitalize; }
-.words span.pg { background: #A855F7; color: #fff; }
+.words span.pg { background: var(--purple); color: #fff; }
 .done-sheet { text-align: center; }
 .done-art { position: relative; width: 84px; margin: 0 auto 8px; }
 .done-art span { position: absolute; right: -26px; bottom: -6px; font-size: 2.4rem; animation: pop .6s ease-out; }
@@ -358,12 +370,308 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 .yday-head { display: flex; align-items: center; gap: 14px; }
 .yday-head h2 { margin: 0; } .yday-head p { margin: 4px 0 0; color: var(--muted); }
 .yday-list { overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
-.words span.miss { background: color-mix(in srgb, #A855F7 18%, var(--surface)); color: #6B21A8; }
-.words span.miss.pg { background: #A855F7; color: #fff; }
+.words span.miss { background: color-mix(in srgb, var(--purple) 18%, var(--surface)); color: #6B21A8; }
+.words span.miss.pg { background: var(--purple); color: #fff; }
 .bonus { border-top: 1px dashed var(--tile-edge); padding-top: 10px; }
 .bonus h4 { margin: 0 0 6px; font-size: .85rem; display: flex; justify-content: space-between; }
 .bonus h4 span, .bonus p { color: var(--muted); font-weight: 600; }
 .bonus p { margin: 0; font-size: .85rem; font-weight: 500; }
+/* =====================================================================
+   WORDOLIO LOOK
+   Soft cream background, rounded cards, gradient badges and pill buttons.
+   Each game has its own colour, passed in as --c (and --ci for text).
+   ===================================================================== */
+body {
+  font-family: var(--font);
+  background: radial-gradient(1200px 500px at 85% -10%, #FBEFE6 0, rgba(251, 239, 230, 0) 60%), radial-gradient(900px 600px at -10% 110%, #F3EAF6 0, rgba(243, 234, 246, 0) 60%), var(--bg);
+}
+h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
+.app { max-width: 1180px; }
+.ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.round {
+  width: 48px; height: 48px; flex: none; border: 0; border-radius: 999px; background: var(--surface); color: var(--brand);
+  display: grid; place-items: center; box-shadow: var(--lift); padding: 0;
+}
+.round .ico { stroke-width: 2.6; }
+.round:active, .gpill:active, .go:active, .btn:active { transform: scale(.96); }
+.wordmark { font-family: var(--head); font-weight: 800; letter-spacing: -.02em; color: var(--ink); white-space: nowrap; }
+.wordmark span { color: var(--hi); }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo .wordmark { font-size: 32px; line-height: 1; }
+.tagline { margin: 4px 0 0; color: var(--muted); font-size: 1rem; font-weight: 600; }
+
+/* ---------- Shared game header ---------- */
+.ghead { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; }
+.ghead-l { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.ghead-brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ghead-brand .wordmark { font-size: 18px; }
+.ghead-c { text-align: center; min-width: 0; }
+.ghead-c h1 { margin: 0; font-size: 28px; font-weight: 800; line-height: 1.1; white-space: nowrap; }
+.ghead-c small { display: block; margin-top: 3px; font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ci, var(--c)); white-space: nowrap; }
+.ghead-r { justify-self: end; display: flex; gap: 8px; align-items: center; }
+.gpill, .timer {
+  height: 44px; padding: 0 15px 0 12px; border: 0; border-radius: 999px; background: var(--surface); color: var(--ink);
+  display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--lift);
+  font-family: var(--head); font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.gpill .ico, .timer svg { width: 20px; height: 20px; stroke: var(--ci, var(--muted)); fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.gpill.help { width: 44px; padding: 0; justify-content: center; }
+.gpill.help .ico { stroke: var(--muted); }
+.timer.frozen { background: #E1EEFF; }
+.timer.frozen svg { stroke: var(--blue); }
+.timer.low { color: var(--coral-ink); }
+.timer.low svg { stroke: var(--coral); }
+.sub { min-height: 40px; }
+.hint-text, .daily-msg { color: var(--muted); font-weight: 600; }
+.counter, .lives { height: 40px; background: var(--surface); border-radius: 999px; padding: 0 14px 0 12px; box-shadow: var(--lift); font-family: var(--head); font-weight: 800; }
+.lives { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .9rem; }
+.lives:empty { display: none; }
+.lives .heart path { fill: var(--coral); }
+.stack i:nth-child(1) { background: var(--green); } .stack i:nth-child(2) { background: var(--blue); } .stack i:nth-child(3) { background: var(--coral); }
+
+/* ---------- Home ---------- */
+.home { padding-bottom: 120px; gap: 18px; padding-inline: 14px; margin-inline: -14px; }
+.home-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 6px; }
+.hello { display: flex; align-items: center; justify-content: space-between; gap: 18px 24px; flex-wrap: wrap; }
+.hello h1 { margin: 0; font-size: 40px; font-weight: 800; line-height: 1.1; }
+.hello p { margin: 4px 0 0; font-size: 1.15rem; color: var(--muted); font-weight: 600; }
+.statstrip { display: flex; background: var(--surface); border-radius: 22px; padding: 12px 4px; box-shadow: var(--card); }
+.statstrip > div { display: flex; align-items: center; gap: 10px; padding: 0 16px; }
+.statstrip > div + div { border-left: 1px solid var(--border); }
+.statstrip .dotico { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.statstrip b { display: block; font-family: var(--head); font-weight: 800; font-size: 17px; line-height: 1.15; }
+.statstrip span span { display: block; font-size: 13px; color: var(--muted); font-weight: 600; line-height: 1.2; }
+.games-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+.games-head h2 { margin: 0; font-size: 26px; font-weight: 800; }
+.chip { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 999px; background: var(--surface); box-shadow: 0 4px 12px rgba(80, 50, 40, .07); font-weight: 700; font-size: 14px; color: #5E5560; }
+.chip .ico { width: 17px; height: 17px; }
+.games { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.gcard {
+  border: 0; text-align: left; background: var(--surface); border-radius: 26px; padding: 10px; display: flex; flex-direction: column;
+  box-shadow: var(--card); position: relative; color: var(--ink); transition: transform .15s;
+}
+.gcard:active { transform: scale(.98); }
+.gcard .art { position: relative; height: 158px; border-radius: 20px; overflow: hidden; display: grid; place-items: center; background: var(--art); }
+.badge {
+  position: absolute; left: 12px; top: 12px; width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; color: #fff;
+  background: var(--badge); box-shadow: 0 6px 14px rgba(0, 0, 0, .14), inset 0 1px 0 rgba(255, 255, 255, .35);
+}
+.badge .ico { stroke-width: 2.3; }
+.gcard .body { padding: 12px 8px 6px; display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.gcard h3 { margin: 0; font-size: 25px; font-weight: 800; }
+.gcard p { margin: 0; font-size: 14.5px; color: var(--muted); line-height: 1.35; }
+.gcard .foot { margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.gcard .status { min-width: 0; }
+.gcard .status b { display: block; font-weight: 800; font-size: 15px; line-height: 1.25; }
+.meter { height: 5px; width: 96px; border-radius: 9px; background: #EFE6DF; margin-top: 6px; overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 9px; background: var(--c); }
+.go {
+  height: 42px; padding: 0 14px 0 18px; border: 0; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; flex: none;
+  font-family: var(--head); font-weight: 800; font-size: 15px; color: #fff; white-space: nowrap;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--c) 85%, #fff), color-mix(in srgb, var(--c) 82%, #000));
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .12), inset 0 1px 0 rgba(255, 255, 255, .3);
+}
+.go .ico { width: 15px; height: 15px; stroke-width: 3; }
+.gcard.off { cursor: default; }
+.gcard.off .art { filter: saturate(.5); opacity: .7; }
+.gcard .soon-tag { font-size: 13px; font-weight: 800; color: var(--muted); background: var(--surface-2); border-radius: 999px; padding: 6px 12px; }
+.soon-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.soon-card { display: flex; align-items: center; gap: 14px; padding: 12px 18px 12px 12px; background: color-mix(in srgb, var(--surface) 70%, transparent); border: 2px dashed var(--border); border-radius: 22px; }
+.soon-card .art { width: 64px; height: 64px; flex: none; border-radius: 16px; display: grid; place-items: center; background: var(--art); color: #fff; }
+.soon-card .art span { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--badge); box-shadow: 0 4px 10px rgba(0, 0, 0, .12); }
+.soon-card h3 { margin: 0; font-size: 18px; font-weight: 800; }
+.soon-card p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+.soon-card .soon-tag { margin-left: auto; flex: none; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.games-sub { margin: 6px 0 0; font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+/* Little game boards inside the cards */
+.mt { display: block; border-radius: 5px; background: #fff; box-shadow: 0 1.5px 0 rgba(0, 0, 0, .06), 0 3px 6px rgba(0, 0, 0, .06); }
+.mboard { display: grid; gap: 5px; margin-left: 30px; }
+.mboard.b { grid-template-columns: repeat(5, 30px); }
+.mboard.b .mt { height: 17px; }
+.mboard.w { grid-template-columns: repeat(4, 38px); }
+.mboard.w .mt { height: 20px; }
+.mboard.f { grid-template-columns: repeat(5, 28px); gap: 6px; }
+.mboard.f .mt { height: 28px; position: relative; display: grid; place-items: center; font-family: var(--head); font-weight: 800; font-size: 13px; color: #fff; }
+.mboard.f .mt.c::after { content: ""; position: absolute; left: 7px; right: 7px; bottom: 3px; height: 2.5px; border-radius: 2px; background: rgba(255, 255, 255, .85); }
+.mboard.f .mt.p::after { content: ""; position: absolute; right: 4px; top: 4px; width: 5px; height: 5px; border-radius: 50%; background: rgba(255, 255, 255, .9); }
+.mwheel.big { width: 112px; height: 112px; margin-left: 24px; }
+.mwheel.big b, .mwheel.big i { width: 34px; height: 34px; margin: -17px; font-size: .95rem; font-family: var(--head); }
+.mwheel.big i { transform: rotate(var(--a)) translateY(-38px) rotate(calc(-1 * var(--a))); }
+.mwheel b { background: var(--purple); }
+.mwheel i { background: #fff; box-shadow: 0 1.5px 0 rgba(0, 0, 0, .06), 0 3px 6px rgba(0, 0, 0, .06); }
+
+/* ---------- Bottom bar (home, statistics, settings) ---------- */
+.navbar {
+  position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40;
+  display: flex; gap: 4px; padding: 6px; border-radius: 999px; background: rgba(255, 252, 248, .92);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 1px 1px rgba(41, 36, 45, .05), 0 14px 34px rgba(41, 36, 45, .14);
+}
+.navbar button { border: 0; background: transparent; height: 52px; padding: 0 20px; border-radius: 999px; display: flex; align-items: center; gap: 8px; font-family: var(--head); font-weight: 800; font-size: 15px; color: var(--muted); }
+.navbar button.on { background: #FBE7D6; color: var(--brand); }
+.navbar button.on .ico { stroke: var(--coral-ink); }
+
+/* ---------- Statistics and settings pages ---------- */
+.page-head h1 { margin: 0; font-size: 36px; font-weight: 800; }
+.page-head p { margin: 4px 0 0; color: var(--muted); font-weight: 600; font-size: 1.05rem; }
+.panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.panel { background: var(--surface); border-radius: 26px; padding: 18px 20px 20px; box-shadow: var(--card); display: flex; flex-direction: column; gap: 14px; }
+.panel-head { display: flex; align-items: center; gap: 12px; }
+.panel-head .badge { position: static; width: 38px; height: 38px; border-radius: 12px; }
+.panel-head .badge .ico { width: 20px; height: 20px; }
+.panel-head h2 { margin: 0; font-size: 21px; font-weight: 800; }
+.panel-head small { display: block; color: var(--muted); font-weight: 600; font-size: 13px; }
+.nums { display: grid; grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 10px; }
+.num { background: var(--bg); border-radius: 16px; padding: 10px 12px; }
+.num b { display: block; font-family: var(--head); font-weight: 800; font-size: 24px; font-variant-numeric: tabular-nums; line-height: 1.15; color: var(--ink); }
+.num span { font-size: 12.5px; color: var(--muted); font-weight: 700; }
+.bars { display: flex; flex-direction: column; gap: 8px; }
+.barrow { display: grid; grid-template-columns: 74px 1fr auto; gap: 10px; align-items: center; font-weight: 700; font-size: 14px; }
+.barrow .track { height: 10px; border-radius: 9px; background: #EFE6DF; overflow: hidden; border: 0; padding: 0; box-shadow: none; display: block; }
+.barrow .track i { display: block; height: 100%; border-radius: 9px; background: var(--c); }
+.barrow em { font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+.note { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.4; }
+.setting { display: flex; align-items: center; gap: 14px; }
+.setting .txt { flex: 1; min-width: 0; }
+.setting .txt b { display: block; font-family: var(--head); font-weight: 800; font-size: 16px; }
+.setting .txt span { color: var(--muted); font-size: 14px; }
+.switch { position: relative; width: 56px; height: 34px; border: 0; border-radius: 999px; background: #E2D9DD; flex: none; padding: 0; transition: background .2s; }
+.switch::after { content: ""; position: absolute; left: 3px; top: 3px; width: 28px; height: 28px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .18); transition: transform .2s; }
+.switch[aria-checked="true"] { background: var(--green); }
+.switch[aria-checked="true"]::after { transform: translateX(22px); }
+.field input { border-color: var(--border); border-radius: 16px; background: #fff; font-family: var(--font); }
+.field input:focus { border-color: var(--hi); }
+.field > span { font-family: var(--head); font-weight: 800; }
+.lang { background: var(--bg); border-radius: 18px; }
+.lang span { font-family: var(--head); font-weight: 800; }
+.lang.on { border-color: var(--hi); background: color-mix(in srgb, var(--hi) 8%, var(--surface)); }
+.welcome .sheet { box-shadow: var(--card); gap: 18px; }
+
+/* ---------- Sheets and buttons ---------- */
+.overlay { background: rgba(41, 36, 45, .32); }
+.sheet { --c: var(--brand); border-radius: 28px; box-shadow: 0 30px 70px rgba(41, 36, 45, .25); }
+.sheet h2 { font-size: 1.8rem; }
+.sheet-badge { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; color: #fff; background: linear-gradient(160deg, color-mix(in srgb, var(--c) 80%, #fff), color-mix(in srgb, var(--c) 85%, #000)); box-shadow: 0 8px 18px rgba(0, 0, 0, .14), inset 0 1px 0 rgba(255, 255, 255, .35); }
+.sheet-badge .ico { width: 28px; height: 28px; }
+.done-sheet .sheet-badge { margin: 0 auto; }
+.stat { background: var(--bg); border-radius: 16px; }
+.stat b { font-family: var(--head); font-weight: 800; }
+.btn { border-radius: 999px; padding: 12px 22px; font-family: var(--head); font-weight: 800; background: var(--surface); color: var(--ink); box-shadow: var(--lift); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn.primary { color: #fff; background: linear-gradient(160deg, color-mix(in srgb, var(--c, var(--brand)) 85%, #fff), color-mix(in srgb, var(--c, var(--brand)) 82%, #000)); box-shadow: 0 6px 14px rgba(0, 0, 0, .12), inset 0 1px 0 rgba(255, 255, 255, .3); }
+.btn .ico { width: 18px; height: 18px; }
+.conn { background: var(--bg); border-radius: 16px; }
+.pill-btn { font-family: var(--head); font-weight: 800; box-shadow: var(--lift); }
+.pill-btn.on { background: var(--green); }
+.toast { background: var(--brand); font-weight: 700; }
+.rules { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.rules li { display: flex; gap: 10px; align-items: flex-start; color: var(--ink); line-height: 1.45; }
+.rules li::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 8px; border-radius: 50%; background: var(--c); }
+
+/* ---------- Linkology board ---------- */
+.board { background: var(--tray); box-shadow: inset 0 0.3cqw 1cqw rgba(80, 50, 40, .10); }
+.tile { font-family: var(--head); font-weight: 700; }
+.tile.anag { color: var(--purple-ink); }
+.ghost { font-family: var(--head); font-weight: 700; }
+.tool { width: 60px; height: 60px; border-radius: 999px; color: var(--coral); box-shadow: var(--lift); }
+.tool .ico { width: 26px; height: 26px; }
+#freezeBtn { color: var(--blue); }
+#shuffleBtn { color: var(--brand); }
+.tool .n { background: var(--coral); font-family: var(--head); }
+#freezeN { background: var(--blue); }
+.tool-label { font-family: var(--head); font-weight: 800; }
+
+/* ---------- The Wall ---------- */
+.wall { background: var(--tray); box-shadow: inset 0 0.3cqw 1cqw rgba(80, 50, 40, .10); }
+.wtile { font-family: var(--head); font-weight: 700; }
+.wtile.sel { box-shadow: 0 0 0 0.45cqw var(--blue), 0 1cqw 2cqw rgba(41, 36, 45, .18); }
+
+/* ---------- Daily Five ---------- */
+.ft { border-radius: 12px; font-family: var(--head); background: #fff; box-shadow: inset 0 0 0 2px var(--border); position: relative; }
+.ft.typed { box-shadow: inset 0 0 0 2px var(--ink); }
+.ft.c, .ft.p, .ft.a { box-shadow: 0 2px 0 rgba(0, 0, 0, .08); }
+.ft.c::after { content: ""; position: absolute; left: 22%; right: 22%; bottom: 9%; height: 4px; border-radius: 3px; background: rgba(255, 255, 255, .9); }
+.ft.p::after { content: ""; position: absolute; right: 9%; top: 9%; width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, .95); }
+.key { border-radius: 12px; background: #fff; box-shadow: 0 1.5px 0 var(--tile-edge), 0 4px 10px rgba(80, 50, 40, .06); font-family: var(--head); font-weight: 800; color: var(--ink); }
+.key.c, .key.p, .key.a { color: #fff; }
+.key.wide .ico { width: 22px; height: 22px; }
+.legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); font-weight: 700; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { position: relative; width: 20px; height: 20px; border-radius: 6px; display: inline-block; }
+.legend i.c { background: var(--green); } .legend i.p { background: var(--amber); } .legend i.a { background: #A79FA5; }
+.legend i.c::after { content: ""; position: absolute; left: 4px; right: 4px; bottom: 3px; height: 2.5px; border-radius: 2px; background: #fff; }
+.legend i.p::after { content: ""; position: absolute; right: 3px; top: 3px; width: 5px; height: 5px; border-radius: 50%; background: #fff; }
+.dist i { font-family: var(--head); border-radius: 7px; background: #E9E0E4; }
+
+/* ---------- Letter Wheel ---------- */
+.daily .ghead { width: 100%; }
+.wheel-screen { --c: var(--purple); }
+.wl { font-family: var(--head); background: #fff; box-shadow: var(--lift); color: var(--ink); }
+.wl.centre { background: linear-gradient(160deg, #B66CF2, #8336D6); color: #fff; }
+.typed { font-family: var(--head); }
+.found { border-radius: 26px; box-shadow: var(--card); }
+.found .section-label { font-family: var(--head); }
+.clue-btn { background: #FFF1D6; box-shadow: var(--lift); }
+.clue-btn.ask { background: var(--amber); color: var(--ink); }
+.rank-head b { font-family: var(--head); color: var(--purple-ink); }
+.wheel-btns.extra { border-top-color: var(--border); }
+.wheel-btns { flex-wrap: wrap; justify-content: center; }
+.wheel-btns .btn { white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .games { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .panels { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .ghead { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .ghead-brand { display: none; }
+  .ghead-c { text-align: left; }
+  .ghead-c h1 { font-size: 21px; }
+  .ghead-c small { font-size: 10.5px; letter-spacing: .1em; }
+  .round { width: 42px; height: 42px; }
+  .gpill, .timer { height: 40px; font-size: 15px; padding: 0 12px 0 10px; }
+  .gpill.help { width: 40px; }
+  .hello h1 { font-size: 30px; }
+  .hello p { font-size: 1rem; }
+  .statstrip { width: 100%; padding: 10px 0; }
+  .statstrip > div { flex: 1; flex-direction: column; text-align: center; gap: 6px; padding: 0 6px; }
+  .statstrip .dotico { width: 32px; height: 32px; }
+  .statstrip .dotico .ico { width: 18px; height: 18px; }
+  .games { grid-template-columns: 1fr; gap: 14px; }
+  .gcard { flex-direction: row; align-items: stretch; gap: 4px; }
+  .gcard .art { width: 118px; height: auto; min-height: 132px; flex: none; }
+  .gcard .art { padding-top: 34px; }
+  .mboard { margin-left: 0; gap: 3px; }
+  .mboard.b { grid-template-columns: repeat(5, 16px); }
+  .mboard.b .mt { height: 10px; border-radius: 3px; }
+  .mboard.w { grid-template-columns: repeat(4, 20px); }
+  .mboard.w .mt { height: 12px; border-radius: 3px; }
+  .mboard.f { grid-template-columns: repeat(5, 17px); gap: 3px; }
+  .mboard.f .mt { height: 17px; font-size: 9px; border-radius: 4px; }
+  .mboard.f .mt.c::after { left: 4px; right: 4px; bottom: 2px; height: 1.5px; }
+  .mboard.f .mt.p::after { right: 2px; top: 2px; width: 3px; height: 3px; }
+  .mwheel.big { width: 84px; height: 84px; margin-left: 0; }
+  .mwheel.big b, .mwheel.big i { width: 26px; height: 26px; margin: -13px; font-size: .8rem; }
+  .mwheel.big i { transform: rotate(var(--a)) translateY(-29px) rotate(calc(-1 * var(--a))); }
+  .gcard .badge { width: 34px; height: 34px; border-radius: 11px; left: 8px; top: 8px; }
+  .gcard .badge .ico { width: 18px; height: 18px; }
+  .gcard .body { padding: 6px 4px 2px 10px; }
+  .gcard h3 { font-size: 21px; }
+  .gcard p { font-size: 13.5px; }
+  .gcard .foot { padding-top: 8px; flex-wrap: wrap; }
+  .meter { width: 80px; }
+  .go { height: 38px; font-size: 14px; padding: 0 12px 0 15px; }
+  .soon-row { grid-template-columns: 1fr; }
+  .navbar button { padding: 0 16px; height: 48px; font-size: 14px; }
+  .page-head h1 { font-size: 30px; }
+  .logo .wordmark { font-size: 28px; }
+}
+@media (max-width: 380px) {
+  .navbar button span { display: none; }
+}
+@media (max-width: 420px) {
+  .lang { padding: 10px 6px; }
+  .lang small { display: none; }
+}
+
 @media (max-width: 700px) {
   .wheel-body { flex-direction: column; gap: 14px; }
   .wheel-screen { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 24px; }
@@ -372,8 +680,9 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 65; }
 @media (prefers-reduced-motion: reduce) {
-  .screen, .sheet, .overlay, .tile.hinted, .timer.low { animation: none !important; }
+  .screen, .sheet, .overlay, .tile.hinted, .timer.low, .wtile.found.new, .ft.typed, .done-art span { animation: none !important; }
 }
+html.calm .screen, html.calm .sheet, html.calm .overlay, html.calm .tile.hinted, html.calm .timer.low, html.calm .wtile.found.new, html.calm .ft.typed, html.calm .done-art span, html.calm .band.new { animation: none !important; }
 @media (max-width: 600px) {
   .board { width: min(100cqw, 80cqh); aspect-ratio: .8; gap: 1.6% 1.8%; }
   .tile { font-size: 2.75cqw; letter-spacing: 0; padding: 0 .15em; }
@@ -391,10 +700,10 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 <script src="puzzles.js"></script>
 <script src="words.js"></script>
 <script>
-const GROUP_COLOURS = ["#FF5A3C", "#3E7BFA", "#1FB57A", "#F5A300", "#A855F7", "#00B2C9", "#FF7A1A", "#EC4899", "#5B6CFF", "#7CB82F", "#0EA5A0", "#E8456B", "#2E86DE", "#D97706", "#6366F1", "#16A34A"];
-const WALL_COLOURS = ["#3E7BFA", "#1FB57A", "#F5A300", "#FF5A3C"];
+const GROUP_COLOURS = ["#FF5A3C", "#3E7BFA", "var(--green)", "#F5A300", "var(--purple)", "#00B2C9", "#FF7A1A", "#EC4899", "#5B6CFF", "#7CB82F", "#0EA5A0", "#E8456B", "#2E86DE", "#D97706", "#6366F1", "#16A34A"];
+const WALL_COLOURS = ["#3E7BFA", "var(--green)", "#F5A300", "#FF5A3C"];
 const TRACKS = [
-  { key: "Easy", colour: "#1FB57A", blurb: "Gentle warm-ups, no clock" },
+  { key: "Easy", colour: "var(--green)", blurb: "Gentle warm-ups, no clock" },
   { key: "Medium", colour: "#F5A300", blurb: "Trickier links, some against the clock" },
   { key: "Hard", colour: "#FF5A3C", blurb: "Red herrings and a ticking clock" },
 ];
@@ -407,7 +716,7 @@ const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.f
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const fmt = s => { s = Math.max(0, Math.floor(s)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches || !!((store.get().profile || {}).calm);
 function parseTile(raw) {
   const i = raw.indexOf("|");
   return i > 0 ? { pic: raw.slice(0, i), label: raw.slice(i + 1) } : { pic: null, label: raw };
@@ -528,6 +837,26 @@ const FR = {
   "Some groups have one word with its letters scrambled, marked ↻. Work out what it really says. When you find the group, it unscrambles.":
     "Certains groupes ont un mot aux lettres mélangées, marqué ↻. Devinez le vrai mot. Quand vous trouvez le groupe, il se remet en ordre.",
   "Got it": "Compris",
+  "Back to home": "Retour à l'accueil", "How to play": "Comment jouer", "How to play {name}": "Comment jouer à {name}",
+  "Swap two tiles by dragging one onto the other, or tap one and then the other.": "Échangez deux tuiles en faisant glisser l'une sur l'autre, ou touchez l'une puis l'autre.",
+  "Make a row of five tiles that belong together. The row turns into a coloured group.": "Formez une rangée de cinq tuiles qui vont ensemble. La rangée devient un groupe coloré.",
+  "Small groups shrink into a picture tile, and the pictures make bigger groups.": "Les petits groupes deviennent une image, et les images forment de plus grands groupes.",
+  "Stuck? A hint lights up two tiles that belong together. You have 3, and they all come back 6 hours after you use the first one.": "Bloqué ? Un indice éclaire deux tuiles qui vont ensemble. Vous en avez 3, et elles reviennent toutes 6 heures après la première utilisée.",
+  "On timed levels, Freeze stops the clock for 30 seconds.": "Dans les niveaux chronométrés, Geler arrête le chrono pendant 30 secondes.",
+  "Some groups have one word with its letters scrambled, marked ↻. When you find the group, it unscrambles.": "Certains groupes ont un mot aux lettres mélangées, marqué ↻. Quand vous trouvez le groupe, il se remet en ordre.",
+  "Main": "Menu", "Statistics": "Statistiques", "Settings": "Réglages", "Swap words to link groups of five.": "Échangez les mots pour former des groupes de cinq.",
+  "Every level solved": "Tous les niveaux réussis", "levels solved": "niveaux réussis", "Your progress": "Votre progression", "Your games": "Vos jeux",
+  "Today": "Aujourd'hui", "Coming soon": "Bientôt", "Soon": "Bientôt",
+  "Change one letter at a time to reach the target.": "Changez une lettre à la fois pour atteindre le mot cible.",
+  "Crack the code to reveal hidden words.": "Déchiffrez le code pour révéler les mots cachés.",
+  "Your level path": "Votre parcours", "hints left": "indices restants", "All your hints come back in {t}.": "Tous vos indices reviennent dans {t}.",
+  "How you're getting on, game by game.": "Vos progrès, jeu par jeu.", "Changes save straight away.": "Les changements sont enregistrés tout de suite.",
+  "Your name": "Votre prénom", "Used in greetings and results.": "Utilisé pour vous saluer et dans les résultats.", "Language": "Langue",
+  "Spellings, words and levels follow your choice.": "L'orthographe, les mots et les niveaux suivent votre choix.", "Motion": "Animations",
+  "Reduce motion": "Réduire les animations", "Turns off confetti, pulsing and bouncy screen changes.": "Désactive les confettis, les pulsations et les transitions animées.",
+  "About": "À propos", "A little world of word games.": "Un petit monde de jeux de mots.",
+  "Free, with no adverts. Your progress is saved on this device.": "Gratuit, sans publicité. Votre progression est enregistrée sur cet appareil.",
+  "Language changed": "Langue modifiée", "Coming soon in French": "Bientôt en français",
 };
 function tr(text, vars = {}) {
   const t = isFR() && FR[text] || text;
@@ -576,6 +905,104 @@ const ICONS = {
   heart: `<svg class="heart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>`,
 };
 
+/* ---------- Wordolio brand and shared pieces ---------- */
+// The name, wordmark and tagline live here, so the branding can change in one place.
+const BRAND = { name: "Wordolio", first: "Word", second: "olio", tagline: "A little world of word games." };
+const wordmark = () => `<span class="wordmark">${BRAND.first}<span>${BRAND.second}</span></span>`;
+const MARK = s => `<svg width="${s}" height="${s}" viewBox="0 0 30 30" aria-hidden="true">${[["#FF6B57", "#A552E8", "#3CB8D6"], ["#F1AA3C", "#20B583", "#B9A3E3"], ["#477EF0", "#E86B9D", "#30243F"]]
+  .map((row, r) => row.map((c, k) => `<rect x="${k * 10.75}" y="${r * 10.75}" width="8.5" height="8.5" rx="2.5" fill="${c}"/>`).join("")).join("")}</svg>`;
+const PATHS = {
+  grid: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
+  cal: '<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/>',
+  wheel: '<circle cx="12" cy="12" r="2.6"/><circle cx="12" cy="5" r="2"/><circle cx="18" cy="9" r="2"/><circle cx="18" cy="15.5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="6" cy="15.5" r="2"/><circle cx="6" cy="9" r="2"/>',
+  wall: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 12h18M9 5v7M15 12v7"/>',
+  steps: '<path d="M4 19h5v-5h5V9h5V4"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  stats: '<path d="M6 20V12M12 20V5M18 20v-5"/>',
+  set: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>',
+  flame: '<path d="M12 3c2 4 6 5 6 10a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 3 3 3 5 1-2 1-5 1-8z"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9.5 17h5"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  help: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01"/>',
+  bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
+  snow: '<path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 3.5l3 2 3-2M9 20.5l3-2 3 2M3.6 10.6l3.2-1.1-.6-3.4M20.4 13.4l-3.2 1.1.6 3.4M3.6 13.4l3.2 1.1-.6 3.4M20.4 10.6l-3.2-1.1.6-3.4"/>',
+  shuffle: '<path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
+  share: '<path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>',
+  del: '<path d="M21 5H9l-6 7 6 7h12z"/><path d="M17 9l-5 6M12 9l5 6"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  motion: '<path d="M4 12h3l2-5 4 10 2-5h5"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',
+  clock: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>',
+  chevr: '<path d="M9 5l7 7-7 7"/>',
+  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+};
+const ic = name => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${PATHS[name]}</svg>`;
+const GAMES = {
+  board: { name: "Linkology", c: "#FF6B57", ci: "#C2402E", icon: "grid", art: "linear-gradient(160deg,#FFE3DC,#FFC9BE)", badge: "linear-gradient(160deg,#FF8A73,#E8503A)" },
+  five: { name: "Daily Five", c: "#20B583", ci: "#0E7F5A", icon: "cal", art: "linear-gradient(160deg,#DDF5EA,#BDE8D5)", badge: "linear-gradient(160deg,#35C894,#0E8F63)" },
+  wheel: { name: "Letter Wheel", c: "#A552E8", ci: "#7B2FC0", icon: "wheel", art: "linear-gradient(160deg,#F1E4FD,#DDC5F8)", badge: "linear-gradient(160deg,#B66CF2,#8336D6)" },
+  wall: { name: "The Wall", c: "#477EF0", ci: "#2856C2", icon: "wall", art: "linear-gradient(160deg,#E2EBFE,#C5D6FB)", badge: "linear-gradient(160deg,#6A98F5,#2F64D6)" },
+  steps: { name: "Word Steps", c: "#F1AA3C", icon: "steps", art: "linear-gradient(160deg,#FFF0D6,#FCDCA6)", badge: "linear-gradient(160deg,#F6BE5C,#D98C17)" },
+  lock: { name: "Letter Lock", c: "#E86B9D", icon: "lock", art: "linear-gradient(160deg,#FDE3EE,#F8C6DA)", badge: "linear-gradient(160deg,#F08AB4,#CF4C82)" },
+};
+const applyCalm = () => document.documentElement.classList.toggle("calm", !!(profile() || {}).calm);
+
+// The header every game shares: back and brand on the left, title in the middle, game pills on the right.
+function gameHeader(g, sub, right = "") {
+  const G = GAMES[g];
+  return `<header class="ghead" style="--c:${G.c};--ci:${G.ci}">
+    <div class="ghead-l"><button class="round" id="back" aria-label="${tr("Back to home")}">${ic("back")}</button><span class="ghead-brand">${MARK(22)}${wordmark()}</span></div>
+    <div class="ghead-c"><h1>${G.name}</h1><small>${sub}</small></div>
+    <div class="ghead-r">${right}<button class="gpill help" id="help" aria-label="${tr("How to play")}">${ic("help")}</button></div>
+  </header>`;
+}
+const sheetBadge = (icon) => `<span class="sheet-badge">${ic(icon)}</span>`;
+const sheetStyle = g => `style="--c:${GAMES[g].c}"`;
+
+function showHelp(g) {
+  const rules = {
+    board: [tr("Swap two tiles by dragging one onto the other, or tap one and then the other."),
+      tr("Make a row of five tiles that belong together. The row turns into a coloured group."),
+      tr("Small groups shrink into a picture tile, and the pictures make bigger groups."),
+      tr("Stuck? A hint lights up two tiles that belong together. You have 3, and they all come back 6 hours after you use the first one."),
+      ...(B && B.timed ? [tr("On timed levels, Freeze stops the clock for 30 seconds.")] : []),
+      ...(B && B.level.anagrams ? [tr("Some groups have one word with its letters scrambled, marked ↻. When you find the group, it unscrambles.")] : [])],
+    five: ["Guess the five-letter word in six tries.", "Green with a bar means the right letter in the right place.",
+      "Amber with a dot means the letter is in the word, but somewhere else.", "Grey means the letter isn't in the word.",
+      "Everyone gets the same word, and a new one arrives at midnight."],
+    wheel: ["Make words of 4 or more letters from the seven letters.", "Every word must use the purple middle letter. Letters can be used more than once.",
+      "4-letter words score 1 point. Longer words score a point for each letter.", "A word that uses all seven letters scores 7 bonus points.",
+      "You get 3 clues a day. Each clue fills in one more letter of every word."],
+    wall: ["Sixteen clues are hiding four groups of four.", "Tap four clues that belong together to make a group.",
+      "You have three minutes. Once you've found two groups, you only get three more wrong guesses.",
+      "At the end, score a point for each group, and a point for each link you knew. Get all eight for 2 bonus points."],
+  }[g];
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle(g)}>
+    ${sheetBadge(GAMES[g].icon)}
+    <h2>${tr("How to play {name}", { name: GAMES[g].name })}</h2>
+    <ul class="rules">${rules.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+    <div class="actions"><button class="btn primary" id="helpOk">${tr("Got it")}</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  $("#helpOk", ov).onclick = close;
+  ov.addEventListener("click", e => { if (e.target === ov) close(); });
+}
+
+function navBar(on) {
+  const b = (id, icon, label) => `<button id="nav-${id}" class="${on === id ? "on" : ""}" ${on === id ? 'aria-current="page"' : ""}>${ic(icon)}<span>${label}</span></button>`;
+  return `<nav class="navbar" aria-label="${tr("Main")}">${b("home", "home", tr("Home"))}${b("stats", "stats", tr("Statistics"))}${b("settings", "set", tr("Settings"))}</nav>`;
+}
+function bindNav() {
+  $("#nav-home").onclick = () => showHome();
+  $("#nav-stats").onclick = showStats;
+  $("#nav-settings").onclick = showSettings;
+}
+
 /* ---------- timer (shared) ---------- */
 let tickHandle = null, lastTick = 0, onTick = null;
 function startTicking(fn) {
@@ -586,7 +1013,7 @@ function stopTicking() { clearInterval(tickHandle); tickHandle = null; }
 
 /* ---------- confetti ---------- */
 function confetti() {
-  if (reduceMotion) return;
+  if (reduceMotion()) return;
   const c = document.createElement("canvas"); c.id = "confetti"; document.body.appendChild(c);
   const ctx = c.getContext("2d"), dpr = devicePixelRatio || 1;
   c.width = innerWidth * dpr; c.height = innerHeight * dpr; ctx.scale(dpr, dpr);
@@ -628,89 +1055,165 @@ function greeting(first) {
   return pick([`${part}, ${n}. Nice to see you today.`, `Hi ${n}, how are you doing today?`, `Welcome back, ${n}. Ready for another puzzle?`, `Hello ${n}! Lovely to see you again.`]);
 }
 
+function helloLine() {
+  if (isFR()) return "Vos jeux de mots vous attendent.";
+  const five = fiveState(), wheel = wheelState(), a = five.guesses.length > 0, b = wheel.found.length > 0;
+  if (five.over && wheelDone(wheel)) return "Both dailies done today. Lovely work.";
+  if (a && b) return "You've played both dailies today. Nice work.";
+  if (a || b) return "One daily down, one to go.";
+  return "Your daily word games are ready.";
+}
+const meter = (n, of) => `<div class="meter"><i style="width:${of ? Math.round(100 * n / of) : 0}%"></i></div>`;
+const solvedBoards = () => LEVELS().filter((_, i) => isDone(bkey(i))).length;
+const solvedWalls = () => WALLS.filter((_, i) => isDone("wall-" + i)).length;
+
+function gameCard(key, id, desc, status, action, art, off = "") {
+  const G = GAMES[key];
+  return `<button class="gcard ${off ? "off" : ""}" id="${id}" style="--c:${G.c};--art:${G.art};--badge:${G.badge}" ${off ? 'aria-disabled="true"' : ""}>
+    <div class="art"><span class="badge">${ic(G.icon)}</span>${art}</div>
+    <div class="body"><h3>${G.name}</h3><p>${desc}</p>
+      <div class="foot"><div class="status">${status}</div>${off ? `<span class="soon-tag">${off}</span>` : `<span class="go">${action}${ic("chevr")}</span>`}</div></div>
+  </button>`;
+}
+
 function showHome(first = false) {
   leaveGame();
   if (!profile()) return showWelcome();
-  const s = store.get();
-  const nb = nextBoard(), nw = nextWall();
-  const miniB = Array.from({ length: 20 }, (_, i) => i >= 15 ? `<i class="c" style="--c:#3E7BFA"></i>` : i >= 10 ? `<i class="c" style="--c:#FF5A3C"></i>` : "<i></i>").join("");
-  const miniW = Array.from({ length: 16 }, (_, i) => i < 4 ? `<i class="c" style="--c:${WALL_COLOURS[0]}"></i>` : i < 8 ? `<i class="c" style="--c:${WALL_COLOURS[1]}"></i>` : "<i></i>").join("");
-  const miniF = ["#1FB57A", "#B9AE9C", "#F5A300", "#B9AE9C", "#1FB57A"].map(c => `<i class="c" style="--c:${c}"></i>`).join("") + "<i></i>".repeat(10);
-  const nbL = nb != null ? LEVELS()[nb] : null;
-  const bc = nbL ? trackColour(nbL.difficulty) : TRACKS[0].colour;
-  const tags = l => [tr(l.difficulty), l.time ? tr("Timed") : "", l.anagrams ? tr("Anagrams") : ""].filter(Boolean).join(" · ");
-  const boardNow = nbL
-    ? `<div class="now" style="--c:${bc}"><small>${tags(nbL)}</small><b>${tr("Level {n}", { n: levelNo(nb) })}</b></div>`
-    : `<div class="now" style="--c:${bc}"><small>${tr("You've played every level")}</small><b>${tr("More levels are on the way")}</b></div>`;
-  const wallNow = nw != null
-    ? `<div class="now" style="--c:${WALL_COLOURS[0]}"><small>Three minutes on the clock</small><b>Level ${nw + 1}</b></div>`
-    : `<div class="now" style="--c:${WALL_COLOURS[0]}"><small>You've played every wall</small><b>More walls are on the way</b></div>`;
-  const five = fiveState(), wheel = wheelState();
-  const english = !isFR();
+  applyCalm();
+  const s = store.get(), english = !isFR(), name = esc(playerName());
+  const nb = nextBoard(), nw = nextWall(), nbL = nb != null ? LEVELS()[nb] : null;
+  const five = fiveState(), fs = fiveStats(), wheel = wheelState();
+  const boards = solvedBoards(), walls = solvedWalls();
+  const dailies = (five.guesses.length ? 1 : 0) + (wheel.found.length ? 1 : 0);
+  const stat = (icon, bg, col, big, small) => `<div><span class="dotico" style="background:${bg};color:${col}">${ic(icon)}</span><span><b>${big}</b><span>${small}</span></span></div>`;
+  const strip = english
+    ? stat("flame", "#FFE9DC", "#E8642F", `${fs.streak} day${fs.streak === 1 ? "" : "s"}`, "Five streak") +
+      stat("check", "#D9F3E8", "#13996D", `${dailies} / 2`, "dailies played today") +
+      stat("trophy", "#FCEFCF", "#C88A12", boards + walls, "levels and walls solved")
+    : stat("trophy", "#FCEFCF", "#C88A12", boards, tr("levels solved"));
+  const tiles = (cols, rows) => rows.map(c => `<i class="mt" style="background:${c}"></i>`.repeat(cols)).join("");
+  const artBoard = `<div class="mboard b">${tiles(5, ["#fff", "#fff", "#FF6B57", "#477EF0"])}</div>`;
+  const artWall = `<div class="mboard w">${tiles(4, ["#477EF0", "#fff", "#fff", "#fff"])}</div>`;
+  const artFive = `<div class="mboard f">${[["W", "c"], ["O", "a"], ["R", "p"], ["D", "a"], ["S", "c"]].map(([l, k]) => `<i class="mt ${k}" style="background:${{ c: "#20B583", p: "#F1AA3C", a: "#A79FA5" }[k]}">${l}</i>`).join("")}${'<i class="mt"></i>'.repeat(5)}</div>`;
+  const soon = tr("Coming soon in French");
+
+  const boardCard = gameCard("board", "modeBoard", tr("Swap words to link groups of five."),
+    `<b>${nbL ? `${tr("Level {n}", { n: levelNo(nb) })} · ${tr(nbL.difficulty)}` : tr("Every level solved")}</b>${meter(boards, LEVELS().length)}`,
+    nb == null ? tr("Play again") : s["save-" + bkey(nb)] ? tr("Continue") : tr("Play"), artBoard);
+  const fiveCard = english ? gameCard("five", "modeFive", "Guess the five-letter word in six tries.",
+    `<b>${five.over ? (five.won ? `Solved in ${five.guesses.length}` : "Done for today") : five.guesses.length ? `${five.guesses.length} of 6 tries used` : "Today's word is ready"}</b><small>${fs.streak ? `${fs.streak} day streak` : "&nbsp;"}</small>`,
+    five.over ? "See result" : five.guesses.length ? "Continue" : "Play", artFive)
+    : gameCard("five", "modeFive", "", "", "", artFive, soon);
+  const wheelCard = english ? gameCard("wheel", "modeWheel", "Make as many words as you can.",
+    `<b>${wheelDone(wheel) ? `All ${wheel.found.length} words found!` : wheel.found.length ? `${wheel.found.length} of ${wheel.words.size} words` : "Today's wheel is ready"}</b>${meter(wheel.found.length, wheel.words.size)}`,
+    wheelDone(wheel) ? "See wheel" : wheel.found.length ? "Continue" : "Play", wheelArt(wheel.puzzle, true))
+    : gameCard("wheel", "modeWheel", "", "", "", wheelArt(wheel.puzzle, true), soon);
+  const wallCard = english ? gameCard("wall", "modeWall", "Find the four hidden groups.",
+    `<b>${nw != null ? `Level ${nw + 1}` : "Every wall solved"}</b>${meter(walls, WALLS.length)}`,
+    nw == null ? "Play again" : s["save-wall-" + nw] ? "Continue" : "Play", artWall)
+    : gameCard("wall", "modeWall", "", "", "", artWall, soon);
+  const soonCard = (key, text) => `<div class="soon-card" style="--art:${GAMES[key].art};--badge:${GAMES[key].badge}"><div class="art"><span>${ic(GAMES[key].icon)}</span></div><div><h3>${GAMES[key].name}</h3><p>${text}</p></div><span class="soon-tag">${tr("Soon")}</span></div>`;
+
   app.innerHTML = `
-  <div class="screen scroll">
-    <div class="home-top">
-      <div class="brand"><div class="mark">${"<i></i>".repeat(9)}</div><h1>Linkboard</h1></div>
-      <button class="flag-btn" id="settings" aria-label="Change your name or language"><b>${FLAGS[lang()]}</b>${LANG_SHORT[lang()]}</button>
+  <div class="screen scroll home">
+    <header class="home-head"><div class="logo">${MARK(38)}${wordmark()}</div></header>
+    <div class="hello">
+      <div><h1>${isFR() ? `Bonjour${name ? ", " + name : ""} !` : `Hello${name ? ", " + name : ""}!`}</h1><p>${helloLine()}</p></div>
+      <div class="statstrip" aria-label="${tr("Your progress")}">${strip}</div>
     </div>
-    <p class="greet">${greeting(first)}</p>
-    <p class="section-label">${tr("Game modes")}</p>
-    <div class="modes">
-      <button class="mode-card" id="modeBoard">
-        <div class="art"><div class="mini b">${miniB}</div></div>
-        <h2>Linkboard</h2>
-        ${boardNow}
-        <p>${tr("Swap the words around to make rows of five that belong together. Small groups shrink into pictures, and the pictures make bigger groups.")}</p>
-        <div class="foot"><span></span><span class="go tinted" style="--c:${bc}">${nb == null ? tr("Play again") : s["save-" + bkey(nb)] ? tr("Continue") : tr("Play")}</span></div>
-      </button>
-      ${english ? `
-      <button class="mode-card" id="modeFive">
-        <div class="art"><div class="mini f">${miniF}</div></div>
-        <h2>Daily Five</h2>
-        <div class="now" style="--c:#1FB57A"><small>A new word every day</small><b>${five.over ? (five.won ? "Solved today" : "Done for today") : five.guesses.length ? "In progress" : "Today's word is ready"}</b></div>
-        <p>Guess the five-letter word in six tries. Green means the right letter in the right spot, yellow means it's in the word but somewhere else.</p>
-        <div class="foot"><span class="progress-text">${fiveStats().streak ? "Streak: " + fiveStats().streak + " days" : ""}</span><span class="go tinted" style="--c:#1FB57A">${five.over ? "See result" : five.guesses.length ? "Continue" : "Play"}</span></div>
-      </button>
-      <button class="mode-card" id="modeWheel">
-        <div class="art">${wheelArt(wheel.puzzle)}</div>
-        <h2>Letter Wheel</h2>
-        <div class="now" style="--c:#A855F7"><small>New letters every day</small><b>${wheelDone(wheel) ? `All ${wheel.found.length} words found! 🎉` : wheel.found.length ? `${wheel.found.length} words, ${wheelRank(wheel).name}` : "Today's wheel is ready"}</b></div>
-        <p>Make as many words as you can from seven letters. Every word must use the letter in the middle, and a word that uses all seven scores a bonus.</p>
-        <div class="foot"><span></span><span class="go tinted" style="--c:#A855F7">${wheelDone(wheel) ? "See today's wheel" : wheel.found.length ? "Continue" : "Play"}</span></div>
-      </button>
-      <button class="mode-card" id="modeWall">
-        <div class="art"><div class="mini w">${miniW}</div></div>
-        <h2>The Wall</h2>
-        ${wallNow}
-        <p>Sixteen clues are hiding four groups of four. Tap four clues that belong together to make a group. You have three minutes, and once you've found two groups, you only get three more wrong guesses. At the end, score bonus points for saying what links each group.</p>
-        <div class="foot"><span></span><span class="go tinted" style="--c:${WALL_COLOURS[0]}">${nw == null ? "Play again" : s["save-wall-" + nw] ? "Continue" : "Play"}</span></div>
-      </button>` : `
-      <div class="mode-card soon"><div class="art">🧱</div><h2>Le Mur, Daily Five, Letter Wheel</h2><p>${tr("Coming soon in French")}</p></div>`}
-      <div class="mode-card soon" aria-label="More game modes coming soon">
-        <div class="art">✨</div>
-        <h2>${tr("More on the way")}</h2>
-        <p>${tr("New games will appear here as we build them.")}</p>
-      </div>
-    </div>
-  </div>`;
+    <div class="games-head"><h2>${tr("Your games")}</h2><span class="chip">${ic("cal")}${tr("Today")}, ${esc(todayLabel())}</span></div>
+    <section class="games">${boardCard}${fiveCard}${wheelCard}${wallCard}</section>
+    <p class="games-sub">${tr("Coming soon")}</p>
+    <section class="soon-row">
+      ${soonCard("steps", tr("Change one letter at a time to reach the target."))}
+      ${soonCard("lock", tr("Crack the code to reveal hidden words."))}
+    </section>
+  </div>${navBar("home")}`;
+  bindNav();
   $("#modeBoard").onclick = () => startBoard(nb ?? pick(PATH()));
   if (english) {
     $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
     $("#modeFive").onclick = startFive;
     $("#modeWheel").onclick = startWheel;
   }
-  $("#settings").onclick = () => showProfileSheet(false);
 }
 
-/* First launch: ask the player's name and language. The same form changes them later. */
+/* Statistics: only numbers the app really keeps. */
+function showStats() {
+  leaveGame();
+  const s = store.get(), L = LEVELS(), english = !isFR();
+  const panel = (g, sub, body) => `<section class="panel" style="--c:${GAMES[g].c}"><div class="panel-head"><span class="badge" style="--badge:${GAMES[g].badge}">${ic(GAMES[g].icon)}</span><div><h2>${GAMES[g].name}</h2><small>${sub}</small></div></div>${body}</section>`;
+  const num = (big, small) => `<div class="num"><b>${big}</b><span>${small}</span></div>`;
+  const bar = (label, n, of, right = `${n} / ${of}`) => `<div class="barrow"><span>${label}</span><span class="track"><i style="width:${of ? Math.round(100 * n / of) : 0}%"></i></span><em>${right}</em></div>`;
+  const byDiff = DIFFS.map(d => { const ids = L.map((l, i) => l.difficulty === d ? i : -1).filter(i => i >= 0); return { d, n: ids.filter(i => isDone(bkey(i))).length, of: ids.length }; }).filter(x => x.of);
+  const hw = hintWallet();
+  let html = panel("board", tr("Your level path"), `
+    <div class="nums">${num(`${solvedBoards()} / ${L.length}`, tr("levels solved"))}${num(`${hw.n} / ${HINT_MAX}`, tr("hints left"))}</div>
+    <div class="bars">${byDiff.map(x => bar(tr(x.d), x.n, x.of)).join("")}</div>
+    ${hw.n < HINT_MAX ? `<p class="note">${tr("All your hints come back in {t}.", { t: hintWait() })}</p>` : ""}`);
+  if (english) {
+    const fs = fiveStats(), maxD = Math.max(1, ...fs.dist);
+    html += panel("five", "A new word every day", `
+      <div class="nums">${num(fs.played, "played")}${num(`${fs.played ? Math.round(100 * fs.won / fs.played) : 0}%`, "won")}${num(fs.streak, "day streak")}${num(fs.best, "best streak")}</div>
+      <div class="bars">${fs.dist.map((n, i) => bar(`${i + 1} ${i ? "tries" : "try"}`, n, maxD, n)).join("")}</div>`);
+    const wh = wheelState(), days = Object.keys(s).filter(k => /^wheel-\d{4}-\d\d-\d\d$/.test(k) && (s[k].found || []).length);
+    html += panel("wheel", "New letters every day", `
+      <div class="nums">${num(`${wh.found.length} / ${wh.words.size}`, "words today")}${num(wh.score, "points today")}${num(days.length, "days played")}${num(Math.max(0, ...days.map(k => s[k].found.length)), "most words in a day")}</div>
+      <p class="note">Today's rank: <b>${wheelRank(wh).name}</b>.</p>`);
+    const bests = WALLS.map((_, i) => s["best-wall-" + i]).filter(v => v != null);
+    html += panel("wall", "Four groups of four", `
+      <div class="nums">${num(`${solvedWalls()} / ${WALLS.length}`, "walls solved")}${num(bests.length ? (bests.reduce((a, b) => a + b, 0) / bests.length).toFixed(1) : "–", "average score out of 10")}${num(bests.filter(v => v >= 10).length, "perfect walls")}</div>
+      ${bar("Solved", solvedWalls(), WALLS.length)}`);
+  }
+  app.innerHTML = `
+  <div class="screen scroll home">
+    <header class="page-head"><h1>${tr("Statistics")}</h1><p>${tr("How you're getting on, game by game.")}</p></header>
+    <div class="panels">${html}</div>
+  </div>${navBar("stats")}`;
+  bindNav();
+}
+
+/* Settings: name, language and calmer motion. Changes save straight away. */
+function showSettings() {
+  leaveGame();
+  const p = { ...profile() };
+  const save = patch => store.set("profile", { ...profile(), ...patch });
+  const opt = (code, label, sample) => `<button class="lang ${p.lang === code ? "on" : ""}" data-lang="${code}"><b>${FLAGS[code]}</b><span>${label}</span><small>${sample}</small></button>`;
+  const head = (icon, bg, title, sub) => `<div class="panel-head"><span class="badge" style="--badge:${bg}">${ic(icon)}</span><div><h2>${title}</h2>${sub ? `<small>${sub}</small>` : ""}</div></div>`;
+  app.innerHTML = `
+  <div class="screen scroll home">
+    <header class="page-head"><h1>${tr("Settings")}</h1><p>${tr("Changes save straight away.")}</p></header>
+    <div class="panels">
+      <section class="panel">${head("user", GAMES.wheel.badge, tr("Your name"), tr("Used in greetings and results."))}
+        <label class="field"><input id="pName" maxlength="20" autocomplete="given-name" autocapitalize="words" placeholder="${tr("Your first name")}" value="${esc(p.name || "")}" aria-label="${tr("Your name")}"></label></section>
+      <section class="panel">${head("globe", GAMES.wall.badge, tr("Language"), tr("Spellings, words and levels follow your choice."))}
+        <div class="langs">${opt("en-GB", "UK English", "Colour, biscuit")}${opt("en-US", "US English", "Color, cookie")}${opt("fr", "Français", "Jeux en français")}</div></section>
+      <section class="panel">${head("motion", GAMES.five.badge, tr("Motion"))}
+        <div class="setting"><div class="txt"><b>${tr("Reduce motion")}</b><span>${tr("Turns off confetti, pulsing and bouncy screen changes.")}</span></div>
+        <button class="switch" id="calm" role="switch" aria-checked="${!!p.calm}" aria-label="${tr("Reduce motion")}"></button></div></section>
+      <section class="panel">${head("info", GAMES.board.badge, tr("About"))}
+        <div class="logo">${MARK(30)}<span class="wordmark" style="font-size:24px">${BRAND.first}<span>${BRAND.second}</span></span></div>
+        <p class="note">${tr(BRAND.tagline)} ${tr("Free, with no adverts. Your progress is saved on this device.")}</p></section>
+    </div>
+  </div>${navBar("settings")}`;
+  bindNav();
+  $("#pName").addEventListener("input", e => save({ name: e.target.value.trim().slice(0, 20) }));
+  app.querySelectorAll(".lang").forEach(b => b.onclick = () => {
+    if (b.dataset.lang === lang()) return;
+    save({ lang: b.dataset.lang }); showSettings(); toast(tr("Language changed"));
+  });
+  $("#calm").onclick = () => { const on = !(profile() || {}).calm; save({ calm: on }); applyCalm(); $("#calm").setAttribute("aria-checked", on); };
+}
+
+/* First launch: ask the player's name and language. Settings changes them later. */
 function profileForm(p) {
   const opt = (code, label, sample) => `<button class="lang ${p.lang === code ? "on" : ""}" data-lang="${code}"><b>${FLAGS[code]}</b><span>${label}</span><small>${sample}</small></button>`;
   return `<label class="field"><span>${tr("What should we call you?")}</span>
       <input id="pName" maxlength="20" autocomplete="given-name" autocapitalize="words" placeholder="${tr("Your first name")}" value="${esc(p.name || "")}"></label>
     <div class="field"><span>${tr("Which language?")}</span>
       <div class="langs">
-        ${opt("en-GB", "British English", "Colour, biscuit, holiday")}
-        ${opt("en-US", "American English", "Color, cookie, vacation")}
+        ${opt("en-GB", "UK English", "Colour, biscuit, holiday")}
+        ${opt("en-US", "US English", "Color, cookie, vacation")}
         ${opt("fr", "Français", "3 niveaux pour l'instant")}
       </div></div>`;
 }
@@ -719,15 +1222,15 @@ function bindProfileForm(root, p, done) {
     p.lang = b.dataset.lang;
     root.querySelectorAll(".lang").forEach(x => x.classList.toggle("on", x === b));
   });
-  $("#pSave", root).onclick = () => { store.set("profile", { name: $("#pName", root).value.trim().slice(0, 20), lang: p.lang || "en-GB" }); done(); };
+  $("#pSave", root).onclick = () => { store.set("profile", { ...(profile() || {}), name: $("#pName", root).value.trim().slice(0, 20), lang: p.lang || "en-GB" }); done(); };
 }
 function showWelcome() {
   const p = { name: "", lang: "en-GB" };
   app.innerHTML = `
   <div class="screen welcome">
     <div class="sheet">
-      <div class="brand"><div class="mark">${"<i></i>".repeat(9)}</div><h1>Linkboard</h1></div>
-      <p>Welcome! Find the connections. No adverts, no coins, just puzzles. First, a couple of quick questions.</p>
+      <div><div class="logo">${MARK(40)}${wordmark()}</div><p class="tagline">${BRAND.tagline}</p></div>
+      <p>Welcome! No adverts, no coins, just word games. First, a couple of quick questions.</p>
       ${profileForm(p)}
       <button class="btn primary big" id="pSave">Let's play</button>
     </div>
@@ -735,18 +1238,7 @@ function showWelcome() {
   bindProfileForm(app, p, () => { showHome(true); const n = playerName(); toast(isFR() ? `Enchanté${n ? ", " + n : ""} !` : n ? `Lovely to meet you, ${n}!` : "Lovely to meet you!"); });
   setTimeout(() => $("#pName")?.focus(), 300);
 }
-function showProfileSheet() {
-  const p = { ...profile() };
-  const ov = document.createElement("div"); ov.className = "overlay";
-  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
-    <h2>${tr("You and your words")}</h2>
-    ${profileForm(p)}
-    <div class="actions"><button class="btn primary" id="pSave">${tr("Save")}</button><button class="btn" id="pCancel">${tr("Cancel")}</button></div>
-  </div>`;
-  document.body.appendChild(ov);
-  bindProfileForm(ov, p, () => { ov.remove(); showHome(); });
-  $("#pCancel", ov).onclick = () => ov.remove();
-}
+const showProfileSheet = () => showSettings();
 
 /* =====================================================================
    BOARD MODE
@@ -821,7 +1313,7 @@ function startBoard(levelIdx) {
     flip(new Map(), new Set(B.board.filter(x => x != null)));
     if (level.anagrams) {
       const ov = document.createElement("div"); ov.className = "overlay";
-      ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><h2>${tr("Anagram round")}</h2>
+      ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("board")}>${sheetBadge("shuffle")}<h2>${tr("Anagram round")}</h2>
         <p>${tr("Some groups have one word with its letters scrambled, marked ↻. Work out what it really says. When you find the group, it unscrambles.")}</p>
         <div class="actions"><button class="btn primary" id="ok">${tr("Got it")}</button></div></div>`;
       document.body.appendChild(ov); $("#ok", ov).onclick = () => ov.remove();
@@ -933,7 +1425,7 @@ function tileRects() {
 function flip(before, fresh = new Set(), skip = null) {
   const board = $("#board"); if (!board || !board.animate) return;
   const top = board.getBoundingClientRect().top;
-  const slow = reduceMotion ? .6 : 1;
+  const slow = reduceMotion() ? .6 : 1;
   board.querySelectorAll(".tile").forEach(el => {
     const id = +el.dataset.id, a = el.getBoundingClientRect(), b = before.get(id);
     if (id === skip) return;
@@ -971,26 +1463,24 @@ function boardTick(dt, now) {
 }
 
 function renderBoardScreen() {
-  const L = B.level, track = TRACKS.find(t => t.key === L.difficulty) || TRACKS[0];
+  const L = B.level;
   app.innerHTML = `
   <div class="screen">
-    <div class="bar">
-      <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
-      <div class="title-block" style="--c:${track.colour}"><div class="lvl">${esc(loc(L.name))}</div><small>${tr("Level {n}", { n: levelNo(B.levelIdx) })} · ${esc(tr(L.difficulty))}</small></div>
-      <div class="timer" id="timer" aria-label="${B.timed ? "Time left" : "Time taken"}">${ICONS.clock}<span class="t">${fmt(B.timed ? B.timeLeft : B.elapsed)}</span></div>
-    </div>
+    ${gameHeader("board", `${tr("Level {n}", { n: levelNo(B.levelIdx) })} · ${esc(tr(L.difficulty))}`,
+      `<div class="timer" id="timer" aria-label="${B.timed ? "Time left" : "Time taken"}">${ICONS.clock}<span class="t">${fmt(B.timed ? B.timeLeft : B.elapsed)}</span></div>`)}
     <div class="sub">
       <span class="hint-text">${L.anagrams ? tr("Anagram round: ↻ words are scrambled") : tr("Put five connected tiles in one row")}</span>
       <span class="counter" aria-label="Groups found"><span class="stack"><i></i><i></i><i></i></span><span id="count"></span></span>
     </div>
     <div class="stage"><div class="board" id="board"></div></div>
     <div class="tools">
-      <div class="tool-wrap"><button class="tool" id="hintBtn" aria-label="Hint: show two tiles that connect">💡<span class="n" id="hintN"></span></button><span class="tool-label">${tr("Hint")}</span></div>
-      ${B.timed ? `<div class="tool-wrap"><button class="tool" id="freezeBtn" aria-label="Freeze the clock for 30 seconds">❄️<span class="n" id="freezeN"></span></button><span class="tool-label">${tr("Freeze")}</span></div>` : ""}
-      <div class="tool-wrap"><button class="tool" id="shuffleBtn" aria-label="Shuffle the board">🔀</button><span class="tool-label">${tr("Shuffle")}</span></div>
+      <div class="tool-wrap"><button class="tool" id="hintBtn" aria-label="Hint: show two tiles that connect">${ic("bulb")}<span class="n" id="hintN"></span></button><span class="tool-label">${tr("Hint")}</span></div>
+      ${B.timed ? `<div class="tool-wrap"><button class="tool" id="freezeBtn" aria-label="Freeze the clock for 30 seconds">${ic("snow")}<span class="n" id="freezeN"></span></button><span class="tool-label">${tr("Freeze")}</span></div>` : ""}
+      <div class="tool-wrap"><button class="tool" id="shuffleBtn" aria-label="Shuffle the board">${ic("shuffle")}</button><span class="tool-label">${tr("Shuffle")}</span></div>
     </div>
   </div>`;
   $("#back").onclick = () => { saveBoard(); showHome(); };
+  $("#help").onclick = () => showHelp("board");
   $("#hintBtn").onclick = useHint;
   if (B.timed) $("#freezeBtn").onclick = useFreeze;
   $("#shuffleBtn").onclick = () => {
@@ -1074,7 +1564,7 @@ const unravelPause = rows => rows.some(d => rowIds(d.row).some(id => id != null 
 
 function resolveRows(done) {
   const subs = done.filter(d => B.groups[d.group].parent != null);
-  const SQUISH = reduceMotion ? 500 : 900;
+  const SQUISH = reduceMotion() ? 500 : 900;
   // Groups that belong to a bigger answer: the five tiles slide together, then shrink into the picture.
   subs.forEach(d => {
     for (let c = 0; c < COLS; c++) {
@@ -1167,7 +1657,8 @@ function endBoard(won) {
   const next = won ? nextBoard() : null;
   const ov = document.createElement("div"); ov.className = "overlay";
   // A failed level never shows the answers: the player starts it again with a fresh deal.
-  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("board")}>
+    ${sheetBadge(won ? "trophy" : "clock")}
     <h2>${won ? `${tr(pick(["Brilliant", "Well done", "Superb", "Nice work"]))}${name ? ", " + name : ""}!` : `${tr("Time's up")}${name ? ", " + name : ""}`}</h2>
     <p>${won ? tr("You found all {n} connections.", { n: B.groups.length }) : tr("You found {a} of {b} connections. This level starts again from the beginning, with a fresh deal.", { a: B.solved.size, b: B.groups.length })}</p>
     <div class="stats">
@@ -1291,15 +1782,12 @@ function wallTick(dt) {
 function renderWallScreen() {
   app.innerHTML = `
   <div class="screen">
-    <div class="bar">
-      <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
-      <div class="title-block" style="--c:${WALL_COLOURS[0]}"><div class="lvl">The Wall</div><small>Level ${W.idx + 1}</small></div>
-      <div class="timer" id="timer">${ICONS.clock}<span class="t">${fmt(W.timeLeft)}</span></div>
-    </div>
+    ${gameHeader("wall", `Level ${W.idx + 1}`, `<div class="timer" id="timer" aria-label="Time left">${ICONS.clock}<span class="t">${fmt(W.timeLeft)}</span></div>`)}
     <div class="sub"><span class="hint-text" id="wallMsg"></span><span class="lives" id="lives"></span></div>
     <div class="wall-stage"><div class="wall" id="wall"></div></div>
   </div>`;
   $("#back").onclick = () => { saveWall(); showHome(); };
+  $("#help").onclick = () => showHelp("wall");
   $("#wall").addEventListener("click", e => { const b = e.target.closest(".wtile"); if (b) tapClue(+b.dataset.id); });
   renderWall();
 }
@@ -1365,7 +1853,8 @@ function endWall(reason) {
     // Not solved: no answers shown. The wall is reshuffled for another go.
     const name = esc(playerName());
     const ov = document.createElement("div"); ov.className = "overlay";
-    ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+    ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("wall")}>
+      ${sheetBadge("wall")}
       <h2>${esc(reason)}${name ? ", " + name : ""}</h2>
       <p>You found ${W.found.length} of 4 groups. Have another go: the wall starts again, reshuffled.</p>
       <div class="actions"><button class="btn primary" id="again">Try again</button><button class="btn" id="menu">Home</button></div>
@@ -1390,7 +1879,8 @@ function showWallResults() {
   const save = () => { const k = "best-wall-" + W.idx, prev = store.get()[k]; if (prev == null || wallScore() > prev) store.set(k, wallScore()); };
   const next = nextWall();
   const draw = () => {
-    ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+    ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("wall")}>
+      ${sheetBadge("trophy")}
       <h2>${esc(W.endReason)}</h2>
       <p>You get a point for every group you found. Now, did you know what links each group? Tap Reveal to see the answer, and give yourself a point if you got it. Get all eight points and you earn 2 bonus points.</p>
       ${W.found.map((g, k) => {
@@ -1432,10 +1922,10 @@ const ofDay = (list, n) => list[((n % list.length) + list.length) % list.length]
 const todayKey = () => dateKey(new Date());
 const dayNumber = () => { const d = new Date(); return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026, 9, 1)) / 864e5); };
 const ofToday = list => ofDay(list, dayNumber());
-const todayLabel = () => new Date().toLocaleDateString(isUS() ? "en-US" : "en-GB", { weekday: "long", day: "numeric", month: "long" });
+const todayLabel = () => new Date().toLocaleDateString(isUS() ? "en-US" : isFR() ? "fr-FR" : "en-GB", { weekday: "long", day: "numeric", month: "long" });
 function dailyKeys(onKey) {
   return k => `<div class="keys">${["qwertyuiop", "asdfghjkl", "+zxcvbnm-"].map(row => `<div class="krow">${[...row].map(c =>
-    c === "+" ? `<button class="key wide" data-k="Enter">Enter</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="Delete">⌫</button>` :
+    c === "+" ? `<button class="key wide" data-k="Enter">Enter</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="Delete">${ic("del")}</button>` :
     `<button class="key ${k[c] || ""}" data-k="${c}">${c}</button>`).join("")}</div>`).join("")}</div>`;
 }
 document.addEventListener("keydown", e => {
@@ -1465,16 +1955,14 @@ function startFive() {
   D = { answer: fiveAnswer(), ...fiveState(), typed: "", busy: false };
   app.innerHTML = `
   <div class="screen daily">
-    <div class="bar">
-      <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
-      <div class="title-block" style="--c:#1FB57A"><div class="lvl">Daily Five</div><small>${esc(todayLabel())}</small></div>
-      <span></span>
-    </div>
+    ${gameHeader("five", esc(todayLabel()), `<span class="gpill" aria-label="Daily Five streak">${ic("flame")}${fiveStats().streak}</span>`)}
     <p class="daily-msg" id="msg">Guess today's five-letter word. You have six tries.</p>
     <div class="fgrid" id="fgrid"></div>
+    <div class="legend" aria-hidden="true"><span><i class="c"></i>Right place</span><span><i class="p"></i>In the word</span><span><i class="a"></i>Not in it</span></div>
     <div id="keys"></div>
   </div>`;
   $("#back").onclick = () => showHome();
+  $("#help").onclick = () => showHelp("five");
   $("#keys").addEventListener("click", e => { const b = e.target.closest(".key"); if (b) fiveKey(b.dataset.k); });
   renderFive();
   if (D.over) setTimeout(() => D && fiveResult(), 400);
@@ -1526,7 +2014,8 @@ function fiveResult() {
   const maxD = Math.max(1, ...s.dist);
   const grid = D.guesses.map(g => fiveScore(g, D.answer).map(r => ({ c: "🟩", p: "🟨", a: "⬜" }[r])).join("")).join("\n");
   const ov = document.createElement("div"); ov.className = "overlay";
-  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("five")}>
+    ${sheetBadge(D.won ? "trophy" : "cal")}
     <h2>${D.won ? `${D.guesses.length === 1 ? "First go!" : "Got it in " + D.guesses.length}${name ? ", " + name : ""}!` : "Not today"}</h2>
     <p>${D.won ? "A new word arrives at midnight." : `Today's word was <b>${D.answer.toUpperCase()}</b>. A new word arrives at midnight.`}</p>
     <div class="stats">
@@ -1536,7 +2025,7 @@ function fiveResult() {
       <div class="stat"><b>${s.best}</b><span>Best streak</span></div>
     </div>
     <div class="dist">${s.dist.map((n, i) => `<div><span>${i + 1}</span><i style="width:${8 + 92 * n / maxD}%" class="${D.won && D.guesses.length === i + 1 ? "on" : ""}">${n}</i></div>`).join("")}</div>
-    <div class="actions"><button class="btn primary" id="share">Share result</button><button class="btn" id="menu">Home</button></div>
+    <div class="actions"><button class="btn primary" id="share">${ic("share")}Share result</button><button class="btn" id="menu">Home</button></div>
   </div>`;
   document.body.appendChild(ov);
   $("#menu", ov).onclick = () => showHome();
@@ -1575,7 +2064,7 @@ function wheelComplete() {
   store.set("wheelCelebrated", todayKey());
   confetti();
   const ov = document.createElement("div"); ov.className = "overlay";
-  ov.innerHTML = `<div class="sheet done-sheet" role="dialog" aria-modal="true">
+  ov.innerHTML = `<div class="sheet done-sheet" role="dialog" aria-modal="true" ${sheetStyle("wheel")}>
     <div class="done-art">${wheelArt(st.puzzle)}<span>🏆</span></div>
     <h2>Wheel complete${name ? ", " + name : ""}!</h2>
     <p>You found all ${st.words.size} words${st.bonus.length ? `, plus ${st.bonus.length} bonus word${st.bonus.length > 1 ? "s" : ""}` : ""}, for ${st.score} points. That's every answer on today's wheel.</p>
@@ -1593,9 +2082,9 @@ function wheelRank(st) {
   let i = 0; WHEEL_RANKS.forEach((r, k) => { if (pct >= r[1]) i = k; });
   return { name: WHEEL_RANKS[i][0], i, next: WHEEL_RANKS[i + 1] ? Math.ceil(WHEEL_RANKS[i + 1][1] * st.max / 100) - st.score : 0 };
 }
-function wheelArt(pz) {
+function wheelArt(pz, big = false) {
   const outer = [...pz.letters].filter(c => c !== pz.centre);
-  return `<div class="mwheel"><b>${pz.centre}</b>${outer.map((c, i) => `<i style="--a:${i * 60}deg">${c}</i>`).join("")}</div>`;
+  return `<div class="mwheel ${big ? "big" : ""}"><b>${pz.centre}</b>${outer.map((c, i) => `<i style="--a:${i * 60}deg">${c}</i>`).join("")}</div>`;
 }
 function startWheel() {
   leaveGame();
@@ -1603,11 +2092,7 @@ function startWheel() {
   H = { puzzle: st.puzzle, outer: shuffle([...st.puzzle.letters].filter(c => c !== st.puzzle.centre)), typed: "" };
   app.innerHTML = `
   <div class="screen daily wheel-screen">
-    <div class="bar">
-      <button class="icon-btn" id="back" aria-label="Back to home">${ICONS.back}</button>
-      <div class="title-block" style="--c:#A855F7"><div class="lvl">Letter Wheel</div><small>${esc(todayLabel())}</small></div>
-      <span></span>
-    </div>
+    ${gameHeader("wheel", esc(todayLabel()), `<span class="gpill" aria-label="Words found">${ic("check")}<span id="wcount"></span></span>`)}
     <div class="wheel-top"><div class="rank" id="rank"></div></div>
     <div class="wheel-body">
       <div class="wheel-play">
@@ -1615,12 +2100,13 @@ function startWheel() {
         <p class="daily-msg" id="msg">Make words of 4 or more letters. The purple middle letter must be in every word, anywhere you like. Letters can be used more than once.</p>
         <div class="wheel" id="wheel"></div>
         <div class="wheel-btns"><button class="btn" id="del">Delete</button><button class="btn" id="mix">Shuffle</button><button class="btn primary" id="enter">Enter</button></div>
-        <div class="wheel-btns extra"><button class="btn clue-btn" id="clue">💡 Clue <span id="clueN"></span></button><button class="btn" id="yday">Yesterday's answers</button></div>
+        <div class="wheel-btns extra"><button class="btn clue-btn" id="clue">${ic("bulb")}Clue <span id="clueN"></span></button><button class="btn" id="yday">Yesterday's answers</button></div>
       </div>
       <div class="found" id="found"></div>
     </div>
   </div>`;
   $("#back").onclick = () => showHome();
+  $("#help").onclick = () => showHelp("wheel");
   $("#wheel").addEventListener("click", e => { const b = e.target.closest("[data-c]"); if (b) wheelKey(b.dataset.c); });
   $("#del").onclick = () => wheelKey("Backspace");
   $("#enter").onclick = () => wheelKey("Enter");
@@ -1647,7 +2133,8 @@ function renderWheel() {
     ? `<div class="words">${st.bonus.sort().map(w => `<span class="${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("")}</div>`
     : `<p>Rarer words that aren't in the list above still score points here.</p>`}</div>`;
   $("#clue").className = "btn clue-btn";
-  $("#clue").innerHTML = wheelDone(st) ? "🎉 All found" : `💡 Clue <span id="clueN">(${WHEEL_CLUES - st.clues} left today)</span>`;
+  $("#clue").innerHTML = wheelDone(st) ? `${ic("check")}All found` : `${ic("bulb")}Clue <span id="clueN">(${WHEEL_CLUES - st.clues} left today)</span>`;
+  $("#wcount").textContent = `${st.found.length}/${st.words.size}`;
   if (wheelDone(st) && !$("#msg").textContent.includes("+")) $("#msg").textContent = "You've found every word! Bonus words still score points.";
 }
 // Yesterday's full answer list, so players can see what they missed.
@@ -1655,7 +2142,7 @@ function wheelYesterday() {
   const { puzzle: pz, words } = wheelDay(dayNumber() - 1), got = new Set((store.get()["wheel-" + yesterdayKey()] || { found: [] }).found);
   const lengths = [...new Set(words.map(w => w.length))].sort((a, b) => a - b), mine = words.filter(w => got.has(w)).length;
   const ov = document.createElement("div"); ov.className = "overlay";
-  ov.innerHTML = `<div class="sheet yday" role="dialog" aria-modal="true">
+  ov.innerHTML = `<div class="sheet yday" role="dialog" aria-modal="true" ${sheetStyle("wheel")}>
     <div class="yday-head">${wheelArt(pz)}<div><h2>Yesterday's answers</h2><p>${mine ? `You found ${mine} of ${words.length}. The ones you missed are in purple.` : `There were ${words.length} words to find.`}</p></div></div>
     <div class="yday-list">${lengths.map(n => `<div class="wgroup"><h4>${n} letters</h4><div class="words">${words.filter(w => w.length === n).sort()
       .map(w => `<span class="${got.has(w) ? "" : "miss"} ${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("")}</div></div>`).join("")}</div>
@@ -1720,6 +2207,7 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) { sav
 document.addEventListener("gesturestart", e => e.preventDefault());
 document.addEventListener("dblclick", e => e.preventDefault());
 
+applyCalm();
 showHome();
 cloud.start();
 

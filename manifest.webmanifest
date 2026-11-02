@@ -1,12 +1,12 @@
 {
-  "name": "Linkboard",
-  "short_name": "Linkboard",
-  "description": "An ad-free word connection game with a Board mode and an Only Connect style Wall mode.",
+  "name": "Wordolio",
+  "short_name": "Wordolio",
+  "description": "Wordolio: a little world of word games. Free, with no adverts.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F5EFE4",
-  "theme_color": "#F5EFE4",
+  "background_color": "#F7F4EF",
+  "theme_color": "#F7F4EF",
   "lang": "en-GB",
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },

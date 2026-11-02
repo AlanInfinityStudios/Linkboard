@@ -63,6 +63,21 @@ for (let day = 0; day < DAILY_DAYS; day++) for (const [diff, lens, lo, hi] of DA
   }
 }
 if (daily.length !== DAILY_DAYS * 3) throw new Error("daily short: " + daily.length);
+// Levels 51 to 200, added after the first 50 and the daily list so neither changes. Each block of ten mixes
+// Medium, Hard and Expert, so the path keeps a gentle up and down rather than one long climb.
+seed = 20261105;
+const MORE_BLOCK = ["Medium", "Medium", "Hard", "Medium", "Hard", "Expert", "Hard", "Medium", "Hard", "Expert"];
+const BAND_OF = Object.fromEntries(BANDS.map(b => [b[0], b]));
+for (let k = 0; levels.length < 200; k++) {
+  const band = BAND_OF[MORE_BLOCK[k % MORE_BLOCK.length]];
+  let placed = false;
+  for (let guard = 0; guard < 200000 && !placed; guard++) {
+    const len = band[2][Math.floor(rnd() * band[2].length)], pool = base.filter(w => w.length === len);
+    const a = pool[Math.floor(rnd() * pool.length)], b = pool[Math.floor(rnd() * pool.length)];
+    if (a !== b && !DAILY_SKIP.has(a) && !DAILY_SKIP.has(b) && !dailyPairs.has(a + ">" + b) && tryPair(a, b, band)) placed = true;
+  }
+  if (!placed) throw new Error("could not place level " + (levels.length + 1));
+}
 const extra = [...accept].filter(w => !common.has(w));
 const out = `/* Word Steps data. Built by tools/build_steps.js from SCOWL (wordlist-english, MIT licence). Do not edit by hand:
    add or remove words in the build script (or tools/blocklist.txt) and run it again. */

@@ -757,11 +757,31 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
   .lang small { display: none; }
 }
 
+.wboard { display: none; }
 @media (max-width: 700px) {
   .wheel-body { flex-direction: column; gap: 14px; }
-  .wheel-screen { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 24px; }
+  .wheel-screen { overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 16px; gap: 8px; }
   .wheel-screen .wheel-body { flex: none; }
-  .found { max-width: none; flex: none; overflow: visible; }
+  .wheel-screen .found { display: none; }
+  .wheel-play { gap: 8px; }
+  .wboard { display: flex; flex-direction: column; gap: 8px; width: 100%; border: 0; text-align: left; background: var(--surface); border-radius: 20px; padding: 12px 14px 8px; box-shadow: var(--card); color: var(--ink); }
+  .wb-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .wb-head b { font-family: var(--head); font-weight: 800; font-size: 17px; color: var(--purple-ink); }
+  .wb-head span { font-size: 13px; font-weight: 700; color: var(--muted); }
+  .wb-words { display: flex; flex-wrap: wrap; gap: 7px 10px; max-height: 128px; overflow-y: auto; }
+  .wb { display: inline-flex; gap: 2px; }
+  .wb i { width: 9px; height: 14px; border-bottom: 2px solid var(--border); font-style: normal; font-family: var(--head); font-weight: 800; font-size: 10px; line-height: 12px; text-align: center; text-transform: uppercase; color: var(--muted); }
+  .wb.got i { color: var(--ink); border-color: var(--purple); }
+  .wb.pg.got i { color: var(--purple); }
+  .wb-more { align-self: center; font-size: 12px; font-weight: 700; color: var(--muted); }
+  .wheel-top { margin-top: -2px; }
+  .rank-head b { font-size: 1rem; } .rank-head span { font-size: .8rem; }
+  .wheel-screen .typed { min-height: 38px; font-size: 1.7rem; }
+  .wheel-screen .daily-msg { font-size: .9rem; min-height: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .wheel { width: min(236px, 62vw); }
+  .wheel-btns .btn { padding: 10px 18px; }
+  .wheel-btns.extra { margin-top: 6px; padding-top: 10px; }
+  .wheel-btns.extra .btn { padding: 8px 14px; font-size: .9rem; }
 }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 65; }
 @media (prefers-reduced-motion: reduce) {
@@ -941,7 +961,7 @@ const FR = {
   "Reduce motion": "Réduire les animations", "Turns off confetti, pulsing and bouncy screen changes.": "Désactive les confettis, les pulsations et les transitions animées.",
   "About": "À propos", "A little world of word games.": "Un petit monde de jeux de mots.",
   "Free, with no adverts. Your progress is saved on this device.": "Gratuit, sans publicité. Votre progression est enregistrée sur cet appareil.",
-  "Language changed": "Langue modifiée", "Advert space": "Espace publicitaire", "Featured games": "Jeux à la une", "Daily games": "Jeux du jour", "New daily game": "Nouveau jeu du jour", "Coming soon in French": "Bientôt en français",
+  "Language changed": "Langue modifiée", "Advert space": "Espace publicitaire", "Tap to see the list": "Touchez pour voir la liste", "Featured games": "Jeux à la une", "Daily games": "Jeux du jour", "New daily game": "Nouveau jeu du jour", "Coming soon in French": "Bientôt en français",
 };
 function tr(text, vars = {}) {
   const t = isFR() && FR[text] || text;
@@ -2187,6 +2207,7 @@ function startWheel() {
     <div class="wheel-top"><div class="rank" id="rank"></div></div>
     <div class="wheel-body">
       <div class="wheel-play">
+        <button class="wboard" id="wboard" aria-label="See all the words"></button>
         <div class="typed" id="typed"></div>
         <p class="daily-msg" id="msg">Make words of 4 or more letters. The purple middle letter must be in every word, anywhere you like. Letters can be used more than once.</p>
         <div class="wheel" id="wheel"></div>
@@ -2204,6 +2225,7 @@ function startWheel() {
   $("#mix").onclick = () => { shuffle(H.outer); renderWheel(); };
   $("#clue").onclick = wheelClue;
   $("#yday").onclick = wheelYesterday;
+  $("#wboard").onclick = wheelList;
   renderWheel();
   if (wheelDone(st) && store.get().wheelCelebrated !== todayKey()) setTimeout(() => H && wheelComplete(), 500);
 }
@@ -2223,10 +2245,26 @@ function renderWheel() {
   }).join("") + `<div class="bonus"><h4>Bonus words <span>${st.bonus.length}</span></h4>${st.bonus.length
     ? `<div class="words">${st.bonus.sort().map(w => `<span class="${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("")}</div>`
     : `<p>Rarer words that aren't in the list above still score points here.</p>`}</div>`;
+  // Phones: a compact board of every answer above the wheel, so it's always clear how many are left.
+  const left = all.length - st.found.length, order = lengths.flatMap(n => all.filter(w => w.length === n).sort());
+  $("#wboard").innerHTML = `<span class="wb-head"><b>${left ? `${left} word${left === 1 ? "" : "s"} left` : "Every word found!"}</b><span>${st.found.length} of ${all.length} found${st.bonus.length ? ` · ${st.bonus.length} bonus` : ""}</span></span>
+    <span class="wb-words">${order.map(w => `<span class="wb ${got.has(w) ? "got" : ""} ${isPangram(w, pz) ? "pg" : ""}">${[...w].map((c, i) => `<i>${got.has(w) || i < st.clues ? c : ""}</i>`).join("")}</span>`).join("")}</span>
+    <span class="wb-more">${tr("Tap to see the list")}</span>`;
   $("#clue").className = "btn clue-btn";
   $("#clue").innerHTML = wheelDone(st) ? `${ic("check")}All found` : `${ic("bulb")}Clue <span id="clueN">(${WHEEL_CLUES - st.clues} left today)</span>`;
   $("#wcount").textContent = `${st.found.length}/${st.words.size}`;
   if (wheelDone(st) && !$("#msg").textContent.includes("+")) $("#msg").textContent = "You've found every word! Bonus words still score points.";
+}
+// Phones: the full list (with bonus words) in a sheet.
+function wheelList() {
+  if (getComputedStyle($("#found")).display !== "none") return;
+  const ov = document.createElement("div"); ov.className = "overlay";
+  ov.innerHTML = `<div class="sheet yday" role="dialog" aria-modal="true" ${sheetStyle("wheel")}><div class="yday-list">${$("#found").innerHTML}</div>
+    <div class="actions"><button class="btn primary" id="listClose">Back to the wheel</button></div></div>`;
+  document.body.appendChild(ov);
+  const close = () => ov.remove();
+  ov.querySelector("#listClose").onclick = close;
+  ov.addEventListener("click", e => { if (e.target === ov) close(); });
 }
 // Yesterday's full answer list, so players can see what they missed.
 function wheelYesterday() {

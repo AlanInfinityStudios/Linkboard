@@ -1661,7 +1661,7 @@ function showSettings() {
         <label class="field"><input id="mvPaste" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${tr("Paste a progress code")}" aria-label="${tr("Paste a progress code")}"></label></section>
       <section class="panel">${head("info", GAMES.board.badge, tr("About"))}
         <div class="logo">${MARK(30)}<span class="wordmark" style="font-size:24px">${BRAND.first}<span>${BRAND.second}</span></span></div>
-        <p class="note">${tr(BRAND.tagline)} ${tr("Free to play. Your progress is saved on this device.")}</p></section>
+        <p class="note">${tr(BRAND.tagline)} ${tr("Free to play. Your progress is saved on this device.")}</p><p class="note">${tr("We count visits anonymously, with no cookies and nothing personal, to see how Wordolio is used.")}</p></section>
     </div>
   </div>${adSlot()}`;
   bindNav();
@@ -3340,6 +3340,37 @@ function maybeOfferInstall() {
   const close = () => ov.remove();
   $("#instOk", ov).onclick = close;
   if ($("#instGo", ov)) $("#instGo", ov).onclick = async () => { close(); try { installEvent.prompt(); await installEvent.userChoice; } catch {} installEvent = null; };
+}
+
+/* Usage statistics: GoatCounter (no cookies, no names, nothing personal). Only on the real sites, never in previews or tests.
+   Page views: "/" in a browser, "/home-screen" from an installed icon. Events: install, play/<game>, complete/<game>. */
+const STATS_ON = /(^|\.)wordolio\.app$|github\.io$/.test(location.hostname);
+const statQueue = [];
+function stat(path, title, event = true) {
+  if (!STATS_ON) return;
+  const send = () => { try { window.goatcounter.count({ path, title: title || path, event }); } catch {} };
+  window.goatcounter && window.goatcounter.count ? send() : statQueue.push(send);
+}
+if (STATS_ON) {
+  window.goatcounter = { no_onload: true };
+  const sc = document.createElement("script");
+  sc.async = true; sc.src = "https://gc.zgo.at/count.js"; sc.dataset.goatcounter = "https://wordolio.goatcounter.com/count";
+  sc.onload = () => statQueue.splice(0).forEach(f => f());
+  document.head.appendChild(sc);
+  const home = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
+  stat(home ? "/home-screen" : "/", home ? "Opened from home screen" : "Opened in browser", false);
+  if (home && !store.get()["stat-installed"]) { store.set("stat-installed", true); stat("install", "Installed on home screen"); }
+  addEventListener("appinstalled", () => { if (!store.get()["stat-installed"]) { store.set("stat-installed", true); stat("install", "Installed on home screen"); } });
+  const GAME_NAMES = { board: "linkology", wall: "the-wall", steps: "word-steps", lock: "letter-lock" };
+  const wrap = (fn, game) => function (...args) { stat("play/" + game, "Played " + game); return fn.apply(this, args); };
+  startBoard = wrap(startBoard, "linkology"); startWall = wrap(startWall, "the-wall"); openFive = wrap(openFive, "sussed");
+  startWheel = wrap(startWheel, "letter-wheel"); startSteps = wrap(startSteps, "word-steps"); startLock = wrap(startLock, "letter-lock");
+  const set = store.set;
+  store.set = (k, v) => {
+    const m = /^done-(?:fr-)?(board|wall|steps|lock)-/.exec(k);
+    if (m && v && !store.get()[k]) stat("complete/" + GAME_NAMES[m[1]], "Completed " + GAME_NAMES[m[1]]);
+    return set(k, v);
+  };
 }
 
 applyCalm();

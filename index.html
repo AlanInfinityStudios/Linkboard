@@ -889,6 +889,18 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .fmode button[aria-selected="true"] { background: linear-gradient(160deg, #35C894, #0E8F63); color: #fff; }
 /* The grid shrinks with the screen height so the keyboard always stays in view (395px is everything else on the screen). */
 .five-screen > * { flex-shrink: 0; }
+.fmode button { position: relative; }
+.fm-tick { position: absolute; top: -5px; right: -3px; width: 18px; height: 18px; border-radius: 50%; background: var(--green); display: grid; place-items: center; box-shadow: 0 0 0 2px var(--surface); }
+.fm-tick .ico { width: 12px; height: 12px; stroke: #fff; stroke-width: 3; }
+.fend { width: min(420px, 100%); margin: auto auto 0; background: var(--surface); border-radius: 22px; box-shadow: var(--lift); padding: 16px 18px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.fend b { font-family: var(--head); font-weight: 900; font-size: 1.25rem; }
+.fend > span { color: var(--muted); font-size: .92rem; }
+.fend .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.fmodes { display: flex; flex-direction: column; gap: 3px; }
+.fm-line { display: flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 14px; color: var(--muted); font-weight: 600; }
+.gcard .status .fm-line b, .fm-line b { display: inline; color: var(--ink); font-weight: 800; font-size: inherit; }
+.fm-line .ico { width: 15px; height: 15px; stroke: var(--green); stroke-width: 3; flex: none; }
+.fm-dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--border); margin: 0 3px; flex: none; }
 .five-screen .fgrid { gap: 6px; width: min(340px, 100%, max(215px, calc((100dvh - 425px) * 5 / 6 - 16px))); }
 .five-screen .fgrid.six { width: min(350px, 100%, max(220px, calc((100dvh - 431px) * 6 / 7 - 20px))); }
 .five-screen .frow { grid-template-columns: repeat(var(--n, 5), 1fr); gap: 6px; background: color-mix(in srgb, var(--surface) 70%, transparent); border-radius: 18px; padding: 5px; }
@@ -1467,7 +1479,7 @@ function greeting(first) {
 function helloLine() {
   if (isFR()) return "Vos jeux de mots vous attendent.";
   const five = fiveState(), wheel = wheelState(), st = dayState("steps"), lk = dayState("lock");
-  const done = [five.over, wheelDone(wheel), st.stage >= 3, lk.stage >= 3].filter(Boolean).length;
+  const done = [five.over || fiveState("hard").over, wheelDone(wheel), st.stage >= 3, lk.stage >= 3].filter(Boolean).length;
   const started = five.guesses.length || wheel.found.length || st.stage || st.cur || lk.stage || lk.cur;
   if (done === 4) return "All four dailies completed today. Lovely work.";
   if (done) return `${done} of 4 dailies completed today. Can you finish the set?`;
@@ -1495,10 +1507,11 @@ function showHome(first = false) {
   const nb = nextBoard(), nw = nextWall(), nbL = nb != null ? LEVELS()[nb] : null;
   const five = fiveState(), fs = fiveStats(), wheel = wheelState();
   const boards = solvedBoards(), walls = solvedWalls();
-  const dailies = [five.over, wheelDone(wheel), dayDone("steps"), dayDone("lock")].filter(Boolean).length;
+  const hard = fiveState("hard"), fsh = fiveStats("hard"), sussStreak = Math.max(fs.streak, fsh.streak);
+  const dailies = [five.over || hard.over, wheelDone(wheel), dayDone("steps"), dayDone("lock")].filter(Boolean).length;
   const stat = (icon, bg, col, big, small) => `<div><span class="dotico" style="background:${bg};color:${col}">${ic(icon)}</span><span><b>${big}</b><span>${small}</span></span></div>`;
   const strip = english
-    ? stat("flame", "#FFE9DC", "#E8642F", `${fs.streak} day${fs.streak === 1 ? "" : "s"}`, "Sussed streak") +
+    ? stat("flame", "#FFE9DC", "#E8642F", `${sussStreak} day${sussStreak === 1 ? "" : "s"}`, "Sussed streak") +
       stat("check", "#D9F3E8", "#13996D", `${dailies} / 4`, "dailies completed today") +
       stat("trophy", "#FCEFCF", "#C88A12", boards + walls, "levels and walls solved")
     : stat("trophy", "#FCEFCF", "#C88A12", boards, tr("levels solved"));
@@ -1514,8 +1527,8 @@ function showHome(first = false) {
     `<b>${nbL ? `${tr("Level {n}", { n: levelNo(nb) })} · ${tr(nbL.difficulty)}` : tr("Every level solved")}</b>${meter(boards, LEVELS().length)}`,
     nb == null ? tr("Play again") : s["save-" + bkey(nb)] ? tr("Continue") : tr("Play"), artBoard, "", "feature");
   const fiveCard = english ? gameCard("five", "modeFive", "Suss out the hidden word. Five letters, or six on Hard.",
-    `<b>${five.over ? (five.won ? `Solved in ${five.guesses.length}` : "Done for today") : five.guesses.length ? `${five.guesses.length} of 6 tries used` : "Today's word is ready"}</b><small>${fiveState("hard").over ? (fiveState("hard").won ? `Hard: solved in ${fiveState("hard").guesses.length}` : "Hard: done for today") : fs.streak ? `${fs.streak} day streak` : "&nbsp;"}</small>`,
-    five.over ? "See result" : five.guesses.length ? "Continue" : "Play", artFive)
+    `<span class="fmodes">${fiveLine("classic")}${fiveLine("hard")}</span>`,
+    five.over && hard.over ? "See results" : five.over ? "Play Hard" : hard.over ? "Play Classic" : (five.guesses.length || hard.guesses.length) ? "Continue" : "Play", artFive)
     : gameCard("five", "modeFive", "", "", "", artFive, soon);
   const wheelCard = english ? gameCard("wheel", "modeWheel", "Make as many words as you can.",
     `<b>${wheelDone(wheel) ? `All ${wheel.found.length} words found!` : wheel.found.length ? `${wheel.found.length} of ${wheel.words.size} words` : "Today's wheel is ready"}</b>${meter(wheel.found.length, wheel.words.size)}`,
@@ -1549,7 +1562,7 @@ function showHome(first = false) {
   $("#modeBoard").onclick = () => startBoard(nb ?? pick(PATH()));
   if (english) {
     $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
-    $("#modeFive").onclick = startFive;
+    $("#modeFive").onclick = openFive;
     $("#modeWheel").onclick = startWheel;
     $("#walletBtn").onclick = showHintShop;
     const cn = store.get().chestNote;
@@ -2428,6 +2441,17 @@ function fiveScore(guess, answer) {
   [...guess].forEach((c, i) => { if (res[i] !== "c" && left[c]) { res[i] = "p"; left[c]--; } });
   return res;
 }
+// One status line per mode for the home card, e.g. "Classic ✓ 4/6" or "Hard: not played".
+function fiveLine(m) {
+  const st = fiveState(m), M = FIVE_MODES[m], label = m === "hard" ? "Hard" : "Classic";
+  const txt = st.over ? (st.won ? `${st.guesses.length}/${M.tries}` : `X/${M.tries}`) : st.guesses.length ? "in progress" : "to play";
+  return `<span class="fm-line ${st.over ? "done" : ""}">${st.over ? ic("check") : `<i class="fm-dot"></i>`}<b>${label}</b> ${txt}</span>`;
+}
+// Opening Sussed from home: go to the mode that still needs playing; otherwise the one played last.
+function openFive() {
+  const last = store.get().fiveMode || "classic", other = last === "hard" ? "classic" : "hard";
+  startFive(fiveState(last).over && !fiveState(other).over ? other : last);
+}
 function startFive(mode = store.get().fiveMode || "classic") {
   leaveGame();
   markPlayed();
@@ -2439,8 +2463,7 @@ function startFive(mode = store.get().fiveMode || "classic") {
   <div class="screen daily five-screen">
     ${gameHeader("five", esc(todayLabel()), `<span class="gpill" aria-label="${mode === "hard" ? "Hard mode" : "Sussed"} streak">${ic("flame")}${fiveStats(mode).streak}</span>`)}
     <div class="fmode" role="tablist" aria-label="Mode">
-      <button role="tab" aria-selected="${mode === "classic"}" data-mode="classic">Classic<small>5 letters</small></button>
-      <button role="tab" aria-selected="${mode === "hard"}" data-mode="hard">Hard<small>6 letters</small></button>
+      ${["classic", "hard"].map(m => `<button role="tab" aria-selected="${mode === m}" data-mode="${m}">${m === "hard" ? "Hard" : "Classic"}<small>${m === "hard" ? "6 letters" : "5 letters"}</small>${fiveState(m).over ? `<span class="fm-tick" aria-label="done">${ic("check")}</span>` : ""}</button>`).join("")}
     </div>
     <p class="daily-msg" id="msg">${mode === "hard" ? "Guess today's six-letter word in seven tries." : "Guess today's five-letter word in six tries."}</p>
     <div class="fgrid ${mode === "hard" ? "six" : ""}" id="fgrid" style="--n:${M.len}"></div>
@@ -2452,7 +2475,14 @@ function startFive(mode = store.get().fiveMode || "classic") {
   app.querySelectorAll(".fmode button").forEach(b => b.onclick = () => { if (b.dataset.mode !== D.mode) startFive(b.dataset.mode); });
   $("#keys").addEventListener("click", e => { const b = e.target.closest(".key"); if (b) fiveKey(b.dataset.k); });
   renderFive();
-  if (D.over) setTimeout(() => D && fiveResult(), 400);
+}
+// Shown in place of the keyboard once a mode is finished: the result, and a way into the other mode.
+function fiveEndPanel() {
+  const other = D.mode === "hard" ? "classic" : "hard", os = fiveState(other), oname = other === "hard" ? "Hard" : "Classic";
+  const head = D.won ? `Solved in ${D.guesses.length} of ${D.tries}` : `Today's word was ${D.answer.toUpperCase()}`;
+  return `<div class="fend"><b>${head}</b><span>${D.mode === "hard" ? "A new six-letter word arrives at midnight." : "A new word arrives at midnight."}</span>
+    <div class="actions"><button class="btn primary" id="fSee">See result</button>
+    <button class="btn" id="fOther">${os.over ? `See ${oname} result` : os.guesses.length ? `Continue ${oname}` : `Play ${oname}`}</button></div></div>`;
 }
 function renderFive(revealRow = -1) {
   const rows = [];
@@ -2465,7 +2495,13 @@ function renderFive(revealRow = -1) {
   $("#fgrid").innerHTML = rows.join("");
   const k = {};
   D.guesses.forEach(g => fiveScore(g, D.answer).forEach((r, i) => { const c = g[i], rank = { c: 3, p: 2, a: 1 }; if (!k[c] || rank[r] > rank[k[c]]) k[c] = r; }));
-  $("#keys").innerHTML = dailyKeys()(k);
+  app.querySelectorAll(".fmode button").forEach(b => { const t = b.querySelector(".fm-tick"), done = fiveState(b.dataset.mode).over;
+    if (done && !t) b.insertAdjacentHTML("beforeend", `<span class="fm-tick" aria-label="done">${ic("check")}</span>`); });
+  if (D.over && !D.busy) {
+    $("#keys").innerHTML = fiveEndPanel();
+    $("#fSee").onclick = () => fiveResult();
+    $("#fOther").onclick = () => startFive(D.mode === "hard" ? "classic" : "hard");
+  } else $("#keys").innerHTML = dailyKeys()(k);
   D.shake = false;
 }
 function fiveKey(k) {
@@ -2495,7 +2531,7 @@ function fiveSubmit() {
   renderFive(D.guesses.length - 1);
   msg.textContent = won ? pick(["Brilliant!", "Spot on!", "Lovely!", "Got it!"]) : D.over ? "So close. Better luck tomorrow!" : `${D.tries - D.guesses.length} ${D.tries - D.guesses.length === 1 ? "try" : "tries"} left.`;
   const cur = D;
-  setTimeout(() => { if (D !== cur) return; D.busy = false; if (D.over) { if (won) confetti(); setTimeout(() => D === cur && fiveResult(), 700); } }, 1500);
+  setTimeout(() => { if (D !== cur) return; D.busy = false; if (D.over) { renderFive(); if (won) confetti(); setTimeout(() => D === cur && fiveResult(), 700); } }, 1500);
 }
 function fiveResult() {
   const s = fiveStats(D.mode), name = esc(playerName()), hard = D.mode === "hard";
@@ -2505,7 +2541,7 @@ function fiveResult() {
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("five")}>
     ${sheetBadge(D.won ? "trophy" : "cal")}
     <h2>${D.won ? `${D.guesses.length === 1 ? "First go" : "Got it in " + D.guesses.length}${name ? ", " + name : ""}!` : "Not today"}</h2>
-    <p>${D.won ? "" : `Today's word was <b>${D.answer.toUpperCase()}</b>. `}${hard ? "A new six-letter word arrives at midnight." : "A new word arrives at midnight."}${!hard && !fiveState("hard").over ? " Fancy a harder one? Try Hard mode: six letters, seven tries." : ""}</p>
+    <p>${D.won ? "" : `Today's word was <b>${D.answer.toUpperCase()}</b>. `}${hard ? "A new six-letter word arrives at midnight." : "A new word arrives at midnight."}${!hard && !fiveState("hard").over && !fiveState("hard").guesses.length ? " Fancy a harder one? Try Hard mode: six letters, seven tries." : ""}</p>
     <div class="stats">
       <div class="stat"><b>${s.played}</b><span>Played</span></div>
       <div class="stat"><b>${s.played ? Math.round(100 * s.won / s.played) : 0}%</b><span>Won</span></div>
@@ -2513,11 +2549,12 @@ function fiveResult() {
       <div class="stat"><b>${s.best}</b><span>Best streak</span></div>
     </div>
     <div class="dist">${s.dist.map((n, i) => `<div><span>${i + 1}</span><i style="width:${8 + 92 * n / maxD}%" class="${D.won && D.guesses.length === i + 1 ? "on" : ""}">${n}</i></div>`).join("")}</div>
-    <div class="actions"><button class="btn primary" id="share">${ic("share")}Share result</button>${!hard && !fiveState("hard").over ? `<button class="btn" id="tryHard">Try Hard mode</button>` : ""}<button class="btn" id="menu">Home</button></div>
+    <div class="actions"><button class="btn primary" id="share">${ic("share")}Share result</button>${(() => { const o = hard ? "classic" : "hard", os = fiveState(o), n = hard ? "Classic" : "Hard"; return `<button class="btn" id="tryHard">${os.over ? `See ${n} result` : os.guesses.length ? `Continue ${n}` : hard ? "Play Classic" : "Try Hard mode"}</button>`; })()}<button class="btn" id="fClose">See board</button><button class="btn" id="menu">Home</button></div>
   </div>`;
   document.body.appendChild(ov);
   $("#menu", ov).onclick = () => showHome();
-  const th = $("#tryHard", ov); if (th) th.onclick = () => startFive("hard");
+  const th = $("#tryHard", ov); if (th) th.onclick = () => { ov.remove(); startFive(hard ? "classic" : "hard"); if (D && D.over) fiveResult(); };
+  $("#fClose", ov).onclick = () => ov.remove();
   $("#share", ov).onclick = async () => {
     shareText(`Wordolio Sussed${hard ? " Hard" : ""}, ${shareDate()}: ${D.won ? D.guesses.length : "X"}/${D.tries}\n${grid}\n${D.won ? "Can you beat me?" : "This one got me. Can you get it?"}`);
   };

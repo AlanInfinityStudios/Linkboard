@@ -3191,9 +3191,60 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) { sav
 document.addEventListener("gesturestart", e => e.preventDefault());
 document.addEventListener("dblclick", e => e.preventDefault());
 
+/* Moving to wordolio.app. Saved progress belongs to one web address, so the old address hands it over:
+   one tap packs the progress into the link (after the #, which never leaves the device) and the new address unpacks it.
+   MOVE_LIVE stays false until wordolio.app is serving the game. */
+const MOVE_TO = "https://wordolio.app/", MOVE_LIVE = false;
+const OLD_HOME = location.hostname.endsWith("github.io");
+const b64url = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const unb64url = s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+async function packProgress() {
+  const json = new TextEncoder().encode(JSON.stringify(store.get()));
+  if (typeof CompressionStream === "undefined") return "j" + b64url(json);
+  const gz = await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer();
+  return "z" + b64url(new Uint8Array(gz));
+}
+async function unpackProgress(s) {
+  const bytes = unb64url(s.slice(1));
+  if (s[0] === "j") return JSON.parse(new TextDecoder().decode(bytes));
+  return JSON.parse(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).text());
+}
+// Same rule as cloud save: the newer copy wins, but a level finished on either copy stays finished.
+function mergeProgress(incoming) {
+  const local = store.get();
+  const merged = (incoming.updatedAt || 0) > (local.updatedAt || 0) ? { ...local, ...incoming } : { ...incoming, ...local };
+  Object.keys({ ...local, ...incoming }).filter(k => k.startsWith("done-")).forEach(k => { if (local[k] || incoming[k]) merged[k] = true; });
+  if (!local.profile && incoming.profile) merged.profile = incoming.profile;
+  storeData = merged;
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(merged)); } catch {}
+  cloud.push();
+}
+async function receiveMove() {
+  const m = location.hash.match(/^#move=([jz][A-Za-z0-9_-]+)$/);
+  if (!m) return false;
+  history.replaceState(null, "", location.pathname + location.search);
+  try { mergeProgress(await unpackProgress(m[1])); showHome(); toast(tr("Your progress has moved across. Welcome to wordolio.app!")); return true; }
+  catch { toast(tr("Sorry, that progress link did not work. Please try again from the old address.")); return false; }
+}
+async function moveProgress() { location.href = MOVE_TO + "#move=" + await packProgress(); }
+function offerMove() {
+  if (!OLD_HOME || !MOVE_LIVE || $(".move-ov")) return;
+  const s = store.get(), hasProgress = Object.keys(s).some(k => k !== "updatedAt" && k !== "profile");
+  if (!hasProgress) { location.replace(MOVE_TO); return; }
+  const ov = document.createElement("div"); ov.className = "overlay move-ov";
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">
+    <h2>${tr("Wordolio has a new home")}</h2>
+    <p>${tr("We have moved to wordolio.app. One tap takes you there with all your games, stars and streaks.")}</p>
+    <div class="actions"><button class="btn primary" id="moveGo">${tr("Move my progress")}</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  $("#moveGo", ov).onclick = () => { $("#moveGo", ov).disabled = true; moveProgress(); };
+}
+
 applyCalm();
 showHome();
 cloud.start();
+receiveMove().then(moved => { if (!moved) offerMove(); });
 
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));

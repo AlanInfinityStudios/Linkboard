@@ -712,6 +712,7 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
   border: 2px dashed var(--border); border-bottom: 0; border-radius: 16px 16px 0 0;
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }
+.adslot.quiet { visibility: hidden; pointer-events: none; }
 .adslot span { font-family: var(--head); font-weight: 800; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 @media (max-width: 900px) {
   .games.featured { grid-template-columns: 1fr; }
@@ -1224,8 +1225,9 @@ function navBar(on) {
   return `<nav class="topnav" aria-label="${tr("Main")}">${b("home", "home", tr("Home"))}${b("stats", "stats", tr("Statistics"))}${b("settings", "set", tr("Settings"))}</nav>`;
 }
 // Where a banner advert would sit in the store version. Shown as an empty frame for now.
-const SHOW_AD_SLOT = true;
-const adSlot = () => SHOW_AD_SLOT ? `<div class="adslot" aria-hidden="true"><span>${tr("Advert space")}</span></div>` : "";
+// The advert space is always reserved, so nothing ever sits underneath it. It stays invisible until adverts are switched on.
+const SHOW_AD_SLOT = true, ADS_LIVE = false;
+const adSlot = () => SHOW_AD_SLOT ? `<div class="adslot ${ADS_LIVE ? "" : "quiet"}" aria-hidden="true">${ADS_LIVE ? `<span>${tr("Advert space")}</span>` : ""}</div>` : "";
 const pageTop = on => `<header class="home-head"><div class="logo">${MARK(34)}${wordmark()}</div>${navBar(on)}</header>`;
 function bindNav() {
   $("#nav-home").onclick = () => showHome();

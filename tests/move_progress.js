@@ -24,5 +24,14 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
   // a broken link does not wipe anything
   await p2.goto('http://127.0.0.1:8765/index.html#move=zAAAA'); await p2.waitForTimeout(1000);
   ok(await p2.evaluate(() => store.get()['done-wall-9'] === true), 'broken link leaves progress alone');
-  ok(await nw.evaluate(() => typeof offerMove === 'function' && MOVE_LIVE === false), 'move offer switched off for now');
+  ok(await nw.evaluate(() => MOVE_LIVE === true && !document.querySelector('.move-ov')), 'no move offer away from the old address');
+  // copy and paste a code in Settings
+  const ctx3 = await b.newContext(); const p3 = await ctx3.newPage(); p3.on('pageerror', e => errs.push(e.message));
+  await p3.addInitScript(() => { if (!localStorage.getItem('linkboard-v3')) localStorage.setItem('linkboard-v3', JSON.stringify({ profile: { name: 'Pat', lang: 'en-GB' }, updatedAt: 1 })); });
+  await p3.goto('http://127.0.0.1:8765/index.html'); await p3.waitForTimeout(600);
+  await p3.evaluate(() => showSettings()); await p3.waitForTimeout(300);
+  ok(await p3.isVisible('#mvCopy') && await p3.isVisible('#mvPaste'), 'settings has copy and paste');
+  await p3.fill('#mvPaste', 'https://wordolio.app/#move=' + packed); await p3.waitForTimeout(800);
+  ok(await p3.evaluate(() => store.get()['done-wall-3'] === true), 'pasted code adds progress');
+  await p3.screenshot({ path: 'shots/move-settings.png', fullPage: true });
   console.log(errs.length ? 'ERRORS\n' + errs.join('\n') : 'no page errors'); console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); await b.close(); })();

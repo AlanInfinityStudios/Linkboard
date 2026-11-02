@@ -880,6 +880,27 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
   .chest-dots i { width: 9px; height: 9px; border-radius: 3px; }
   .packs { grid-template-columns: repeat(2, 1fr); }
 }
+/* Daily Five, Wordolio style: rows sit on soft cards, round-cornered tiles, empty tiles shown as dots, a bounce reveal. */
+.fmode { display: inline-flex; background: var(--surface); border-radius: 999px; padding: 4px; box-shadow: var(--lift); gap: 2px; }
+.fmode button { border: 0; background: none; border-radius: 999px; padding: 6px 14px; font: 800 14px var(--head); color: var(--muted); display: flex; align-items: baseline; gap: 6px; line-height: 1.2; }
+.fmode button small { font-size: 11px; font-weight: 700; opacity: .8; }
+.fmode button[aria-selected="true"] { background: linear-gradient(160deg, #35C894, #0E8F63); color: #fff; }
+/* The grid shrinks with the screen height so the keyboard always stays in view (395px is everything else on the screen). */
+.five-screen > * { flex-shrink: 0; }
+.five-screen .fgrid { gap: 6px; width: min(340px, 100%, max(215px, calc((100dvh - 425px) * 5 / 6 - 16px))); }
+.five-screen .fgrid.six { width: min(350px, 100%, max(220px, calc((100dvh - 431px) * 6 / 7 - 20px))); }
+.five-screen .frow { grid-template-columns: repeat(var(--n, 5), 1fr); gap: 6px; background: color-mix(in srgb, var(--surface) 70%, transparent); border-radius: 18px; padding: 5px; }
+.five-screen .ft { border-radius: 14px; background: var(--surface); box-shadow: inset 0 0 0 2px var(--border); }
+.five-screen .ft:empty::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+.five-screen .ft.c { background: linear-gradient(160deg, #35C894, #12936A); }
+.five-screen .ft.p { background: linear-gradient(160deg, #F6BE5C, #E39A22); }
+.five-screen .ft.a { background: #B4AAB2; }
+.five-screen .ft.flip { animation: fbounce .45s cubic-bezier(.3, 1.6, .5, 1) both; animation-delay: var(--d); }
+@keyframes fbounce { 0% { transform: scale(.6); opacity: .4; } 100% { transform: none; opacity: 1; } }
+.fgrid.six .ft { font-size: 1.45rem; }
+@media (max-height: 700px) { .five-screen .key { height: 46px; } .five-screen { gap: 8px; } }
+@media (prefers-reduced-motion: reduce) { .five-screen .ft.flip { animation: none; } }
+html.calm .five-screen .ft.flip { animation: none; }
 .dayres { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
 .dayres div { background: var(--bg); border-radius: 14px; padding: 8px 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .dayres span { font: 800 11px var(--head); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
@@ -950,6 +971,7 @@ html.calm .screen, html.calm .sheet, html.calm .overlay, html.calm .tile.hinted,
 <script src="words.js"></script>
 <script src="steps.js"></script>
 <script src="locks.js"></script>
+<script src="six.js"></script>
 <script>
 const GROUP_COLOURS = ["#FF5A3C", "#3E7BFA", "var(--green)", "#F5A300", "var(--purple)", "#00B2C9", "#FF7A1A", "#EC4899", "#5B6CFF", "#7CB82F", "#0EA5A0", "#E8456B", "#2E86DE", "#D97706", "#6366F1", "#16A34A"];
 const WALL_COLOURS = ["#3E7BFA", "var(--green)", "#F5A300", "#FF5A3C"];
@@ -1315,7 +1337,8 @@ function showHelp(g) {
       ...(B && B.level.anagrams ? [tr("Some groups have one word with its letters scrambled, marked ↻. When you find the group, it unscrambles.")] : [])],
     five: ["Guess the five-letter word in six tries.", "Green with a bar means the right letter in the right place.",
       "Amber with a dot means the letter is in the word, but somewhere else.", "Grey means the letter isn't in the word.",
-      "Everyone gets the same word, and a new one arrives at midnight."],
+      "Everyone gets the same word, and a new one arrives at midnight.",
+      "Fancy more of a challenge? Hard mode is a six-letter word in seven tries, with its own streak."],
     wheel: ["Make words of 4 or more letters from the seven letters.", "Every word must use the purple middle letter. Letters can be used more than once.",
       "4-letter words score 1 point. Longer words score a point for each letter.", "A word that uses all seven letters scores 7 bonus points.",
       "Each clue fills in one more letter of every word. You get 1 free clue a day, then clues come from your hint wallet."],
@@ -1481,7 +1504,7 @@ function showHome(first = false) {
     `<b>${nbL ? `${tr("Level {n}", { n: levelNo(nb) })} · ${tr(nbL.difficulty)}` : tr("Every level solved")}</b>${meter(boards, LEVELS().length)}`,
     nb == null ? tr("Play again") : s["save-" + bkey(nb)] ? tr("Continue") : tr("Play"), artBoard, "", "feature");
   const fiveCard = english ? gameCard("five", "modeFive", "Guess the five-letter word in six tries.",
-    `<b>${five.over ? (five.won ? `Solved in ${five.guesses.length}` : "Done for today") : five.guesses.length ? `${five.guesses.length} of 6 tries used` : "Today's word is ready"}</b><small>${fs.streak ? `${fs.streak} day streak` : "&nbsp;"}</small>`,
+    `<b>${five.over ? (five.won ? `Solved in ${five.guesses.length}` : "Done for today") : five.guesses.length ? `${five.guesses.length} of 6 tries used` : "Today's word is ready"}</b><small>${fiveState("hard").over ? (fiveState("hard").won ? `Hard: solved in ${fiveState("hard").guesses.length}` : "Hard: done for today") : fs.streak ? `${fs.streak} day streak` : "&nbsp;"}</small>`,
     five.over ? "See result" : five.guesses.length ? "Continue" : "Play", artFive)
     : gameCard("five", "modeFive", "", "", "", artFive, soon);
   const wheelCard = english ? gameCard("wheel", "modeWheel", "Make as many words as you can.",
@@ -1543,7 +1566,8 @@ function showStats() {
     const fs = fiveStats(), maxD = Math.max(1, ...fs.dist);
     html += panel("five", "A new word every day", `
       <div class="nums">${num(fs.played, "played")}${num(`${fs.played ? Math.round(100 * fs.won / fs.played) : 0}%`, "won")}${num(fs.streak, "day streak")}${num(fs.best, "best streak")}</div>
-      <div class="bars">${fs.dist.map((n, i) => bar(`${i + 1} ${i ? "tries" : "try"}`, n, maxD, n)).join("")}</div>`);
+      <div class="bars">${fs.dist.map((n, i) => bar(`${i + 1} ${i ? "tries" : "try"}`, n, maxD, n)).join("")}</div>
+      ${(() => { const h = fiveStats("hard"); return h.played ? `<p class="note">Hard mode: ${h.played} played, ${Math.round(100 * h.won / h.played)}% won, ${h.streak} day streak (best ${h.best}).</p>` : `<p class="note">Hard mode: six letters, seven tries. Not played yet.</p>`; })()}`);
     const wh = wheelState(), days = Object.keys(s).filter(k => /^wheel-\d{4}-\d\d-\d\d$/.test(k) && (s[k].found || []).length);
     html += panel("wheel", "New letters every day", `
       <div class="nums">${num(`${wh.found.length} / ${wh.words.size}`, "words today")}${num(wh.score, "points today")}${num(days.length, "days played")}${num(Math.max(0, ...days.map(k => s[k].found.length)), "most words in a day")}</div>
@@ -2349,45 +2373,57 @@ document.addEventListener("keydown", e => {
   else if (S) { e.preventDefault(); stepsKey(k); } else if (K) { e.preventDefault(); lockKey(k); }
 });
 
-/* ---------- Daily Five: guess the five-letter word in six tries ---------- */
+/* ---------- Daily Five: guess the five-letter word in six tries ----------
+   Hard mode: a six-letter word in seven tries, with its own daily word and streak.
+   Saved as five-<date> / fiveStats (classic) and six-<date> / sixStats (hard). */
 let D = null;
-const fiveAnswer = () => ofToday(FIVE_ANSWERS);
-const fiveState = () => store.get()["five-" + todayKey()] || { guesses: [], over: false, won: false };
-function fiveStats() {
-  const s = store.get().fiveStats || { played: 0, won: 0, streak: 0, best: 0, lastWin: null, dist: [0, 0, 0, 0, 0, 0] };
+const FIVE_MODES = { classic: { len: 5, tries: 6, key: "five", stats: "fiveStats", answers: () => FIVE_ANSWERS, guesses: () => FIVE_GUESSES },
+  hard: { len: 6, tries: 7, key: "six", stats: "sixStats", answers: () => SIX_ANSWERS, guesses: () => SIX_GUESSES } };
+const fiveAnswer = (m = "classic") => ofToday(FIVE_MODES[m].answers());
+const fiveState = (m = "classic") => store.get()[FIVE_MODES[m].key + "-" + todayKey()] || { guesses: [], over: false, won: false };
+function fiveStats(m = "classic") {
+  const s = store.get()[FIVE_MODES[m].stats] || { played: 0, won: 0, streak: 0, best: 0, lastWin: null, dist: Array(FIVE_MODES[m].tries).fill(0) };
   return { ...s, streak: s.lastWin != null && dayNumber() - s.lastWin <= 1 ? s.streak : 0 };
 }
 // Colours for one guess: c = right letter, right place; p = in the word, wrong place; a = not in the word.
 function fiveScore(guess, answer) {
-  const res = Array(5).fill("a"), left = {};
+  const res = Array(answer.length).fill("a"), left = {};
   [...answer].forEach((c, i) => { if (guess[i] === c) res[i] = "c"; else left[c] = (left[c] || 0) + 1; });
   [...guess].forEach((c, i) => { if (res[i] !== "c" && left[c]) { res[i] = "p"; left[c]--; } });
   return res;
 }
-function startFive() {
+function startFive(mode = store.get().fiveMode || "classic") {
   leaveGame();
   markPlayed();
-  D = { answer: fiveAnswer(), ...fiveState(), typed: "", busy: false };
+  if (!FIVE_MODES[mode]) mode = "classic";
+  const M = FIVE_MODES[mode];
+  store.set("fiveMode", mode);
+  D = { mode, len: M.len, tries: M.tries, answer: fiveAnswer(mode), ...fiveState(mode), typed: "", busy: false };
   app.innerHTML = `
-  <div class="screen daily">
-    ${gameHeader("five", esc(todayLabel()), `<span class="gpill" aria-label="Daily Five streak">${ic("flame")}${fiveStats().streak}</span>`)}
-    <p class="daily-msg" id="msg">Guess today's five-letter word. You have six tries.</p>
-    <div class="fgrid" id="fgrid"></div>
+  <div class="screen daily five-screen">
+    ${gameHeader("five", esc(todayLabel()), `<span class="gpill" aria-label="${mode === "hard" ? "Hard mode" : "Daily Five"} streak">${ic("flame")}${fiveStats(mode).streak}</span>`)}
+    <div class="fmode" role="tablist" aria-label="Mode">
+      <button role="tab" aria-selected="${mode === "classic"}" data-mode="classic">Classic<small>5 letters</small></button>
+      <button role="tab" aria-selected="${mode === "hard"}" data-mode="hard">Hard<small>6 letters</small></button>
+    </div>
+    <p class="daily-msg" id="msg">${mode === "hard" ? "Guess today's six-letter word in seven tries." : "Guess today's five-letter word in six tries."}</p>
+    <div class="fgrid ${mode === "hard" ? "six" : ""}" id="fgrid" style="--n:${M.len}"></div>
     <div class="legend" aria-hidden="true"><span><i class="c"></i>Right place</span><span><i class="p"></i>In the word</span><span><i class="a"></i>Not in it</span></div>
     <div id="keys"></div>
   </div>`;
   $("#back").onclick = () => showHome();
   $("#help").onclick = () => showHelp("five");
+  app.querySelectorAll(".fmode button").forEach(b => b.onclick = () => { if (b.dataset.mode !== D.mode) startFive(b.dataset.mode); });
   $("#keys").addEventListener("click", e => { const b = e.target.closest(".key"); if (b) fiveKey(b.dataset.k); });
   renderFive();
   if (D.over) setTimeout(() => D && fiveResult(), 400);
 }
 function renderFive(revealRow = -1) {
   const rows = [];
-  for (let r = 0; r < 6; r++) {
+  for (let r = 0; r < D.tries; r++) {
     const g = D.guesses[r], sc = g ? fiveScore(g, D.answer) : null;
     const text = g || (r === D.guesses.length ? D.typed : "");
-    rows.push(`<div class="frow ${r === D.guesses.length && D.shake ? "shake" : ""}">${[0, 1, 2, 3, 4].map(i =>
+    rows.push(`<div class="frow ${r === D.guesses.length && D.shake ? "shake" : ""}">${[...Array(D.len).keys()].map(i =>
       `<div class="ft ${sc ? sc[i] : text[i] ? "typed" : ""} ${r === revealRow ? "flip" : ""}" style="--d:${i * 0.25}s">${text[i] || ""}</div>`).join("")}</div>`);
   }
   $("#fgrid").innerHTML = rows.join("");
@@ -2400,39 +2436,40 @@ function fiveKey(k) {
   if (!D || D.over || D.busy) return;
   if (k === "Backspace") D.typed = D.typed.slice(0, -1);
   else if (k === "Enter") return fiveSubmit();
-  else if (D.typed.length < 5) D.typed += k;
+  else if (D.typed.length < D.len) D.typed += k;
   renderFive();
 }
 function fiveSubmit() {
   const msg = $("#msg");
-  if (D.typed.length < 5) { msg.textContent = "Five letters, please."; D.shake = true; return renderFive(); }
-  if (!FIVE_GUESSES.has(D.typed)) { msg.textContent = `"${D.typed.toUpperCase()}" isn't in our word list.`; D.shake = true; return renderFive(); }
+  const M = FIVE_MODES[D.mode];
+  if (D.typed.length < D.len) { msg.textContent = D.len === 6 ? "Six letters, please." : "Five letters, please."; D.shake = true; return renderFive(); }
+  if (!M.guesses().has(D.typed)) { msg.textContent = `"${D.typed.toUpperCase()}" isn't in our word list.`; D.shake = true; return renderFive(); }
   D.guesses.push(D.typed); D.typed = "";
   const won = D.guesses[D.guesses.length - 1] === D.answer;
-  D.over = won || D.guesses.length === 6; D.won = won;
-  store.set("five-" + todayKey(), { guesses: D.guesses, over: D.over, won: D.won });
+  D.over = won || D.guesses.length === D.tries; D.won = won;
+  store.set(M.key + "-" + todayKey(), { guesses: D.guesses, over: D.over, won: D.won });
   if (D.over) {
-    const s = fiveStats(), today = dayNumber();
+    const s = fiveStats(D.mode), today = dayNumber();
     s.played++;
     if (won) { s.won++; s.streak = s.lastWin === today - 1 ? s.streak + 1 : 1; s.best = Math.max(s.best, s.streak); s.lastWin = today; s.dist[D.guesses.length - 1]++; }
     else s.streak = 0;
-    store.set("fiveStats", s);
+    store.set(M.stats, s);
   }
   D.busy = true;
   renderFive(D.guesses.length - 1);
-  msg.textContent = won ? pick(["Brilliant!", "Spot on!", "Lovely!", "Got it!"]) : D.over ? "So close. Better luck tomorrow!" : `${6 - D.guesses.length} ${6 - D.guesses.length === 1 ? "try" : "tries"} left.`;
+  msg.textContent = won ? pick(["Brilliant!", "Spot on!", "Lovely!", "Got it!"]) : D.over ? "So close. Better luck tomorrow!" : `${D.tries - D.guesses.length} ${D.tries - D.guesses.length === 1 ? "try" : "tries"} left.`;
   const cur = D;
   setTimeout(() => { if (D !== cur) return; D.busy = false; if (D.over) { if (won) confetti(); setTimeout(() => D === cur && fiveResult(), 700); } }, 1500);
 }
 function fiveResult() {
-  const s = fiveStats(), name = esc(playerName());
+  const s = fiveStats(D.mode), name = esc(playerName()), hard = D.mode === "hard";
   const maxD = Math.max(1, ...s.dist);
-  const grid = D.guesses.map(g => fiveScore(g, D.answer).map(r => ({ c: "🟩", p: "🟨", a: "⬜" }[r])).join("")).join("\n");
+  const grid = D.guesses.map(g => fiveScore(g, D.answer).map(r => ({ c: "🟢", p: "🟠", a: "⚪" }[r])).join("")).join("\n");
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("five")}>
     ${sheetBadge(D.won ? "trophy" : "cal")}
-    <h2>${D.won ? `${D.guesses.length === 1 ? "First go!" : "Got it in " + D.guesses.length}${name ? ", " + name : ""}!` : "Not today"}</h2>
-    <p>${D.won ? "A new word arrives at midnight." : `Today's word was <b>${D.answer.toUpperCase()}</b>. A new word arrives at midnight.`}</p>
+    <h2>${D.won ? `${D.guesses.length === 1 ? "First go" : "Got it in " + D.guesses.length}${name ? ", " + name : ""}!` : "Not today"}</h2>
+    <p>${D.won ? "" : `Today's word was <b>${D.answer.toUpperCase()}</b>. `}${hard ? "A new six-letter word arrives at midnight." : "A new word arrives at midnight."}${!hard && !fiveState("hard").over ? " Fancy a harder one? Try Hard mode: six letters, seven tries." : ""}</p>
     <div class="stats">
       <div class="stat"><b>${s.played}</b><span>Played</span></div>
       <div class="stat"><b>${s.played ? Math.round(100 * s.won / s.played) : 0}%</b><span>Won</span></div>
@@ -2440,12 +2477,13 @@ function fiveResult() {
       <div class="stat"><b>${s.best}</b><span>Best streak</span></div>
     </div>
     <div class="dist">${s.dist.map((n, i) => `<div><span>${i + 1}</span><i style="width:${8 + 92 * n / maxD}%" class="${D.won && D.guesses.length === i + 1 ? "on" : ""}">${n}</i></div>`).join("")}</div>
-    <div class="actions"><button class="btn primary" id="share">${ic("share")}Share result</button><button class="btn" id="menu">Home</button></div>
+    <div class="actions"><button class="btn primary" id="share">${ic("share")}Share result</button>${!hard && !fiveState("hard").over ? `<button class="btn" id="tryHard">Try Hard mode</button>` : ""}<button class="btn" id="menu">Home</button></div>
   </div>`;
   document.body.appendChild(ov);
   $("#menu", ov).onclick = () => showHome();
+  const th = $("#tryHard", ov); if (th) th.onclick = () => startFive("hard");
   $("#share", ov).onclick = async () => {
-    shareText(`Wordolio Daily Five, ${shareDate()}: ${D.won ? D.guesses.length : "X"}/6\n${grid}\n${D.won ? "Can you beat me?" : "This one got me. Can you get it?"}`);
+    shareText(`Wordolio Daily Five${hard ? " Hard" : ""}, ${shareDate()}: ${D.won ? D.guesses.length : "X"}/${D.tries}\n${grid}\n${D.won ? "Can you beat me?" : "This one got me. Can you get it?"}`);
   };
 }
 

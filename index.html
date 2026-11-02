@@ -2563,7 +2563,7 @@ function fiveResult() {
 /* ---------- Sharing results ----------
    Every finished game can share a spoiler-free result plus a link. SHARE_URL is the address friends land on:
    set it to the game's own web address (it can point at the beta now and the app stores later). */
-const SHARE_URL = "https://wordolio.app";
+const SHARE_URL = "https://alaninfinitystudios.github.io/Linkboard/"; // swap for the game's own web address once bought
 const shareBtn = (label = "Share") => `<button class="btn share-btn" id="shareRes">${ic("share")}${label}</button>`;
 const stars3 = n => "★".repeat(n) + "☆".repeat(3 - n);
 const shareDate = () => new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short" });

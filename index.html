@@ -6,6 +6,7 @@
 <title>Wordolio</title>
 <meta name="description" content="Wordolio: a little world of word games, free to play with fresh puzzles every day.">
 <meta name="theme-color" content="#F7F4EF">
+<script>/* Night mode before first paint, so there is no white flash. */ try { const n = (JSON.parse(localStorage.getItem("linkboard-v3") || "{}").profile || {}).night || "auto"; if (n === "on" || (n === "auto" && matchMedia("(prefers-color-scheme: dark)").matches)) document.documentElement.dataset.theme = "dark"; } catch (e) {}</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -509,7 +510,7 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 /* ---------- Bottom bar (home, statistics, settings) ---------- */
 .navbar {
   position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40;
-  display: flex; gap: 4px; padding: 6px; border-radius: 999px; background: rgba(255, 252, 248, .92);
+  display: flex; gap: 4px; padding: 6px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 92%, transparent);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 1px 1px rgba(41, 36, 45, .05), 0 14px 34px rgba(41, 36, 45, .14);
 }
 .navbar button { border: 0; background: transparent; height: 52px; padding: 0 20px; border-radius: 999px; display: flex; align-items: center; gap: 8px; font-family: var(--head); font-weight: 800; font-size: 15px; color: var(--muted); }
@@ -541,7 +542,7 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .share-opt { display: grid; justify-items: center; gap: 6px; font: 600 13px inherit; font-family: inherit; color: var(--ink); background: none; border: 0; padding: 4px 0; text-decoration: none; cursor: pointer; }
 .share-opt span { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; color: #fff; }
 .share-opt svg { width: 24px; height: 24px; }
-.invite-card { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 14px; padding: 16px 18px; border: 0; border-radius: 22px; background: var(--card-bg, #fff); box-shadow: var(--card); text-align: left; font: inherit; color: var(--ink); cursor: pointer; }
+.invite-card { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 14px; padding: 16px 18px; border: 0; border-radius: 22px; background: var(--surface); box-shadow: var(--card); text-align: left; font: inherit; color: var(--ink); cursor: pointer; }
 .invite-card > span:nth-child(2) { flex: 1; display: grid; gap: 2px; }
 .invite-card b { font-size: 16px; } .invite-card span span { color: var(--muted); font-size: 14px; }
 .invite-card .ico { width: 20px; height: 20px; color: var(--muted); }
@@ -557,7 +558,7 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .switch::after { content: ""; position: absolute; left: 3px; top: 3px; width: 28px; height: 28px; border-radius: 50%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .18); transition: transform .2s; }
 .switch[aria-checked="true"] { background: var(--green); }
 .switch[aria-checked="true"]::after { transform: translateX(22px); }
-.field input { border-color: var(--border); border-radius: 16px; background: #fff; font-family: var(--font); }
+.field input { border-color: var(--border); border-radius: 16px; background: var(--tile); font-family: var(--font); }
 .field input:focus { border-color: var(--hi); }
 .field > span { font-family: var(--head); font-weight: 800; }
 .lang { background: var(--bg); border-radius: 18px; }
@@ -575,7 +576,7 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .stat { background: var(--bg); border-radius: 16px; }
 .stat b { font-family: var(--head); font-weight: 800; }
 .btn { border-radius: 999px; padding: 12px 22px; font-family: var(--head); font-weight: 800; background: var(--surface); color: var(--ink); box-shadow: var(--lift); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.btn.primary { color: #fff; background: linear-gradient(160deg, color-mix(in srgb, var(--c, var(--brand)) 85%, #fff), color-mix(in srgb, var(--c, var(--brand)) 82%, #000)); box-shadow: 0 6px 14px rgba(0, 0, 0, .12), inset 0 1px 0 rgba(255, 255, 255, .3); }
+.btn.primary { color: #fff; background: linear-gradient(160deg, color-mix(in srgb, var(--c, var(--btn-brand, var(--brand))) 85%, #fff), color-mix(in srgb, var(--c, var(--btn-brand, var(--brand))) 82%, #000)); box-shadow: 0 6px 14px rgba(0, 0, 0, .12), inset 0 1px 0 rgba(255, 255, 255, .3); }
 .btn .ico { width: 18px; height: 18px; }
 .conn { background: var(--bg); border-radius: 16px; }
 .pill-btn { font-family: var(--head); font-weight: 800; box-shadow: var(--lift); }
@@ -605,12 +606,12 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .wtile.sel { box-shadow: 0 0 0 0.45cqw var(--blue), 0 1cqw 2cqw rgba(41, 36, 45, .18); }
 
 /* ---------- Daily Five ---------- */
-.ft { border-radius: 12px; font-family: var(--head); background: #fff; box-shadow: inset 0 0 0 2px var(--border); position: relative; }
+.ft { border-radius: 12px; font-family: var(--head); background: var(--tile); box-shadow: inset 0 0 0 2px var(--border); position: relative; }
 .ft.typed { box-shadow: inset 0 0 0 2px var(--ink); }
 .ft.c, .ft.p, .ft.a { box-shadow: 0 2px 0 rgba(0, 0, 0, .08); }
 .ft.c::after { content: ""; position: absolute; left: 22%; right: 22%; bottom: 9%; height: 4px; border-radius: 3px; background: rgba(255, 255, 255, .9); }
 .ft.p::after { content: ""; position: absolute; right: 9%; top: 9%; width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, .95); }
-.key { border-radius: 12px; background: #fff; box-shadow: 0 1.5px 0 var(--tile-edge), 0 4px 10px rgba(80, 50, 40, .06); font-family: var(--head); font-weight: 800; color: var(--ink); }
+.key { border-radius: 12px; background: var(--tile); box-shadow: 0 1.5px 0 var(--tile-edge), 0 4px 10px rgba(80, 50, 40, .06); font-family: var(--head); font-weight: 800; color: var(--ink); }
 .key.c, .key.p, .key.a { color: #fff; }
 .key.wide .ico { width: 22px; height: 22px; }
 .legend { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); font-weight: 700; }
@@ -624,7 +625,7 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 /* ---------- Letter Wheel ---------- */
 .daily .ghead { width: 100%; }
 .wheel-screen { --c: var(--purple); }
-.wl { font-family: var(--head); background: #fff; box-shadow: var(--lift); color: var(--ink); }
+.wl { font-family: var(--head); background: var(--tile); box-shadow: var(--lift); color: var(--ink); }
 .wl.centre { background: linear-gradient(160deg, #B66CF2, #8336D6); color: #fff; }
 .typed { font-family: var(--head); }
 .wheel-body .found { border-radius: 26px; box-shadow: var(--card); }
@@ -727,7 +728,7 @@ h1, h2, h3, h4, .h { font-family: var(--head); letter-spacing: -.015em; }
 .adslot {
   position: fixed; left: 50%; bottom: env(safe-area-inset-bottom, 0px); transform: translateX(-50%); z-index: 40;
   width: min(728px, 100%); height: 90px; display: grid; place-items: center;
-  background: repeating-linear-gradient(135deg, rgba(41, 36, 45, .035) 0 10px, transparent 10px 20px), rgba(255, 252, 248, .92);
+  background: repeating-linear-gradient(135deg, rgba(41, 36, 45, .035) 0 10px, transparent 10px 20px), color-mix(in srgb, var(--surface) 92%, transparent);
   border: 2px dashed var(--border); border-bottom: 0; border-radius: 16px 16px 0 0;
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }
@@ -999,6 +1000,41 @@ html.calm .screen, html.calm .sheet, html.calm .overlay, html.calm .tile.hinted,
   .tool { width: 52px; height: 52px; font-size: 22px; }
   .timer { font-size: 1rem; }
 }
+
+/* ---------- Night mode: a warm dark theme (Settings > Night mode, or the device setting) ---------- */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #17141B; --bg-deep: #100E13; --surface: #221E28; --surface-2: #2A2531; --tray: #1B1820;
+  --tile: #2D2834; --tile-edge: #3D3545; --ink: #EEE8F0; --muted: #A99FAC; --border: #3A3341;
+  --line: rgba(255, 255, 255, .10); --brand: #EADFF6; --btn-brand: #6E3FB0; --hi: #BE80F5;
+  --coral-ink: #FF8C7A; --green-ink: #4CD3A5; --purple-ink: #C99CF6; --blue-ink: #8FB2FF;
+  --shadow: 0 1px 1px rgba(0, 0, 0, .3), 0 6px 16px rgba(0, 0, 0, .35);
+  --lift: 0 1px 1px rgba(0, 0, 0, .3), 0 8px 20px rgba(0, 0, 0, .35);
+  --card: 0 1px 1px rgba(0, 0, 0, .3), 0 14px 34px rgba(0, 0, 0, .4);
+}
+html[data-theme="dark"] body { background: radial-gradient(130% 70% at 50% 0%, #211C26 0%, var(--bg) 60%, var(--bg-deep) 100%); }
+html[data-theme="dark"] .tile.symbol { background: radial-gradient(circle at 50% 35%, #3A3240 0%, #332A2A 80%); box-shadow: 0 0.25cqw 0 #6B5530, inset 0 0 0 0.25cqw #7A6136, 0 0.8cqw 1.6cqw rgba(0, 0, 0, .3); }
+html[data-theme="dark"] .tile { box-shadow: 0 0.25cqw 0 var(--tile-edge), 0 0.8cqw 1.6cqw rgba(0, 0, 0, .25); }
+html[data-theme="dark"] .tile.anag { color: #C3A2FF; }
+html[data-theme="dark"] .meter, html[data-theme="dark"] .barrow .track { background: #332D3A; }
+html[data-theme="dark"] .mt, html[data-theme="dark"] .mwheel i { background: var(--tile); box-shadow: 0 1.5px 0 rgba(0, 0, 0, .3); }
+html[data-theme="dark"] .switch { background: #4A4251; }
+html[data-theme="dark"] .timer.frozen { background: #1E3550; }
+html[data-theme="dark"] .clue-btn { background: #3B3222; color: var(--ink); }
+html[data-theme="dark"] .clue-btn.ask { background: #F5B42A; color: #2A2420; }
+html[data-theme="dark"] .rung.start .st { background: #3D3020; }
+html[data-theme="dark"] .st.edit.changed { background: #5A4320; }
+html[data-theme="dark"] .lock-clue { background: #3B3222; }
+html[data-theme="dark"] .ref.guessed { background: #4A2638; }
+html[data-theme="dark"] .stars i { color: #4A4251; }
+html[data-theme="dark"] .share-preview { background: rgba(255, 255, 255, .06); }
+html[data-theme="dark"] .dotico { filter: brightness(.8) saturate(.85); }
+html[data-theme="dark"] img, html[data-theme="dark"] .emoji { filter: none; }
+html[data-theme="dark"] .gcard .art, html[data-theme="dark"] .soon-card .art { background: linear-gradient(rgba(23, 20, 27, .68), rgba(23, 20, 27, .68)), var(--art); }
+html[data-theme="dark"] .wallet { background: #3B3222; }
+html[data-theme="dark"] .key.used { background: #4A2638; }
+html[data-theme="dark"] .key { box-shadow: 0 1.5px 0 var(--tile-edge), 0 4px 10px rgba(0, 0, 0, .25); }
+.nights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 </style>
 </head>
 <body>
@@ -1171,7 +1207,7 @@ const FR = {
   "Your level path": "Votre parcours", "hints left": "indices restants", "All your hints come back in {t}.": "Tous vos indices reviennent dans {t}.",
   "How you're getting on, game by game.": "Vos progrès, jeu par jeu.", "Changes save straight away.": "Les changements sont enregistrés tout de suite.",
   "Your name": "Votre prénom", "Used in greetings and results.": "Utilisé pour vous saluer et dans les résultats.", "Language": "Langue",
-  "Spellings, words and levels follow your choice.": "L'orthographe, les mots et les niveaux suivent votre choix.", "Motion": "Animations",
+  "Spellings, words and levels follow your choice.": "L'orthographe, les mots et les niveaux suivent votre choix.", "Motion": "Animations", "Night mode": "Mode nuit", "A darker screen that's easier on the eyes at bedtime.": "Un écran plus sombre, plus doux pour les yeux avant de dormir.", "Automatic": "Automatique", "Follows your device": "Suit votre appareil", "On": "Activé", "Always dark": "Toujours sombre", "Off": "Désactivé", "Always light": "Toujours clair",
   "Reduce motion": "Réduire les animations", "Turns off confetti, pulsing and bouncy screen changes.": "Désactive les confettis, les pulsations et les transitions animées.",
   "About": "À propos", "A little world of word games.": "Un petit monde de jeux de mots.",
   "Free to play. Your progress is saved on this device.": "Gratuit. Votre progression est enregistrée sur cet appareil.",
@@ -1524,6 +1560,7 @@ const wordmark = () => `<span class="wordmark">${BRAND.first}<span>${BRAND.secon
 const MARK = s => `<svg width="${s}" height="${s}" viewBox="0 0 30 30" aria-hidden="true">${[["#FF6B57", "#A552E8", "#3CB8D6"], ["#F1AA3C", "#20B583", "#B9A3E3"], ["#477EF0", "#E86B9D", "#30243F"]]
   .map((row, r) => row.map((c, k) => `<rect x="${k * 10.75}" y="${r * 10.75}" width="8.5" height="8.5" rx="2.5" fill="${c}"/>`).join("")).join("")}</svg>`;
 const PATHS = {
+  moon: `<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>`,
   grid: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
   cal: '<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/>',
   wheel: '<circle cx="12" cy="12" r="2.6"/><circle cx="12" cy="5" r="2"/><circle cx="18" cy="9" r="2"/><circle cx="18" cy="15.5" r="2"/><circle cx="12" cy="19" r="2"/><circle cx="6" cy="15.5" r="2"/><circle cx="6" cy="9" r="2"/>',
@@ -1563,6 +1600,15 @@ const GAMES = {
   lock: { get name() { return isFR() ? "Code secret" : "Letter Lock"; }, c: "#E86B9D", ci: "#B83A6E", icon: "lock", art: "linear-gradient(160deg,#FDE3EE,#F8C6DA)", badge: "linear-gradient(160deg,#F08AB4,#CF4C82)" },
 };
 const applyCalm = () => document.documentElement.classList.toggle("calm", !!(profile() || {}).calm);
+// Night mode: "auto" follows the device's dark mode, "on" is always dark, "off" always light.
+const nightPref = () => ((store.get().profile || {}).night) || "auto";
+const darkMQ = matchMedia("(prefers-color-scheme: dark)");
+function applyTheme() {
+  const n = nightPref(), dark = n === "on" || (n === "auto" && darkMQ.matches);
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = dark ? "#17141B" : "#F7F4EF";
+}
+try { darkMQ.addEventListener("change", applyTheme); } catch {}
 
 // The header every game shares: back and brand on the left, title in the middle, game pills on the right.
 function gameHeader(g, sub, right = "") {
@@ -1742,8 +1788,8 @@ function showHome(first = false) {
       stat("check", "#D9F3E8", "#13996D", `${dailies} / 4`, tr("dailies completed today")) +
       stat("trophy", "#FCEFCF", "#C88A12", boards + walls, tr("levels and walls solved"));
   const tiles = (cols, rows) => rows.map(c => `<i class="mt" style="background:${c}"></i>`.repeat(cols)).join("");
-  const artBoard = `<div class="mboard b">${tiles(5, ["#fff", "#fff", "#FF6B57", "#477EF0"])}</div>`;
-  const artWall = `<div class="mboard w">${tiles(4, ["#477EF0", "#fff", "#fff", "#fff"])}</div>`;
+  const artBoard = `<div class="mboard b">${tiles(5, ["var(--tile)", "var(--tile)", "#FF6B57", "#477EF0"])}</div>`;
+  const artWall = `<div class="mboard w">${tiles(4, ["#477EF0", "var(--tile)", "var(--tile)", "var(--tile)"])}</div>`;
   const artFive = `<div class="mboard f">${(isFR() ? [["L", "c"], ["I", "a"], ["V", "p"], ["R", "a"], ["E", "c"]] : [["W", "c"], ["O", "a"], ["R", "p"], ["D", "a"], ["S", "c"]]).map(([l, k]) => `<i class="mt ${k}" style="background:${{ c: "#20B583", p: "#F1AA3C", a: "#A79FA5" }[k]}">${l}</i>`).join("")}${'<i class="mt"></i>'.repeat(5)}</div>`;
   const artSteps = `<div class="mboard s">${(isFR() ? ["MOTS", "MOIS", "ROIS"] : ["COLD", "CORD", "WORD"]).map((w, r) => [...w].map((l, i) => `<i class="mt ${r && i === [0, 2, 0][r] ? "hi" : ""}">${l}</i>`).join("")).join("")}</div>`;
   const artLock = `<div class="mboard k">${"?".repeat(4).split("").map((l, i) => `<i class="mt ${i === 1 ? "hi" : ""}">${i === 1 ? "R" : l}</i>`).join("")}</div>`;
@@ -1861,6 +1907,8 @@ function showSettings() {
       <section class="panel">${head("motion", GAMES.five.badge, tr("Motion"))}
         <div class="setting"><div class="txt"><b>${tr("Reduce motion")}</b><span>${tr("Turns off confetti, pulsing and bouncy screen changes.")}</span></div>
         <button class="switch" id="calm" role="switch" aria-checked="${!!p.calm}" aria-label="${tr("Reduce motion")}"></button></div></section>
+      <section class="panel">${head("moon", GAMES.lock.badge, tr("Night mode"), tr("A darker screen that's easier on the eyes at bedtime."))}
+        <div class="nights">${[["auto", "🌗", tr("Automatic"), tr("Follows your device")], ["on", "🌙", tr("On"), tr("Always dark")], ["off", "☀️", tr("Off"), tr("Always light")]].map(([k, e, l, sm]) => `<button class="lang ${nightPref() === k ? "on" : ""}" data-night="${k}"><b>${e}</b><span>${l}</span><small>${sm}</small></button>`).join("")}</div></section>
       <section class="panel">${head("bulb", GAMES.steps.badge, tr("Beta testers"))}
         ${store.get().tester ? `<p class="note">${tr("Test shop is on for this device. Purchases are pretend, so no money is taken.")}</p>` : `<label class="field"><input id="tCode" maxlength="24" autocapitalize="characters" placeholder="${tr("Tester code")}" aria-label="${tr("Tester code")}"></label>`}</section>
       <section class="panel">${head("help", GAMES.five.badge, tr("Feedback"), tr("You're one of our first players, so we'd love to hear from you."))}
@@ -1876,7 +1924,11 @@ function showSettings() {
   </div>${adSlot()}`;
   bindNav();
   $("#pName").addEventListener("input", e => save({ name: e.target.value.trim().slice(0, 20) }));
-  app.querySelectorAll(".lang").forEach(b => b.onclick = () => {
+  app.querySelectorAll("[data-night]").forEach(b => b.onclick = () => {
+    save({ night: b.dataset.night }); applyTheme();
+    app.querySelectorAll("[data-night]").forEach(x => x.classList.toggle("on", x === b));
+  });
+  app.querySelectorAll(".lang[data-lang]").forEach(b => b.onclick = () => {
     if (b.dataset.lang === lang()) return;
     save({ lang: b.dataset.lang }); showSettings(); toast(tr("Language changed"));
   });
@@ -3625,7 +3677,7 @@ if (STATS_ON) {
   };
 }
 
-applyCalm();
+applyCalm(); applyTheme();
 showHome();
 cloud.start();
 receiveMove().then(moved => { if (!moved) offerMove(); setTimeout(maybeOfferInstall, 1200); });

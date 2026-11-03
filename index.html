@@ -1969,6 +1969,8 @@ function buildLevel(level, levelIdx) {
   return { groups, tiles };
 }
 
+// A level's save signature. "rev" marks a reworked level, so a half-played old version starts afresh.
+const boardSig = (level, tiles, groups) => tiles.length + ":" + groups.length + (level.us ? ":us" : "") + (level.rev ? ":r" + level.rev : "");
 function startBoard(levelIdx) {
   leaveGame();
   markPlayed();
@@ -1983,7 +1985,7 @@ function startBoard(levelIdx) {
   };
   const saved = store.get()["save-" + bkey(levelIdx)];
   // A half-played level resumes only in the version it was started in (an American level has its own signature).
-  if (saved && saved.sig === tiles.length + ":" + groups.length + (level.us ? ":us" : "")) {
+  if (saved && saved.sig === boardSig(level, tiles, groups)) {
     Object.assign(B, { board: saved.board, lockedList: saved.lockedList, solved: new Set(saved.solved), pool: saved.pool,
       timeLeft: saved.timeLeft, elapsed: saved.elapsed, hintsUsed: saved.hintsUsed || 0, freezes: saved.freezes, hints: loadHints(saved) });
     syncHints();
@@ -2015,7 +2017,7 @@ function startBoard(levelIdx) {
 function saveBoard() {
   if (!B || B.over || B.busy) return;
   store.set("save-" + bkey(B.levelIdx), {
-    sig: B.tiles.length + ":" + B.groups.length + (B.level.us ? ":us" : ""), board: B.board, lockedList: B.lockedList, solved: [...B.solved], pool: B.pool,
+    sig: boardSig(B.level, B.tiles, B.groups), board: B.board, lockedList: B.lockedList, solved: [...B.solved], pool: B.pool,
     timeLeft: B.timeLeft, elapsed: B.elapsed, hintsUsed: B.hintsUsed, freezes: B.freezes, hints: B.hints, hintTiles: B.hintTiles,
   });
 }

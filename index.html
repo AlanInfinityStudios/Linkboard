@@ -2616,13 +2616,15 @@ const SHARE_SVG = {
   copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
   more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m8 7 4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>',
 };
+const mobileShare = () => !!navigator.share && (matchMedia("(pointer: coarse)").matches || /iPad|iPhone|Android/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
 async function shareText(text, title = "Share your result") {
   const full = `${text}\n${SHARE_URL}`, enc = encodeURIComponent;
   const opts = [
     ["wa", "WhatsApp", "#25D366", `https://wa.me/?text=${enc(full)}`],
     ["sms", "Messages", "#34C759", `sms:?&body=${enc(full)}`],
     ["mail", "Email", "#477EF0", `mailto:?subject=${enc("Come and play Wordolio")}&body=${enc(full)}`],
-    ["fb", "Facebook", "#1877F2", `https://www.facebook.com/sharer/sharer.php?u=${enc(SHARE_URL)}&quote=${enc(text)}`],
+    // Phones and tablets: the system share sheet reaches the Facebook app (the web link can only open in the browser).
+    ["fb", "Facebook", "#1877F2", mobileShare() ? null : `https://www.facebook.com/sharer/sharer.php?u=${enc(SHARE_URL)}&quote=${enc(text)}`],
     ["x", "X", "#14171A", `https://x.com/intent/post?text=${enc(full)}`],
     ["copy", "Copy", "#6B6470", null],
   ];
@@ -2642,6 +2644,13 @@ async function shareText(text, title = "Share your result") {
   ov.addEventListener("click", e => { if (e.target === ov) close(); });
   ov.querySelectorAll("a.share-opt").forEach(a => a.addEventListener("click", () => setTimeout(close, 300)));
   $('[data-k="copy"]', ov).onclick = async () => { try { await navigator.clipboard.writeText(full); toast("Copied. Paste it anywhere."); close(); } catch { prompt("Copy this", full); } };
+  const fb = $('button[data-k="fb"]', ov);
+  // Facebook's app ignores ready-made text, so the result is copied first for the player to paste in.
+  if (fb) fb.onclick = async () => {
+    try { navigator.clipboard.writeText(full).catch(() => {}); } catch {}
+    toast("Result copied. Choose Facebook, then paste it into your post.");
+    try { await navigator.share({ text: full, url: SHARE_URL }); close(); } catch (e) { if (!e || e.name !== "AbortError") toast("Sharing isn't available here."); }
+  };
   const more = $('[data-k="more"]', ov);
   if (more) more.onclick = async () => { try { await navigator.share({ text: full }); close(); } catch (e) { if (!e || e.name !== "AbortError") toast("Sharing isn't available here."); } };
 }

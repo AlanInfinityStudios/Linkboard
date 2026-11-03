@@ -23,7 +23,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
           if (!g) return { stuck: true, solved: B.solved.size, of: B.groups.length, left: B.groups.filter(g => !B.solved.has(g.id)).map(g => g.name + ':' + g.memberTiles.map(t => (B.board.includes(t) ? '' : '!') + B.tiles[t]?.label).join('/')), pool: (B.pool||[]).length };
           const mem = g.memberTiles, idx = t => B.board.indexOf(t);
           for (let c = 0; c < 4; c++) { const a = c, bI = idx(mem[c]); [B.board[a], B.board[bI]] = [B.board[bI], B.board[a]]; }
-          if (idx(mem[4]) === 4) { [B.board[4], B.board[30]] = [B.board[30], B.board[4]]; }
+          if (idx(mem[4]) === 4) { [B.board[4], B.board[5]] = [B.board[5], B.board[4]]; }  // a free slot in row 2 (row 7 may be a locked group)
           renderBoard(); return { a: B.board.indexOf(mem[4]), t: 4 };
         });
         if (r.end || r.stuck) { ok(!r.stuck || r.solved === r.of, `level ${i + 1} solved to the end ${JSON.stringify(r)} after ${steps - 1}`); break; }

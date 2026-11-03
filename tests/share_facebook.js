@@ -1,0 +1,20 @@
+// On a tablet, Facebook goes through the system share sheet (which reaches the Facebook app), copying the text first.
+const { chromium, devices } = require('playwright');
+let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++; };
+(async () => { const b = await chromium.launch(); const errs = [];
+  const ctx = await b.newContext({ ...devices['iPad (gen 7)'] }); const pg = await ctx.newPage(); pg.on('pageerror', e => errs.push(e.message));
+  await pg.addInitScript(() => { localStorage.setItem('linkboard-v3', JSON.stringify({ profile: { name: 'Alan', lang: 'en-GB' }, 'install-asked': true, updatedAt: 1 }));
+    window.__shared = []; window.__copied = []; navigator.share = async d => { window.__shared.push(d); };
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText: async t => { window.__copied.push(t); } } }); });
+  await pg.goto('http://localhost:8765/index.html'); await pg.waitForTimeout(1200);
+  await pg.click('#invite'); await pg.waitForTimeout(300);
+  ok(await pg.isVisible('button[data-k="fb"]'), 'Facebook is a share-sheet button on iPad');
+  await pg.click('button[data-k="fb"]'); await pg.waitForTimeout(300);
+  const r = await pg.evaluate(() => ({ s: window.__shared, c: window.__copied }));
+  ok(r.s.length === 1 && r.s[0].url === 'https://wordolio.app/', 'system share sheet opened with the link');
+  ok(r.c.length === 1 && r.c[0].includes('Wordolio'), 'text copied for pasting');
+  const d = await (await b.newContext()).newPage();
+  await d.addInitScript(() => localStorage.setItem('linkboard-v3', JSON.stringify({ profile: { name: 'Alan', lang: 'en-GB' }, 'install-asked': true, updatedAt: 1 })));
+  await d.goto('http://localhost:8765/index.html'); await d.waitForTimeout(1000); await d.click('#invite'); await d.waitForTimeout(300);
+  ok(await d.isVisible('a[data-k="fb"][href*="facebook.com/sharer"]'), 'desktop keeps the Facebook web link');
+  console.log(errs.length ? 'ERRORS\n' + errs.join('\n') : 'no page errors'); console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); await b.close(); })();

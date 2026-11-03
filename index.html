@@ -212,6 +212,10 @@ button:focus-visible, .tile:focus-visible { outline: 3px solid var(--accent); ou
 /* Hinted tiles keep a steady ring until their group is solved; each hint has its own number and colour. */
 .tile.hinted { --hc: var(--gold); box-shadow: 0 0 0 0.45cqw var(--hc), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); animation: hintPulse 1.1s ease-in-out infinite; }
 .tile.hinted.h2 { --hc: #2FA7C9; } .tile.hinted.h3 { --hc: #E86B9D; } .tile.hinted.h4 { --hc: #20B583; }
+/* Themes named by hints, in the hint's colour, after the line above the board. */
+.themes { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-left: 10px; vertical-align: middle; }
+.theme { --hc: var(--gold); padding: 2px 10px; border-radius: 999px; background: var(--hc); color: #fff; font-size: .85rem; font-weight: 800; }
+.theme.h2 { --hc: #2FA7C9; } .theme.h3 { --hc: #E86B9D; } .theme.h4 { --hc: #20B583; }
 .tile.hinted::after { content: attr(data-h); position: absolute; top: .3em; right: .35em; min-width: 1.35em; height: 1.35em; padding: 0 .2em; border-radius: 999px; background: var(--hc); color: #fff; font-size: .62em; font-weight: 900; line-height: 1.35em; text-align: center; }
 @keyframes hintPulse { 0%, 100% { box-shadow: 0 0 0 0.45cqw var(--hc), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); } 50% { box-shadow: 0 0 0 0.85cqw color-mix(in srgb, var(--hc) 55%, transparent), 0 0.8cqw 1.6cqw rgba(90, 60, 25, .10); } }
 .tile.anag { color: #7A45D6; }
@@ -1006,6 +1010,7 @@ html.calm .screen, html.calm .sheet, html.calm .overlay, html.calm .tile.hinted,
 <script src="six.js"></script>
 <script src="walls_us.js"></script>
 <script src="boards_us.js"></script>
+<script src="fr.js"></script>
 <script>
 const GROUP_COLOURS = ["#FF5A3C", "#3E7BFA", "var(--green)", "#F5A300", "var(--purple)", "#00B2C9", "#FF7A1A", "#EC4899", "#5B6CFF", "#7CB82F", "#0EA5A0", "#E8456B", "#2E86DE", "#D97706", "#6366F1", "#16A34A"];
 const WALL_COLOURS = ["#3E7BFA", "var(--green)", "#F5A300", "#FF5A3C"];
@@ -1108,6 +1113,10 @@ const playerName = () => ((profile() || {}).name || "").trim();
 const lang = () => (profile() || {}).lang || "en-GB";
 const isUS = () => lang() === "en-US";
 const isFR = () => lang() === "fr";
+// French saves live under their own keys ("fr-" in front), so switching language never mixes progress.
+const FRK = () => isFR() ? "fr-" : "";
+const gk = g => FRK() + g;
+const WALLS_NOW = () => isFR() ? WALLS_FR : WALLS;
 // Picks the British or American version of a word: "Porridge»Oatmeal" inline, or the US_WORDS list.
 function loc(text, dict = US_WORDS) {
   const i = text.indexOf("»");
@@ -1168,6 +1177,207 @@ const FR = {
   "Free to play. Your progress is saved on this device.": "Gratuit. Votre progression est enregistrée sur cet appareil.",
   "Language changed": "Langue modifiée", "Advert space": "Espace publicitaire", "Tap to see the list": "Touchez pour voir la liste", "Featured games": "Jeux à la une", "Daily games": "Jeux du jour", "New daily game": "Nouveau jeu du jour", "Coming soon in French": "Bientôt en français",
 };
+/* French for every game (added November 2026, so French players get all six games). */
+Object.assign(FR, {
+  // hints, wallet and test shop
+  "1 free": "1 gratuit", "{n} in wallet": "{n} en réserve", "Your hints: {n}": "Vos indices : {n}", "hints": "indices",
+  "Weekly chest: {a} of {b} days played": "Coffre de la semaine : {a} jours joués sur {b}", "Weekly chest": "Coffre de la semaine",
+  "Play today to start it": "Jouez aujourd'hui pour le lancer", "{a} of {b} days · opens in 1 day": "{a} jours sur {b} · s'ouvre dans 1 jour",
+  "{a} of {b} days · opens in {n} days": "{a} jours sur {b} · s'ouvre dans {n} jours", "Hints": "Indices",
+  "You have <b>1</b> hint in your wallet.": "Vous avez <b>1</b> indice en réserve.", "You have <b>{n}</b> hints in your wallet.": "Vous avez <b>{n}</b> indices en réserve.",
+  "Each game also gives you 1 free hint a day, and your weekly chest adds more.": "Chaque jeu vous donne aussi 1 indice gratuit par jour, et votre coffre de la semaine en ajoute d'autres.",
+  "Watch a short video": "Regarder une courte vidéo", "That's today's videos. More tomorrow.": "C'est tout pour les vidéos aujourd'hui. D'autres demain.",
+  "{n} left today": "{n} restantes aujourd'hui", "No adverts": "Sans publicité", "Test shop for beta testers. No real money is taken.": "Boutique de test pour les bêta-testeurs. Aucun argent réel n'est prélevé.",
+  "Done": "Terminé", "+1 hint": "+1 indice", "+{n} hints": "+{n} indices", "Test purchase": "Achat de test",
+  "{n} hints for {p}. This is a pretend purchase for beta testers, so no money will be taken.": "{n} indices pour {p}. C'est un faux achat pour les bêta-testeurs : aucun argent ne sera prélevé.",
+  "Buy (test)": "Acheter (test)", "Pretend advert for testing": "Fausse publicité pour les tests", "Your hint arrives in a moment.": "Votre indice arrive dans un instant.",
+  "Claim your hint": "Récupérer votre indice", "Thanks for watching.": "Merci d'avoir regardé.",
+  "Weekly chest opened: a full week! +{n} hints": "Coffre ouvert : une semaine complète ! +{n} indices", "Weekly chest opened: +{n} hints": "Coffre ouvert : +{n} indices",
+  // home
+  "All four dailies completed today. Lovely work.": "Les quatre jeux du jour sont terminés. Bravo !",
+  "{n} of 4 dailies completed today. Can you finish the set?": "{n} jeux du jour sur 4 terminés. Allez-vous finir la série ?",
+  "You've made a start. Come back and finish today's dailies.": "Bien commencé ! Revenez finir les jeux du jour.",
+  "Your daily word games are ready.": "Vos jeux de mots du jour sont prêts.",
+  "{n} day": "{n} jour", "{n} days": "{n} jours", "Sussed streak": "série Sussed", "dailies completed today": "jeux du jour terminés",
+  "levels and walls solved": "niveaux et murs réussis",
+  "Suss out the hidden word. Five letters, or six on Hard.": "Trouvez le mot caché. Cinq lettres, ou six en mode Difficile.",
+  "Make as many words as you can.": "Formez le plus de mots possible.", "All {n} words found!": "Les {n} mots sont trouvés !",
+  "{a} of {b} words": "{a} mots sur {b}", "Today's wheel is ready": "La roue du jour est prête", "See wheel": "Voir la roue",
+  "Find the four hidden groups.": "Trouvez les quatre groupes cachés.", "Every wall solved": "Tous les murs réussis",
+  "Today's challenge complete": "Défi du jour terminé", "{d} next · {k} of 3 done": "Ensuite : {d} · {k} sur 3",
+  "Easy, Medium and Hard": "Facile, Moyen et Difficile", "Change one letter. Reach the target.": "Changez une lettre. Atteignez le mot cible.",
+  "Crack the code. Reveal the words.": "Déchiffrez le code. Révélez les mots.", "Invite friends": "Inviter des amis",
+  "Send Wordolio by WhatsApp, text, email or social media.": "Envoyez Wordolio par WhatsApp, SMS, e-mail ou réseaux sociaux.",
+  "Send feedback": "Donner votre avis", "Tell us what you love, what went wrong, or what you'd like next.": "Dites-nous ce que vous aimez, ce qui n'a pas marché ou ce que vous aimeriez voir.",
+  "See results": "Voir les résultats", "Play Hard": "Jouer en Difficile", "Play Classic": "Jouer en Classique",
+  "in progress": "en cours", "to play": "à jouer", "Classic": "Classique",
+  // statistics
+  "hints in your wallet": "indices en réserve", "A new word every day": "Un nouveau mot chaque jour", "played": "parties", "won": "gagnées",
+  "day streak": "jours d'affilée", "best streak": "meilleure série", "{n} try": "{n} essai", "{n} tries": "{n} essais",
+  "Hard mode: {p} played, {w}% won, {s} day streak (best {b}).": "Mode Difficile : {p} parties, {w} % gagnées, série de {s} jours (record {b}).",
+  "Hard mode: six letters, seven tries. Not played yet.": "Mode Difficile : six lettres, sept essais. Pas encore joué.",
+  "New letters every day": "De nouvelles lettres chaque jour", "words today": "mots aujourd'hui", "points today": "points aujourd'hui",
+  "days played": "jours joués", "most words in a day": "record de mots en un jour", "Today's rank:": "Rang du jour :",
+  "Four groups of four": "Quatre groupes de quatre", "walls solved": "murs réussis", "average score out of 10": "score moyen sur 10",
+  "perfect walls": "murs parfaits", "Solved": "Réussis", "three-star levels": "niveaux à trois étoiles", "stars earned": "étoiles gagnées",
+  "One letter at a time": "Une lettre à la fois", "Crack the code": "Déchiffrez le code",
+  // settings
+  "Beta testers": "Bêta-testeurs", "Test shop is on for this device. Purchases are pretend, so no money is taken.": "La boutique de test est activée sur cet appareil. Les achats sont fictifs : aucun argent n'est prélevé.",
+  "Tester code": "Code testeur", "Feedback": "Votre avis", "You're one of our first players, so we'd love to hear from you.": "Vous faites partie de nos premiers joueurs : votre avis compte beaucoup.",
+  "Opens your email app, addressed to {e}.": "Ouvre votre messagerie, avec le message adressé à {e}.", "Move your progress": "Transférer votre progression",
+  "Copy a code here, then paste it on another device or app.": "Copiez un code ici, puis collez-le sur un autre appareil ou une autre application.",
+  "Copy progress code": "Copier le code de progression", "Paste a progress code": "Coller un code de progression",
+  "We count visits anonymously, with no cookies and nothing personal, to see how Wordolio is used.": "Nous comptons les visites de façon anonyme, sans cookies ni données personnelles, pour voir comment Wordolio est utilisé.",
+  "Test shop turned on": "Boutique de test activée",
+  "Your progress has moved across. Welcome to wordolio.app!": "Votre progression a été transférée. Bienvenue sur wordolio.app !",
+  "Sorry, that progress link did not work. Please try again from the old address.": "Désolé, ce lien de progression n'a pas marché. Réessayez depuis l'ancienne adresse.",
+  "Progress code copied": "Code de progression copié", "Copy this progress code": "Copiez ce code de progression",
+  "Progress added to this device": "Progression ajoutée sur cet appareil", "Sorry, that progress code did not work.": "Désolé, ce code de progression n'a pas marché.",
+  "Wordolio has a new home": "Wordolio a une nouvelle adresse",
+  "We have moved to wordolio.app. One tap takes you there with all your games, stars and streaks.": "Nous avons déménagé sur wordolio.app. Un seul geste vous y emmène avec tous vos jeux, étoiles et séries.",
+  "Using a home screen icon? Tap Copy progress code, open wordolio.app in Safari, add it to your home screen, then open the new icon and paste the code in Settings.": "Vous jouez depuis une icône sur l'écran d'accueil ? Touchez Copier le code de progression, ouvrez wordolio.app dans Safari, ajoutez-le à l'écran d'accueil, puis ouvrez la nouvelle icône et collez le code dans Réglages.",
+  "Move my progress": "Transférer ma progression", "Keep Wordolio one tap away": "Gardez Wordolio à portée de main",
+  "Tap the Share button": "Touchez le bouton Partager", "at the top or bottom of the screen.": "en haut ou en bas de l'écran.",
+  "Choose <b>Add to Home Screen</b>, then <b>Add</b>.": "Choisissez <b>Sur l'écran d'accueil</b>, puis <b>Ajouter</b>.",
+  "Play from the new Wordolio icon from now on, so your progress stays in one place.": "Jouez désormais depuis la nouvelle icône Wordolio, pour garder votre progression au même endroit.",
+  "Add Wordolio to your home screen and open it like an app, even offline.": "Ajoutez Wordolio à votre écran d'accueil et ouvrez-le comme une application, même hors ligne.",
+  "Add to home screen": "Ajouter à l'écran d'accueil", "Not now": "Pas maintenant",
+  // sharing and feedback
+  "Share": "Partager", "Share your result": "Partager votre résultat", "Share result": "Partager le résultat", "Messages": "Messages", "Email": "E-mail",
+  "Come and play Wordolio": "Viens jouer à Wordolio", "Copy": "Copier", "More": "Plus", "Close": "Fermer", "Copied. Paste it anywhere.": "Copié. Collez-le où vous voulez.",
+  "Copy this": "Copiez ceci", "Result copied. Choose Facebook, then paste it into your post.": "Résultat copié. Choisissez Facebook, puis collez-le dans votre publication.",
+  "Sharing isn't available here.": "Le partage n'est pas disponible ici.",
+  "I've been playing Wordolio, free word games with fresh puzzles every day. Come and play with me!": "Je joue à Wordolio, des jeux de mots gratuits avec de nouvelles énigmes chaque jour. Viens jouer avec moi !",
+  "Hi, it's {name}! ": "Salut, c'est {name} ! ",
+  "What did you enjoy?": "Qu'avez-vous aimé ?", "What went wrong or felt confusing?": "Qu'est-ce qui n'a pas marché ou n'était pas clair ?",
+  "Any ideas or wishes?": "Des idées ou des envies ?", "Wordolio feedback": "Avis sur Wordolio", " from {name}": " de {name}",
+  "Can you beat me?": "Tu peux faire mieux ?",
+  // Linkology
+  "Wordolio Linkology: Level {n} solved, all {g} connections found": "Wordolio Linkology : niveau {n} réussi, les {g} liens trouvés",
+  " with no hints": " sans indice", " with 1 hint": " avec 1 indice", " with {n} hints": " avec {n} indices", ".\nCan you link them all?": ".\nTu peux tous les trouver ?",
+  // The Wall
+  "Time left": "Temps restant", "Tap four clues that belong together.": "Touchez quatre indices qui vont ensemble.",
+  "Nice! 1 group found. Keep going.": "Bien ! 1 groupe trouvé. Continuez.", "Nice! {n} groups found. Keep going.": "Bien ! {n} groupes trouvés. Continuez.",
+  "Careful now: from here, each wrong guess loses a life.": "Attention : à partir de maintenant, chaque erreur coûte une vie.", "Lives": "Vies",
+  "Two groups found! Now you have three lives left for the rest.": "Deux groupes trouvés ! Il vous reste maintenant trois vies pour la suite.",
+  "Wall solved!": "Mur réussi !", "Out of lives": "Plus de vies",
+  "You found {n} of 4 groups. Have another go: the wall starts again, reshuffled.": "Vous avez trouvé {n} groupes sur 4. Réessayez : le mur recommence, mélangé.",
+  "Try again": "Réessayer",
+  "You get a point for every group you found. Now, did you know what links each group? Tap Reveal to see the answer, and give yourself a point if you got it. Get all eight points and you earn 2 bonus points.": "Vous gagnez un point par groupe trouvé. Mais saviez-vous ce qui relie chaque groupe ? Touchez Révéler pour voir la réponse, et comptez-vous un point si vous l'aviez. Avec les huit points, vous gagnez 2 points bonus.",
+  "Connection hidden": "Lien caché", "Got it ✓": "Trouvé ✓", "I had it": "Je l'avais", "Reveal": "Révéler", "Groups": "Groupes", "Total / 10": "Total / 10",
+  "Wordolio The Wall, level {n}: {g}/4 groups, {c}/4 connections.": "Wordolio Le Mur, niveau {n} : {g}/4 groupes, {c}/4 liens.",
+  "Can you crack the wall?": "Tu peux venir à bout du mur ?",
+  // Sussed
+  "Enter": "Entrée", "Delete": "Effacer", "Hard mode streak": "série du mode Difficile", "6 letters": "6 lettres", "5 letters": "5 lettres",
+  "Guess today's six-letter word in seven tries.": "Trouvez le mot du jour de six lettres en sept essais.",
+  "Guess today's five-letter word in six tries.": "Trouvez le mot du jour de cinq lettres en six essais.",
+  "Right place": "Bien placée", "In the word": "Dans le mot", "Not in it": "Absente",
+  "Solved in {a} of {b}": "Trouvé en {a} sur {b}", "Today's word was {w}": "Le mot du jour était {w}",
+  "A new six-letter word arrives at midnight.": "Un nouveau mot de six lettres arrive à minuit.", "A new word arrives at midnight.": "Un nouveau mot arrive à minuit.",
+  "See result": "Voir le résultat", "See Hard result": "Voir le résultat Difficile", "See Classic result": "Voir le résultat Classique",
+  "Continue Hard": "Continuer en Difficile", "Continue Classic": "Continuer en Classique",
+  "Six letters, please.": "Six lettres, s'il vous plaît.", "Five letters, please.": "Cinq lettres, s'il vous plaît.",
+  "\"{w}\" isn't in our word list.": "« {w} » n'est pas dans notre liste de mots.",
+  "Brilliant!": "Bravo !", "Spot on!": "Dans le mille !", "Lovely!": "Superbe !", "Got it!": "Trouvé !",
+  "So close. Better luck tomorrow!": "Presque ! Plus de chance demain.", "1 try left.": "Plus qu'un essai.", "{n} tries left.": "Encore {n} essais.",
+  "First go": "Du premier coup", "Got it in {n}": "Trouvé en {n}", "Not today": "Pas aujourd'hui", "Today's word was <b>{w}</b>. ": "Le mot du jour était <b>{w}</b>. ",
+  " Fancy a harder one? Try Hard mode: six letters, seven tries.": " Envie de plus difficile ? Essayez le mode Difficile : six lettres, sept essais.",
+  "Played": "Parties", "Won": "Gagnées", "Streak": "Série", "Best streak": "Record", "Try Hard mode": "Essayer le mode Difficile", "See board": "Voir la grille",
+  "This one got me. Can you get it?": "Celui-là m'a eu. Tu peux le trouver ?",
+  // Letter Wheel
+  "Wheel complete": "Roue terminée", "You found all {n} words": "Vous avez trouvé les {n} mots", ", plus 1 bonus word": ", plus 1 mot bonus",
+  ", plus {n} bonus words": ", plus {n} mots bonus", ", for {s} points. That's every answer on today's wheel.": ", pour {s} points. Ce sont toutes les réponses de la roue du jour.",
+  "New letters arrive at midnight.": "De nouvelles lettres arrivent à minuit.", "Look for bonus words": "Chercher des mots bonus",
+  "Wordolio Letter Wheel, {d}: all {n} words found, {s} points. Word wizard!\nCan you find them all?": "Wordolio Roue des lettres, {d} : les {n} mots trouvés, {s} points. Magicien des mots !\nTu peux tous les trouver ?",
+  "Words found": "Mots trouvés", "See all the words": "Voir tous les mots",
+  "Make words of 4 or more letters. The purple middle letter must be in every word, anywhere you like. Letters can be used more than once.": "Formez des mots de 4 lettres ou plus. La lettre violette du centre doit figurer dans chaque mot, à n'importe quelle place. Une lettre peut servir plusieurs fois.",
+  "Clue": "Indice", "Yesterday's answers": "Réponses d'hier",
+  "Wordolio Letter Wheel, {d}: {a} of {b} words, {s} points. Rank: {r}.\nHow many can you find?": "Wordolio Roue des lettres, {d} : {a} mots sur {b}, {s} points. Rang : {r}.\nCombien peux-tu en trouver ?",
+  "Tap letters to spell a word": "Touchez les lettres pour former un mot", "{n} points": "{n} points", " · {n} to the next rank": " · encore {n} pour le rang suivant",
+  "You've found {a} of {b} words, from {x} to {y} letters": "Vous avez trouvé {a} mots sur {b}, de {x} à {y} lettres", "{n} letters": "{n} lettres",
+  "{a} of {b}": "{a} sur {b}", "Bonus words": "Mots bonus", "Rarer words that aren't in the list above still score points here.": "Les mots plus rares, absents de la liste ci-dessus, rapportent quand même des points ici.",
+  "1 word left": "Plus qu'un mot", "{n} words left": "Encore {n} mots", "Every word found!": "Tous les mots sont trouvés !", "{a} of {b} found": "{a} sur {b} trouvés",
+  " · {n} bonus": " · {n} bonus", "All found": "Tout est trouvé", "All {n} clues used": "Les {n} indices sont utilisés", "Clue {a} of {b}": "Indice {a} sur {b}",
+  "You've found every word! Bonus words still score points.": "Vous avez trouvé tous les mots ! Les mots bonus rapportent encore des points.",
+  "Back to the wheel": "Retour à la roue", "You found {a} of {b}. The ones you missed are in purple.": "Vous en avez trouvé {a} sur {b}. Ceux qui vous ont échappé sont en violet.",
+  "There were {n} words to find.": "Il y avait {n} mots à trouver.", "Back to today": "Retour à aujourd'hui", "You've found every word!": "Vous avez trouvé tous les mots !",
+  "That's all {n} clues for today.": "Vous avez utilisé les {n} indices du jour.", "Clue: the first letter of every word is filled in.": "Indice : la première lettre de chaque mot est affichée.",
+  "Clue: letter {n} of every word is filled in.": "Indice : la lettre {n} de chaque mot est affichée.", "Words need at least 4 letters.": "Les mots doivent avoir au moins 4 lettres.",
+  "Every word must use the middle letter, {c}.": "Chaque mot doit contenir la lettre du centre, {c}.", "You've already found that one.": "Vous l'avez déjà trouvé.",
+  "All seven letters!": "Les sept lettres !", "Bonus word!": "Mot bonus !", "+1 point": "+1 point", "+{n} points": "+{n} points",
+  "Nice": "Bien", "Good one": "Joli", "Lovely": "Superbe", "Yes": "Oui", ". You're now {r}!": ". Vous voici {r} !",
+  "Just starting": "Débutant", "Warming up": "Échauffement", "Good": "Bien", "Great": "Très bien", "Superstar": "Superstar", "Word wizard": "Magicien des mots",
+  // Word Steps and Letter Lock, shared
+  "{n} of {of} stars": "{n} étoiles sur {of}", "Replay": "Rejouer", "Wordolio {g}, level {n} ({d}):": "Wordolio {g}, niveau {n} ({d}) :",
+  "{a} of {b} solved": "{a} sur {b} réussis", ", solved": ", réussi", ", locked": ", verrouillé", "In progress": "En cours", "Next: {d}": "Suivant : {d}",
+  "On to the {d}. Fancy a go?": "Place au niveau {d}. Tu essaies ?", "Today's challenge complete!": "Défi du jour terminé !",
+  "You finished the Easy, Medium and Hard {g} puzzles, with {n} of 9 stars. A new set arrives tomorrow.": "Vous avez terminé les énigmes Facile, Moyen et Difficile de {g}, avec {n} étoiles sur 9. Une nouvelle série arrive demain.",
+  "Play more levels": "Jouer d'autres niveaux", "today's challenge complete!": "défi du jour terminé !", "Can you beat {n}/9?": "Tu peux battre {n}/9 ?",
+  "All levels": "Tous les niveaux", "Levels": "Niveaux", "Today · {d} · {n} of 3": "Aujourd'hui · {d} · {n} sur 3", "Level {n} · {d}": "Niveau {n} · {d}",
+  // Word Steps
+  "Undo": "Annuler", "Restart": "Recommencer", "Submit step": "Valider", "Submit": "Valider", "Restart this level?": "Recommencer ce niveau ?",
+  "Your steps so far will be cleared and you'll start again from the first word.": "Vos étapes seront effacées et vous repartirez du premier mot.",
+  "Back to the start.": "Retour au départ.", "Change one letter at a time to turn {a} into {b}.": "Changez une lettre à la fois pour transformer {a} en {b}.",
+  "You've solved this one before. Can you find a shorter route?": "Vous avez déjà réussi celui-ci. Trouverez-vous un chemin plus court ?",
+  "Letter {n}: {c}": "Lettre {n} : {c}", ", selected": ", sélectionnée", "Start": "Départ", "Step {n}": "Étape {n}", "Target": "Cible",
+  "1 step so far · shortest route {m}": "1 étape pour l'instant · chemin le plus court : {m}", "{n} steps so far · shortest route {m}": "{n} étapes pour l'instant · chemin le plus court : {m}",
+  "Changes cleared.": "Modification effacée.", "That's the same letter. Pick a different one.": "C'est la même lettre. Choisissez-en une autre.",
+  "{w}? Tap Submit step when you're ready.": "{w} ? Touchez Valider quand vous êtes prêt.", "Keep the same number of letters.": "Gardez le même nombre de lettres.",
+  "Change just one letter.": "Changez une seule lettre.", "\"{w}\" isn't in our dictionary.": "« {w} » n'est pas dans notre dictionnaire.",
+  "You've already used that word. Use Undo to go back instead.": "Vous avez déjà utilisé ce mot. Touchez Annuler pour revenir en arrière.",
+  "Nice move.": "Bien joué.", "Good step.": "Bonne étape.", "Lovely.": "Superbe.", "That works.": "Ça marche.", "Step undone.": "Étape annulée.",
+  "This word can't reach the target. Use Undo to go back a step.": "Ce mot ne mène pas à la cible. Touchez Annuler pour revenir d'une étape.",
+  "Try Undo: the way forward goes through a word you've already used.": "Essayez Annuler : le chemin passe par un mot déjà utilisé.",
+  "Hint: try changing letter {n}.": "Indice : essayez de changer la lettre {n}.", "Hint: {w} is on a shortest route from here.": "Indice : {w} est sur un des chemins les plus courts.",
+  "Hint: {w} is filled in for you. Tap Submit step.": "Indice : {w} est écrit pour vous. Touchez Valider.", "You reached the target!": "Vous avez atteint la cible !",
+  "Perfect route!": "Chemin parfait !", "Well done!": "Bien joué !",
+  "You reached {t} in {n} steps. That's the shortest possible route.": "Vous avez atteint {t} en {n} étapes. C'est le chemin le plus court possible.",
+  "Completed in {n} steps. The shortest route is {m}.": "Réussi en {n} étapes. Le chemin le plus court en compte {m}.",
+  "Moves taken": "Étapes", "Shortest route": "Chemin le plus court",
+  // Letter Lock
+  "The coded phrase": "La phrase codée", "Clear letter": "Effacer la lettre", "Check answer": "Vérifier", "Reset": "Réinitialiser", "Your letters so far": "Vos lettres",
+  "Reset this puzzle?": "Réinitialiser cette énigme ?", "Your guessed letters will be cleared. Letters revealed by hints stay.": "Vos lettres seront effacées. Les lettres révélées par les indices restent.",
+  "Guesses cleared.": "Lettres effacées.", "Tap a number, then type the letter you think it stands for.": "Touchez un nombre, puis tapez la lettre qu'il représente selon vous.",
+  "Number {n}": "Nombre {n}", "revealed {g}": "révélé {g}", "your guess {g}": "votre lettre {g}", ", blank": ", vide", "Your letters": "Vos lettres", "Clue:": "Indice :",
+  "Check": "Vérifier", "Tap a number first.": "Touchez d'abord un nombre.", "That letter is locked in.": "Cette lettre est verrouillée.", "Letter cleared.": "Lettre effacée.",
+  "You've already used {l} for {n}. Change that one first.": "Vous avez déjà utilisé {l} pour {n}. Changez d'abord celui-là.",
+  "Every letter is filled in. Tap Check answer when you're ready.": "Toutes les lettres sont remplies. Touchez Vérifier quand vous êtes prêt.",
+  "Fill in every letter first.": "Remplissez d'abord toutes les lettres.", "Not quite. Some letters still need changing.": "Pas tout à fait. Certaines lettres sont à changer.",
+  "Here's a clue to the subject.": "Voici un indice sur le thème.", "Your letters are all right. Tap Check answer.": "Vos lettres sont toutes justes. Touchez Vérifier.",
+  "{n} is {l}. It's locked in for you.": "{n} est {l}. C'est verrouillé pour vous.", "Code cracked!": "Code déchiffré !", "Here's the hidden phrase:": "Voici la phrase cachée :",
+  "Answer checks": "Vérifications",
+  // How to play
+  "Stuck? A hint lights up two tiles that belong together. The next hint names their theme, and later ones light up more tiles.": "Bloqué ? Un indice éclaire deux tuiles qui vont ensemble. L'indice suivant donne leur thème, et les autres éclairent d'autres tuiles.",
+  "You get 1 free hint a day. After that, hints come from your hint wallet, which your weekly chest tops up.": "Vous avez 1 indice gratuit par jour. Ensuite, les indices viennent de votre réserve, que le coffre de la semaine remplit.",
+  "Hint {n}: the theme is {t}": "Indice {n} : le thème est {t}",
+  "Guess the five-letter word in six tries.": "Trouvez le mot de cinq lettres en six essais.",
+  "Green with a bar means the right letter in the right place.": "Vert avec une barre : la bonne lettre à la bonne place.",
+  "Amber with a dot means the letter is in the word, but somewhere else.": "Orange avec un point : la lettre est dans le mot, mais ailleurs.",
+  "Grey means the letter isn't in the word.": "Gris : la lettre n'est pas dans le mot.",
+  "Everyone gets the same word, and a new one arrives at midnight.": "Tout le monde a le même mot, et un nouveau arrive à minuit.",
+  "Fancy more of a challenge? Hard mode is a six-letter word in seven tries, with its own streak.": "Envie de plus de défi ? Le mode Difficile, c'est un mot de six lettres en sept essais, avec sa propre série.",
+  "Letters have no accents: type E for É, È or Ê.": "Les lettres n'ont pas d'accents : tapez E pour É, È ou Ê.",
+  "Make words of 4 or more letters from the seven letters.": "Formez des mots de 4 lettres ou plus avec les sept lettres.",
+  "Every word must use the purple middle letter. Letters can be used more than once.": "Chaque mot doit contenir la lettre violette du centre. Une lettre peut servir plusieurs fois.",
+  "4-letter words score 1 point. Longer words score a point for each letter.": "Les mots de 4 lettres rapportent 1 point. Les plus longs rapportent un point par lettre.",
+  "A word that uses all seven letters scores 7 bonus points.": "Un mot qui utilise les sept lettres rapporte 7 points bonus.",
+  "Each clue fills in one more letter of every word, up to 3 clues a day. The first is free, then clues come from your hint wallet.": "Chaque indice affiche une lettre de plus de chaque mot, jusqu'à 3 indices par jour. Le premier est gratuit, les suivants viennent de votre réserve d'indices.",
+  "Sixteen clues are hiding four groups of four.": "Seize indices cachent quatre groupes de quatre.", "Tap four clues that belong together to make a group.": "Touchez quatre indices qui vont ensemble pour former un groupe.",
+  "You have three minutes. Once you've found two groups, you only get three more wrong guesses.": "Vous avez trois minutes. Après deux groupes trouvés, vous n'avez plus droit qu'à trois erreurs.",
+  "At the end, score a point for each group, and a point for each link you knew. Get all eight for 2 bonus points.": "À la fin, comptez un point par groupe, et un point par lien que vous connaissiez. Avec les huit, vous gagnez 2 points bonus.",
+  "Change one letter at a time to turn the start word into the target word.": "Changez une lettre à la fois pour transformer le mot de départ en mot cible.",
+  "Every step must be a real word. Any route that works counts.": "Chaque étape doit être un vrai mot. Tous les chemins qui marchent comptent.",
+  "Tap a letter in your word, type the new letter, then tap Submit step. Undo takes back a step.": "Touchez une lettre de votre mot, tapez la nouvelle lettre, puis touchez Valider. Annuler revient d'une étape.",
+  "Reach the target in the shortest number of moves, without hints, for three stars.": "Atteignez la cible en un minimum d'étapes, sans indice, pour gagner trois étoiles.",
+  "Every day there's an Easy, a Medium and a Hard puzzle. Finish all three to complete the day's challenge.": "Chaque jour, il y a une énigme Facile, une Moyenne et une Difficile. Terminez les trois pour réussir le défi du jour.",
+  "Hints show which letter to change, then name a good next word. You get 1 free hint a day, then hints come from your hint wallet.": "Les indices montrent quelle lettre changer, puis donnent un bon mot suivant. Vous avez 1 indice gratuit par jour, les suivants viennent de votre réserve.",
+  "Every letter in the phrase has been swapped for a number. The same number always means the same letter.": "Chaque lettre de la phrase a été remplacée par un nombre. Le même nombre correspond toujours à la même lettre.",
+  "Tap a number, then type the letter you think it stands for. It fills in everywhere that number appears.": "Touchez un nombre, puis tapez la lettre qu'il représente selon vous. Elle s'affiche partout où ce nombre apparaît.",
+  "Each letter can only be used once. Letters shown with a lock were revealed for you and can't be changed.": "Chaque lettre ne peut servir qu'une fois. Les lettres avec un cadenas ont été révélées et ne peuvent pas changer.",
+  "When every number has a letter, tap Check answer. Crack it first time without hints for three stars.": "Quand chaque nombre a sa lettre, touchez Vérifier. Réussissez du premier coup, sans indice, pour trois étoiles.",
+  "Every day there's an Easy, a Medium and a Hard phrase. Crack all three to complete the day's challenge.": "Chaque jour, il y a une phrase Facile, une Moyenne et une Difficile. Déchiffrez les trois pour réussir le défi du jour.",
+  "Hints reveal a letter, then another, then give a clue to the subject. You get 1 free hint a day, then hints come from your hint wallet.": "Les indices révèlent une lettre, puis une autre, puis donnent un indice sur le thème. Vous avez 1 indice gratuit par jour, les suivants viennent de votre réserve.",
+});
 function tr(text, vars = {}) {
   const t = isFR() && FR[text] || text;
   return t.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
@@ -1187,9 +1397,9 @@ function nextBoard() {
 }
 function nextWall() {
   const s = store.get();
-  const saved = WALLS.findIndex((_, i) => s["save-wall-" + i]);
+  const saved = WALLS_NOW().findIndex((_, i) => s["save-" + gk("wall-") + i]);
   if (saved >= 0) return saved;
-  const i = WALLS.findIndex((_, i) => !s["done-wall-" + i]);
+  const i = WALLS_NOW().findIndex((_, i) => !s["done-" + gk("wall-") + i]);
   return i >= 0 ? i : null;
 }
 
@@ -1206,7 +1416,7 @@ const walletAdd = n => store.set("wallet", walletN() + n);
 const freeKey = g => "free-" + g + "-" + todayKey();
 const freeLeft = g => !store.get()[freeKey(g)];
 const hintsAvail = g => (freeLeft(g) ? 1 : 0) + walletN();
-const hintNote = g => freeLeft(g) ? "1 free" : `${walletN()} in wallet`;
+const hintNote = g => freeLeft(g) ? tr("1 free") : tr("{n} in wallet", { n: walletN() });
 const shopOn = () => SHOP_MODE === "all" || (SHOP_MODE === "testers" && !!store.get().tester);
 const videosToday = () => store.get()["videos-" + todayKey()] || 0;
 // Spend a hint for game g: today's free one first, then the wallet. With none left, offer ways to get more.
@@ -1237,10 +1447,10 @@ function markPlayed() {
 function walletBar() {
   const c = chestRoll(), d = dayNumber(), days = c ? c.days.length : 0, left = c ? c.start + CHEST_DAYS - d : CHEST_DAYS;
   return `<div class="walletbar">
-    <button class="wallet" id="walletBtn" aria-label="Your hints: ${walletN()}">${ic("bulb")}<b>${walletN()}</b><span>hints</span></button>
-    <div class="chest" aria-label="Weekly chest: ${days} of ${CHEST_DAYS} days played">
+    <button class="wallet" id="walletBtn" aria-label="${tr("Your hints: {n}", { n: walletN() })}">${ic("bulb")}<b>${walletN()}</b><span>${tr("hints")}</span></button>
+    <div class="chest" aria-label="${tr("Weekly chest: {a} of {b} days played", { a: days, b: CHEST_DAYS })}">
       <span class="chest-dots">${Array.from({ length: CHEST_DAYS }, (_, k) => `<i class="${k < days ? "on" : ""}"></i>`).join("")}</span>
-      <span class="chest-txt"><b>Weekly chest</b> ${c ? `${days} of ${CHEST_DAYS} days · opens in ${left} day${left === 1 ? "" : "s"}` : "Play today to start it"}</span>
+      <span class="chest-txt"><b>${tr("Weekly chest")}</b> ${c ? tr(left === 1 ? "{a} of {b} days · opens in 1 day" : "{a} of {b} days · opens in {n} days", { a: days, b: CHEST_DAYS, n: left }) : tr("Play today to start it")}</span>
     </div>
   </div>`;
 }
@@ -1250,28 +1460,28 @@ function showHintShop() {
   const draw = () => {
     const v = videosToday(), on = shopOn();
     ov.innerHTML = `<div class="sheet shop" role="dialog" aria-modal="true" style="--c:#F1AA3C">
-      ${sheetBadge("bulb")}<h2>Hints</h2>
-      <p>You have <b>${walletN()}</b> hint${walletN() === 1 ? "" : "s"} in your wallet. Each game also gives you 1 free hint a day, and your weekly chest adds more.</p>
+      ${sheetBadge("bulb")}<h2>${tr("Hints")}</h2>
+      <p>${tr(walletN() === 1 ? "You have <b>1</b> hint in your wallet." : "You have <b>{n}</b> hints in your wallet.", { n: walletN() })} ${tr("Each game also gives you 1 free hint a day, and your weekly chest adds more.")}</p>
       ${on ? `
-      <button class="shop-row" id="video" ${v >= VIDEO_CAP ? "disabled" : ""}>${ic("play")}<span><b>Watch a short video</b><small>${v >= VIDEO_CAP ? "That's today's videos. More tomorrow." : `${VIDEO_CAP - v} left today`}</small></span><em>+1</em></button>
-      <div class="packs">${SHOP_PACKS.map(([n, price], k) => `<button class="pack" data-k="${k}"><b>${n}</b><span>hints</span><em>${price}</em>${k >= 2 ? "<small>No adverts</small>" : ""}</button>`).join("")}</div>
-      <p class="note">Test shop for beta testers. No real money is taken.</p>` : ""}
-      <div class="actions"><button class="btn primary" id="shopClose">Done</button></div></div>`;
+      <button class="shop-row" id="video" ${v >= VIDEO_CAP ? "disabled" : ""}>${ic("play")}<span><b>${tr("Watch a short video")}</b><small>${v >= VIDEO_CAP ? tr("That's today's videos. More tomorrow.") : tr("{n} left today", { n: VIDEO_CAP - v })}</small></span><em>+1</em></button>
+      <div class="packs">${SHOP_PACKS.map(([n, price], k) => `<button class="pack" data-k="${k}"><b>${n}</b><span>${tr("hints")}</span><em>${price}</em>${k >= 2 ? `<small>${tr("No adverts")}</small>` : ""}</button>`).join("")}</div>
+      <p class="note">${tr("Test shop for beta testers. No real money is taken.")}</p>` : ""}
+      <div class="actions"><button class="btn primary" id="shopClose">${tr("Done")}</button></div></div>`;
     $("#shopClose", ov).onclick = () => { ov.remove(); refreshHints(); };
     if (!on) return;
-    const vb = $("#video", ov); if (vb && v < VIDEO_CAP) vb.onclick = () => pretendVideo(() => { store.set("videos-" + todayKey(), videosToday() + 1); walletAdd(1); toast("+1 hint"); draw(); });
+    const vb = $("#video", ov); if (vb && v < VIDEO_CAP) vb.onclick = () => pretendVideo(() => { store.set("videos-" + todayKey(), videosToday() + 1); walletAdd(1); toast(tr("+1 hint")); draw(); });
     ov.querySelectorAll(".pack").forEach(b => b.onclick = () => {
       const [n, price] = SHOP_PACKS[+b.dataset.k];
-      confirmBuy(n, price, () => { walletAdd(n); store.set("buys", [...(store.get().buys || []), { n, price, at: Date.now(), test: true }]); toast(`+${n} hints`); draw(); });
+      confirmBuy(n, price, () => { walletAdd(n); store.set("buys", [...(store.get().buys || []), { n, price, at: Date.now(), test: true }]); toast(tr("+{n} hints", { n })); draw(); });
     });
   };
   draw(); document.body.appendChild(ov);
 }
 function confirmBuy(n, price, done) {
   const ov = document.createElement("div"); ov.className = "overlay";
-  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><h2>Test purchase</h2>
-    <p>${n} hints for ${price}. This is a pretend purchase for beta testers, so no money will be taken.</p>
-    <div class="actions"><button class="btn primary" id="bYes">Buy (test)</button><button class="btn" id="bNo">Cancel</button></div></div>`;
+  ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><h2>${tr("Test purchase")}</h2>
+    <p>${tr("{n} hints for {p}. This is a pretend purchase for beta testers, so no money will be taken.", { n, p: price })}</p>
+    <div class="actions"><button class="btn primary" id="bYes">${tr("Buy (test)")}</button><button class="btn" id="bNo">${tr("Cancel")}</button></div></div>`;
   document.body.appendChild(ov);
   $("#bYes", ov).onclick = () => { ov.remove(); done(); };
   $("#bNo", ov).onclick = () => ov.remove();
@@ -1282,10 +1492,10 @@ function pretendVideo(done) {
   let t = 5;
   ov.innerHTML = `<div class="video-box" role="dialog" aria-modal="true" aria-label="Pretend video">
     <button class="round" id="vClose" aria-label="Close">${ic("close")}</button>
-    <p class="video-tag">Pretend advert for testing</p><b class="video-n" id="vN">5</b>
-    <p id="vMsg">Your hint arrives in a moment.</p><button class="btn primary" id="vClaim" hidden>Claim your hint</button></div>`;
+    <p class="video-tag">${tr("Pretend advert for testing")}</p><b class="video-n" id="vN">5</b>
+    <p id="vMsg">${tr("Your hint arrives in a moment.")}</p><button class="btn primary" id="vClaim" hidden>${tr("Claim your hint")}</button></div>`;
   document.body.appendChild(ov);
-  const tick = setInterval(() => { t--; const n = $("#vN", ov); if (n) n.textContent = Math.max(t, 0); if (t <= 0) { clearInterval(tick); $("#vClaim", ov).hidden = false; $("#vMsg", ov).textContent = "Thanks for watching."; } }, 1000);
+  const tick = setInterval(() => { t--; const n = $("#vN", ov); if (n) n.textContent = Math.max(t, 0); if (t <= 0) { clearInterval(tick); $("#vClaim", ov).hidden = false; $("#vMsg", ov).textContent = tr("Thanks for watching."); } }, 1000);
   $("#vClose", ov).onclick = () => { clearInterval(tick); ov.remove(); };
   $("#vClaim", ov).onclick = () => { ov.remove(); done(); };
 }
@@ -1347,10 +1557,10 @@ const ic = name => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${PA
 const GAMES = {
   board: { name: "Linkology", c: "#FF6B57", ci: "#C2402E", icon: "grid", art: "linear-gradient(160deg,#FFE3DC,#FFC9BE)", badge: "linear-gradient(160deg,#FF8A73,#E8503A)" },
   five: { name: "Sussed", tag: "Suss out the hidden word.", c: "#20B583", ci: "#0E7F5A", icon: "cal", art: "linear-gradient(160deg,#DDF5EA,#BDE8D5)", badge: "linear-gradient(160deg,#35C894,#0E8F63)" },
-  wheel: { name: "Letter Wheel", c: "#A552E8", ci: "#7B2FC0", icon: "wheel", art: "linear-gradient(160deg,#F1E4FD,#DDC5F8)", badge: "linear-gradient(160deg,#B66CF2,#8336D6)" },
-  wall: { name: "The Wall", c: "#477EF0", ci: "#2856C2", icon: "wall", art: "linear-gradient(160deg,#E2EBFE,#C5D6FB)", badge: "linear-gradient(160deg,#6A98F5,#2F64D6)" },
-  steps: { name: "Word Steps", c: "#F1AA3C", ci: "#B9780F", icon: "steps", art: "linear-gradient(160deg,#FFF0D6,#FCDCA6)", badge: "linear-gradient(160deg,#F6BE5C,#D98C17)" },
-  lock: { name: "Letter Lock", c: "#E86B9D", ci: "#B83A6E", icon: "lock", art: "linear-gradient(160deg,#FDE3EE,#F8C6DA)", badge: "linear-gradient(160deg,#F08AB4,#CF4C82)" },
+  wheel: { get name() { return isFR() ? "Roue des lettres" : "Letter Wheel"; }, c: "#A552E8", ci: "#7B2FC0", icon: "wheel", art: "linear-gradient(160deg,#F1E4FD,#DDC5F8)", badge: "linear-gradient(160deg,#B66CF2,#8336D6)" },
+  wall: { get name() { return isFR() ? "Le Mur" : "The Wall"; }, c: "#477EF0", ci: "#2856C2", icon: "wall", art: "linear-gradient(160deg,#E2EBFE,#C5D6FB)", badge: "linear-gradient(160deg,#6A98F5,#2F64D6)" },
+  steps: { get name() { return isFR() ? "Pas à pas" : "Word Steps"; }, c: "#F1AA3C", ci: "#B9780F", icon: "steps", art: "linear-gradient(160deg,#FFF0D6,#FCDCA6)", badge: "linear-gradient(160deg,#F6BE5C,#D98C17)" },
+  lock: { get name() { return isFR() ? "Code secret" : "Letter Lock"; }, c: "#E86B9D", ci: "#B83A6E", icon: "lock", art: "linear-gradient(160deg,#FDE3EE,#F8C6DA)", badge: "linear-gradient(160deg,#F08AB4,#CF4C82)" },
 };
 const applyCalm = () => document.documentElement.classList.toggle("calm", !!(profile() || {}).calm);
 
@@ -1371,7 +1581,8 @@ function showHelp(g) {
     board: [tr("Swap two tiles by dragging one onto the other, or tap one and then the other."),
       tr("Make a row of five tiles that belong together. The row turns into a coloured group."),
       tr("Small groups shrink into a picture tile, and the pictures make bigger groups."),
-      tr("Stuck? A hint lights up two tiles that belong together. You have 3, and they all come back 6 hours after you use the first one."),
+      tr("Stuck? A hint lights up two tiles that belong together. The next hint names their theme, and later ones light up more tiles."),
+      tr("You get 1 free hint a day. After that, hints come from your hint wallet, which your weekly chest tops up."),
       ...(B && B.timed ? [tr("On timed levels, Freeze stops the clock for 30 seconds.")] : []),
       ...(B && B.level.anagrams ? [tr("Some groups have one word with its letters scrambled, marked ↻. When you find the group, it unscrambles.")] : [])],
     five: ["Guess the five-letter word in six tries.", "Green with a bar means the right letter in the right place.",
@@ -1396,11 +1607,12 @@ function showHelp(g) {
       "Every day there's an Easy, a Medium and a Hard phrase. Crack all three to complete the day's challenge.",
       "Hints reveal a letter, then another, then give a clue to the subject. You get 1 free hint a day, then hints come from your hint wallet."],
   }[g];
+  if (isFR() && g !== "board" && g !== "wall") rules.push("Letters have no accents: type E for É, È or Ê.");
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle(g)}>
     ${sheetBadge(GAMES[g].icon)}
     <h2>${tr("How to play {name}", { name: GAMES[g].name })}</h2>
-    <ul class="rules">${rules.map(r => `<li>${esc(r)}</li>`).join("")}</ul>
+    <ul class="rules">${rules.map(r => `<li>${esc(tr(r))}</li>`).join("")}</ul>
     <div class="actions"><button class="btn primary" id="helpOk">${tr("Got it")}</button></div>
   </div>`;
   document.body.appendChild(ov);
@@ -1494,18 +1706,17 @@ function greeting(first) {
 }
 
 function helloLine() {
-  if (isFR()) return "Vos jeux de mots vous attendent.";
   const five = fiveState(), wheel = wheelState(), st = dayState("steps"), lk = dayState("lock");
   const done = [five.over || fiveState("hard").over, wheelDone(wheel), st.stage >= 3, lk.stage >= 3].filter(Boolean).length;
   const started = five.guesses.length || wheel.found.length || st.stage || st.cur || lk.stage || lk.cur;
-  if (done === 4) return "All four dailies completed today. Lovely work.";
-  if (done) return `${done} of 4 dailies completed today. Can you finish the set?`;
-  if (started) return "You've made a start. Come back and finish today's dailies.";
-  return "Your daily word games are ready.";
+  if (done === 4) return tr("All four dailies completed today. Lovely work.");
+  if (done) return tr("{n} of 4 dailies completed today. Can you finish the set?", { n: done });
+  if (started) return tr("You've made a start. Come back and finish today's dailies.");
+  return tr("Your daily word games are ready.");
 }
 const meter = (n, of) => `<div class="meter"><i style="width:${of ? Math.round(100 * n / of) : 0}%"></i></div>`;
 const solvedBoards = () => LEVELS().filter((_, i) => isDone(bkey(i))).length;
-const solvedWalls = () => WALLS.filter((_, i) => isDone("wall-" + i)).length;
+const solvedWalls = () => WALLS_NOW().filter((_, i) => isDone(gk("wall-") + i)).length;
 
 function gameCard(key, id, desc, status, action, art, off = "", cls = "") {
   const G = GAMES[key];
@@ -1520,48 +1731,42 @@ function showHome(first = false) {
   leaveGame();
   if (!profile()) return showWelcome();
   applyCalm();
-  const s = store.get(), english = !isFR(), name = esc(playerName());
+  const s = store.get(), name = esc(playerName());
   const nb = nextBoard(), nw = nextWall(), nbL = nb != null ? LEVELS()[nb] : null;
   const five = fiveState(), fs = fiveStats(), wheel = wheelState();
   const boards = solvedBoards(), walls = solvedWalls();
   const hard = fiveState("hard"), fsh = fiveStats("hard"), sussStreak = Math.max(fs.streak, fsh.streak);
   const dailies = [five.over || hard.over, wheelDone(wheel), dayDone("steps"), dayDone("lock")].filter(Boolean).length;
   const stat = (icon, bg, col, big, small) => `<div><span class="dotico" style="background:${bg};color:${col}">${ic(icon)}</span><span><b>${big}</b><span>${small}</span></span></div>`;
-  const strip = english
-    ? stat("flame", "#FFE9DC", "#E8642F", `${sussStreak} day${sussStreak === 1 ? "" : "s"}`, "Sussed streak") +
-      stat("check", "#D9F3E8", "#13996D", `${dailies} / 4`, "dailies completed today") +
-      stat("trophy", "#FCEFCF", "#C88A12", boards + walls, "levels and walls solved")
-    : stat("trophy", "#FCEFCF", "#C88A12", boards, tr("levels solved"));
+  const strip = stat("flame", "#FFE9DC", "#E8642F", tr(sussStreak === 1 ? "{n} day" : "{n} days", { n: sussStreak }), tr("Sussed streak")) +
+      stat("check", "#D9F3E8", "#13996D", `${dailies} / 4`, tr("dailies completed today")) +
+      stat("trophy", "#FCEFCF", "#C88A12", boards + walls, tr("levels and walls solved"));
   const tiles = (cols, rows) => rows.map(c => `<i class="mt" style="background:${c}"></i>`.repeat(cols)).join("");
   const artBoard = `<div class="mboard b">${tiles(5, ["#fff", "#fff", "#FF6B57", "#477EF0"])}</div>`;
   const artWall = `<div class="mboard w">${tiles(4, ["#477EF0", "#fff", "#fff", "#fff"])}</div>`;
-  const artFive = `<div class="mboard f">${[["W", "c"], ["O", "a"], ["R", "p"], ["D", "a"], ["S", "c"]].map(([l, k]) => `<i class="mt ${k}" style="background:${{ c: "#20B583", p: "#F1AA3C", a: "#A79FA5" }[k]}">${l}</i>`).join("")}${'<i class="mt"></i>'.repeat(5)}</div>`;
-  const soon = tr("Coming soon in French");
-  const artSteps = `<div class="mboard s">${["COLD", "CORD", "WORD"].map((w, r) => [...w].map((l, i) => `<i class="mt ${r && i === [0, 2, 0][r] ? "hi" : ""}">${l}</i>`).join("")).join("")}</div>`;
+  const artFive = `<div class="mboard f">${(isFR() ? [["L", "c"], ["I", "a"], ["V", "p"], ["R", "a"], ["E", "c"]] : [["W", "c"], ["O", "a"], ["R", "p"], ["D", "a"], ["S", "c"]]).map(([l, k]) => `<i class="mt ${k}" style="background:${{ c: "#20B583", p: "#F1AA3C", a: "#A79FA5" }[k]}">${l}</i>`).join("")}${'<i class="mt"></i>'.repeat(5)}</div>`;
+  const artSteps = `<div class="mboard s">${(isFR() ? ["MOTS", "MOIS", "ROIS"] : ["COLD", "CORD", "WORD"]).map((w, r) => [...w].map((l, i) => `<i class="mt ${r && i === [0, 2, 0][r] ? "hi" : ""}">${l}</i>`).join("")).join("")}</div>`;
   const artLock = `<div class="mboard k">${"?".repeat(4).split("").map((l, i) => `<i class="mt ${i === 1 ? "hi" : ""}">${i === 1 ? "R" : l}</i>`).join("")}</div>`;
 
   const boardCard = gameCard("board", "modeBoard", tr("Swap words to link groups of five."),
     `<b>${nbL ? `${tr("Level {n}", { n: levelNo(nb) })} · ${tr(nbL.difficulty)}` : tr("Every level solved")}</b>${meter(boards, LEVELS().length)}`,
     nb == null ? tr("Play again") : s["save-" + bkey(nb)] ? tr("Continue") : tr("Play"), artBoard, "", "feature");
-  const fiveCard = english ? gameCard("five", "modeFive", "Suss out the hidden word. Five letters, or six on Hard.",
+  const fiveCard = gameCard("five", "modeFive", tr("Suss out the hidden word. Five letters, or six on Hard."),
     `<span class="fmodes">${fiveLine("classic")}${fiveLine("hard")}</span>`,
-    five.over && hard.over ? "See results" : five.over ? "Play Hard" : hard.over ? "Play Classic" : (five.guesses.length || hard.guesses.length) ? "Continue" : "Play", artFive)
-    : gameCard("five", "modeFive", "", "", "", artFive, soon);
-  const wheelCard = english ? gameCard("wheel", "modeWheel", "Make as many words as you can.",
-    `<b>${wheelDone(wheel) ? `All ${wheel.found.length} words found!` : wheel.found.length ? `${wheel.found.length} of ${wheel.words.size} words` : "Today's wheel is ready"}</b>${meter(wheel.found.length, wheel.words.size)}`,
-    wheelDone(wheel) ? "See wheel" : wheel.found.length ? "Continue" : "Play", wheelArt(wheel.puzzle, true))
-    : gameCard("wheel", "modeWheel", "", "", "", wheelArt(wheel.puzzle, true), soon);
-  const wallCard = english ? gameCard("wall", "modeWall", "Find the four hidden groups.",
-    `<b>${nw != null ? `Level ${nw + 1}` : "Every wall solved"}</b>${meter(walls, WALLS.length)}`,
-    nw == null ? "Play again" : s["save-wall-" + nw] ? "Continue" : "Play", artWall, "", "feature")
-    : gameCard("wall", "modeWall", "", "", "", artWall, soon, "feature");
+    tr(five.over && hard.over ? "See results" : five.over ? "Play Hard" : hard.over ? "Play Classic" : (five.guesses.length || hard.guesses.length) ? "Continue" : "Play"), artFive);
+  const wheelCard = gameCard("wheel", "modeWheel", tr("Make as many words as you can."),
+    `<b>${wheelDone(wheel) ? tr("All {n} words found!", { n: wheel.found.length }) : wheel.found.length ? tr("{a} of {b} words", { a: wheel.found.length, b: wheel.words.size }) : tr("Today's wheel is ready")}</b>${meter(wheel.found.length, wheel.words.size)}`,
+    tr(wheelDone(wheel) ? "See wheel" : wheel.found.length ? "Continue" : "Play"), wheelArt(wheel.puzzle, true));
+  const wallCard = gameCard("wall", "modeWall", tr("Find the four hidden groups."),
+    `<b>${nw != null ? tr("Level {n}", { n: nw + 1 }) : tr("Every wall solved")}</b>${meter(walls, WALLS_NOW().length)}`,
+    tr(nw == null ? "Play again" : s["save-" + gk("wall-") + nw] ? "Continue" : "Play"), artWall, "", "feature");
   const lvCard = (g, id, desc, art) => {
     const st = dayState(g), k = st.stage;
-    return gameCard(g, id, desc, `<b>${k >= 3 ? "Today's challenge complete" : k || st.cur ? `${DAY_DIFFS[k]} next · ${k} of 3 done` : "Easy, Medium and Hard"}</b>${meter(k, 3)}`,
-      k >= 3 ? "See results" : k || st.cur ? "Continue" : "Play", art);
+    return gameCard(g, id, desc, `<b>${k >= 3 ? tr("Today's challenge complete") : k || st.cur ? tr("{d} next · {k} of 3 done", { d: tr(DAY_DIFFS[k]), k }) : tr("Easy, Medium and Hard")}</b>${meter(k, 3)}`,
+      tr(k >= 3 ? "See results" : k || st.cur ? "Continue" : "Play"), art);
   };
-  const stepsCard = english ? lvCard("steps", "modeSteps", "Change one letter. Reach the target.", artSteps) : gameCard("steps", "modeSteps", "", "", "", artSteps, soon);
-  const lockCard = english ? lvCard("lock", "modeLock", "Crack the code. Reveal the words.", artLock) : gameCard("lock", "modeLock", "", "", "", artLock, soon);
+  const stepsCard = lvCard("steps", "modeSteps", tr("Change one letter. Reach the target."), artSteps);
+  const lockCard = lvCard("lock", "modeLock", tr("Crack the code. Reveal the words."), artLock);
 
   app.innerHTML = `
   <div class="screen scroll home">
@@ -1570,24 +1775,24 @@ function showHome(first = false) {
       <div><h1>${isFR() ? `Bonjour${name ? ", " + name : ""} !` : `Hello${name ? ", " + name : ""}!`}</h1><p>${helloLine()}</p></div>
       <div class="statstrip" aria-label="${tr("Your progress")}">${strip}</div>
     </div>
-    ${english ? walletBar() : ""}
+    ${walletBar()}
     <section class="games featured" aria-label="${tr("Featured games")}">${boardCard}${wallCard}</section>
     <div class="games-head"><h2>${tr("Daily games")}</h2><span class="chip">${ic("cal")}${tr("Today")}, ${esc(todayLabel())}</span></div>
     <section class="games dailies">${fiveCard}${wheelCard}${stepsCard}${lockCard}</section>
-    ${english ? `<button class="invite-card" id="invite"><span class="dotico" style="background:#EFE7FB;color:#A552E8">${ic("share")}</span><span><b>Invite friends</b><span>Send Wordolio by WhatsApp, text, email or social media.</span></span>${ic("chevr")}</button>
-    <button class="invite-card" id="feedback"><span class="dotico" style="background:#E3F6EE;color:#20B583">${ic("help")}</span><span><b>Send feedback</b><span>Tell us what you love, what went wrong, or what you'd like next.</span></span>${ic("chevr")}</button>` : ""}
+    <button class="invite-card" id="invite"><span class="dotico" style="background:#EFE7FB;color:#A552E8">${ic("share")}</span><span><b>${tr("Invite friends")}</b><span>${tr("Send Wordolio by WhatsApp, text, email or social media.")}</span></span>${ic("chevr")}</button>
+    <button class="invite-card" id="feedback"><span class="dotico" style="background:#E3F6EE;color:#20B583">${ic("help")}</span><span><b>${tr("Send feedback")}</b><span>${tr("Tell us what you love, what went wrong, or what you'd like next.")}</span></span>${ic("chevr")}</button>
   </div>${adSlot()}`;
   bindNav();
   if ($("#invite")) $("#invite").onclick = inviteFriends;
   if ($("#feedback")) $("#feedback").onclick = sendFeedback;
   $("#modeBoard").onclick = () => startBoard(nb ?? pick(PATH()));
-  if (english) {
-    $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS.length));
+  {
+    $("#modeWall").onclick = () => startWall(nw ?? Math.floor(Math.random() * WALLS_NOW().length));
     $("#modeFive").onclick = openFive;
     $("#modeWheel").onclick = startWheel;
     $("#walletBtn").onclick = showHintShop;
     const cn = store.get().chestNote;
-    if (cn) { store.set("chestNote", null); toast(cn.full ? `Weekly chest opened: a full week! +${cn.pay} hints` : `Weekly chest opened: +${cn.pay} hints`); }
+    if (cn) { store.set("chestNote", null); toast(tr(cn.full ? "Weekly chest opened: a full week! +{n} hints" : "Weekly chest opened: +{n} hints", { n: cn.pay })); }
     $("#modeSteps").onclick = () => startDaily("steps");
     $("#modeLock").onclick = () => startDaily("lock");
   }
@@ -1596,7 +1801,7 @@ function showHome(first = false) {
 /* Statistics: only numbers the app really keeps. */
 function showStats() {
   leaveGame();
-  const s = store.get(), L = LEVELS(), english = !isFR();
+  const s = store.get(), L = LEVELS();
   const panel = (g, sub, body) => `<section class="panel" style="--c:${GAMES[g].c}"><div class="panel-head"><span class="badge" style="--badge:${GAMES[g].badge}">${ic(GAMES[g].icon)}</span><div><h2>${GAMES[g].name}</h2><small>${sub}</small></div></div>${body}</section>`;
   const num = (big, small) => `<div class="num"><b>${big}</b><span>${small}</span></div>`;
   const bar = (label, n, of, right = `${n} / ${of}`) => `<div class="barrow"><span>${label}</span><span class="track"><i style="width:${of ? Math.round(100 * n / of) : 0}%"></i></span><em>${right}</em></div>`;
@@ -1606,25 +1811,25 @@ function showStats() {
     <div class="nums">${num(`${solvedBoards()} / ${L.length}`, tr("levels solved"))}${num(walletN(), tr("hints in your wallet"))}</div>
     <div class="bars">${byDiff.map(x => bar(tr(x.d), x.n, x.of)).join("")}</div>
     `);
-  if (english) {
+  {
     const fs = fiveStats(), maxD = Math.max(1, ...fs.dist);
-    html += panel("five", "A new word every day", `
-      <div class="nums">${num(fs.played, "played")}${num(`${fs.played ? Math.round(100 * fs.won / fs.played) : 0}%`, "won")}${num(fs.streak, "day streak")}${num(fs.best, "best streak")}</div>
-      <div class="bars">${fs.dist.map((n, i) => bar(`${i + 1} ${i ? "tries" : "try"}`, n, maxD, n)).join("")}</div>
-      ${(() => { const h = fiveStats("hard"); return h.played ? `<p class="note">Hard mode: ${h.played} played, ${Math.round(100 * h.won / h.played)}% won, ${h.streak} day streak (best ${h.best}).</p>` : `<p class="note">Hard mode: six letters, seven tries. Not played yet.</p>`; })()}`);
-    const wh = wheelState(), days = Object.keys(s).filter(k => /^wheel-\d{4}-\d\d-\d\d$/.test(k) && (s[k].found || []).length);
-    html += panel("wheel", "New letters every day", `
-      <div class="nums">${num(`${wh.found.length} / ${wh.words.size}`, "words today")}${num(wh.score, "points today")}${num(days.length, "days played")}${num(Math.max(0, ...days.map(k => s[k].found.length)), "most words in a day")}</div>
-      <p class="note">Today's rank: <b>${wheelRank(wh).name}</b>.</p>`);
-    const bests = WALLS.map((_, i) => s["best-wall-" + i]).filter(v => v != null);
-    html += panel("wall", "Four groups of four", `
-      <div class="nums">${num(`${solvedWalls()} / ${WALLS.length}`, "walls solved")}${num(bests.length ? (bests.reduce((a, b) => a + b, 0) / bests.length).toFixed(1) : "–", "average score out of 10")}${num(bests.filter(v => v >= 10).length, "perfect walls")}</div>
-      ${bar("Solved", solvedWalls(), WALLS.length)}`);
+    html += panel("five", tr("A new word every day"), `
+      <div class="nums">${num(fs.played, tr("played"))}${num(`${fs.played ? Math.round(100 * fs.won / fs.played) : 0}%`, tr("won"))}${num(fs.streak, tr("day streak"))}${num(fs.best, tr("best streak"))}</div>
+      <div class="bars">${fs.dist.map((n, i) => bar(tr(i ? "{n} tries" : "{n} try", { n: i + 1 }), n, maxD, n)).join("")}</div>
+      ${(() => { const h = fiveStats("hard"); return h.played ? `<p class="note">${tr("Hard mode: {p} played, {w}% won, {s} day streak (best {b}).", { p: h.played, w: Math.round(100 * h.won / h.played), s: h.streak, b: h.best })}</p>` : `<p class="note">${tr("Hard mode: six letters, seven tries. Not played yet.")}</p>`; })()}`);
+    const wh = wheelState(), wre = new RegExp("^" + gk("wheel-") + "\\d{4}-\\d\\d-\\d\\d$"), days = Object.keys(s).filter(k => wre.test(k) && (s[k].found || []).length);
+    html += panel("wheel", tr("New letters every day"), `
+      <div class="nums">${num(`${wh.found.length} / ${wh.words.size}`, tr("words today"))}${num(wh.score, tr("points today"))}${num(days.length, tr("days played"))}${num(Math.max(0, ...days.map(k => s[k].found.length)), tr("most words in a day"))}</div>
+      <p class="note">${tr("Today's rank:")} <b>${tr(wheelRank(wh).name)}</b>.</p>`);
+    const bests = WALLS_NOW().map((_, i) => s["best-" + gk("wall-") + i]).filter(v => v != null);
+    html += panel("wall", tr("Four groups of four"), `
+      <div class="nums">${num(`${solvedWalls()} / ${WALLS_NOW().length}`, tr("walls solved"))}${num(bests.length ? (bests.reduce((a, b) => a + b, 0) / bests.length).toFixed(1) : "–", tr("average score out of 10"))}${num(bests.filter(v => v >= 10).length, tr("perfect walls"))}</div>
+      ${bar(tr("Solved"), solvedWalls(), WALLS_NOW().length)}`);
     for (const [g, sub] of [["steps", "One letter at a time"], ["lock", "Crack the code"]]) {
       const L = LEVELLED[g].levels(), bs = L.map((_, i) => lvBest(g, i)).filter(Boolean);
-      const diffs = [...new Set(L.map(l => l.difficulty))].map(d => { const ids = L.map((l, i) => l.difficulty === d ? i : -1).filter(i => i >= 0); return bar(d, ids.filter(i => lvDone(g, i)).length, ids.length); });
-      html += panel(g, sub, `
-      <div class="nums">${num(`${lvSolved(g)} / ${L.length}`, "levels solved")}${num(bs.filter(b => b.stars === 3).length, "three-star levels")}${num(bs.reduce((a, b) => a + b.stars, 0), "stars earned")}</div>
+      const diffs = [...new Set(L.map(l => l.difficulty))].map(d => { const ids = L.map((l, i) => l.difficulty === d ? i : -1).filter(i => i >= 0); return bar(tr(d), ids.filter(i => lvDone(g, i)).length, ids.length); });
+      html += panel(g, tr(sub), `
+      <div class="nums">${num(`${lvSolved(g)} / ${L.length}`, tr("levels solved"))}${num(bs.filter(b => b.stars === 3).length, tr("three-star levels"))}${num(bs.reduce((a, b) => a + b.stars, 0), tr("stars earned"))}</div>
       <div class="bars">${diffs.join("")}</div>`);
     }
   }
@@ -1656,11 +1861,11 @@ function showSettings() {
       <section class="panel">${head("motion", GAMES.five.badge, tr("Motion"))}
         <div class="setting"><div class="txt"><b>${tr("Reduce motion")}</b><span>${tr("Turns off confetti, pulsing and bouncy screen changes.")}</span></div>
         <button class="switch" id="calm" role="switch" aria-checked="${!!p.calm}" aria-label="${tr("Reduce motion")}"></button></div></section>
-      ${isFR() ? "" : `<section class="panel">${head("bulb", GAMES.steps.badge, "Beta testers")}
-        ${store.get().tester ? `<p class="note">Test shop is on for this device. Purchases are pretend, so no money is taken.</p>` : `<label class="field"><input id="tCode" maxlength="24" autocapitalize="characters" placeholder="Tester code" aria-label="Tester code"></label>`}</section>`}
-      ${isFR() ? "" : `<section class="panel">${head("help", GAMES.five.badge, "Feedback", "You're one of our first players, so we'd love to hear from you.")}
-        <div class="actions"><button class="btn primary" id="fbSend">Send feedback</button><button class="btn" id="fbInvite">Invite friends</button></div>
-        <p class="note">Opens your email app, addressed to ${FEEDBACK_EMAIL}.</p></section>`}
+      <section class="panel">${head("bulb", GAMES.steps.badge, tr("Beta testers"))}
+        ${store.get().tester ? `<p class="note">${tr("Test shop is on for this device. Purchases are pretend, so no money is taken.")}</p>` : `<label class="field"><input id="tCode" maxlength="24" autocapitalize="characters" placeholder="${tr("Tester code")}" aria-label="${tr("Tester code")}"></label>`}</section>
+      <section class="panel">${head("help", GAMES.five.badge, tr("Feedback"), tr("You're one of our first players, so we'd love to hear from you."))}
+        <div class="actions"><button class="btn primary" id="fbSend">${tr("Send feedback")}</button><button class="btn" id="fbInvite">${tr("Invite friends")}</button></div>
+        <p class="note">${tr("Opens your email app, addressed to {e}.", { e: FEEDBACK_EMAIL })}</p></section>
       <section class="panel">${head("share", GAMES.lock.badge, tr("Move your progress"), tr("Copy a code here, then paste it on another device or app."))}
         <div class="actions"><button class="btn" id="mvCopy">${tr("Copy progress code")}</button></div>
         <label class="field"><input id="mvPaste" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${tr("Paste a progress code")}" aria-label="${tr("Paste a progress code")}"></label></section>
@@ -1680,7 +1885,7 @@ function showSettings() {
   if ($("#fbSend")) { $("#fbSend").onclick = sendFeedback; $("#fbInvite").onclick = inviteFriends; }
   $("#mvPaste").addEventListener("input", e => pasteProgress(e.target.value));
   const tc = $("#tCode");
-  if (tc) tc.addEventListener("input", e => { if (e.target.value.trim().toUpperCase() === TESTER_CODE) { store.set("tester", true); toast("Test shop turned on"); showSettings(); } });
+  if (tc) tc.addEventListener("input", e => { if (e.target.value.trim().toUpperCase() === TESTER_CODE) { store.set("tester", true); toast(tr("Test shop turned on")); showSettings(); } });
 }
 
 /* First launch: ask the player's name and language. Settings changes them later. */
@@ -1692,7 +1897,7 @@ function profileForm(p) {
       <div class="langs">
         ${opt("en-GB", "UK English", "Colour, biscuit, holiday")}
         ${opt("en-US", "US English", "Color, cookie, vacation")}
-        ${opt("fr", "Français", "3 niveaux pour l'instant")}
+        ${opt("fr", "Français", "Jeux en français")}
       </div></div>`;
 }
 function bindProfileForm(root, p, done) {
@@ -1953,7 +2158,7 @@ function renderBoardScreen() {
     ${gameHeader("board", `${tr("Level {n}", { n: levelNo(B.levelIdx) })} · ${esc(tr(L.difficulty))}`,
       `<div class="timer" id="timer" aria-label="${B.timed ? "Time left" : "Time taken"}">${ICONS.clock}<span class="t">${fmt(B.timed ? B.timeLeft : B.elapsed)}</span></div>`)}
     <div class="sub">
-      <span class="hint-text">${L.anagrams ? tr("Anagram round: ↻ words are scrambled") : tr("Put five connected tiles in one row")}</span>
+      <span class="hint-text">${L.anagrams ? tr("Anagram round: ↻ words are scrambled") : tr("Put five connected tiles in one row")}<span class="themes" id="themes"></span></span>
       <span class="counter" aria-label="Groups found"><span class="stack"><i></i><i></i><i></i></span><span id="count"></span></span>
     </div>
     <div class="stage"><div class="board" id="board"></div></div>
@@ -1982,6 +2187,8 @@ function renderBoardScreen() {
 
 function renderBoard() {
   const el = $("#board"); if (!el) return;
+  const th = $("#themes");
+  if (th) th.innerHTML = B.hints.map((h, k) => h.named && !B.solved.has(h.g) ? `<b class="theme h${k + 1}">${k + 1}: ${esc(B.groups[h.g].name)}</b>` : "").join("");
   let html = "";
   const bandRows = new Map();
   for (let r = playRows(); r < ROWS; r++) bandRows.set(r, lockedGroupAt(r));
@@ -2123,11 +2330,16 @@ function useHint() {
   const doable = B.groups.filter(g => !B.solved.has(g.id) && g.memberTiles.every(t => onBoard.has(t)));
   const fresh = doable.filter(g => !B.hints.some(h => h.g === g.id));
   const extend = B.hints.find(h => { const g = B.groups[h.g]; return doable.includes(g) && h.tiles.length < g.memberTiles.length - 1; });
-  if (!fresh.length && !extend) return toast(tr("No new hint right now. Swap a few words and try again."));
+  // The next hint on a group names its theme, before any new connection or extra word.
+  const unnamed = B.hints.find(h => !h.named && doable.includes(B.groups[h.g]));
+  if (!fresh.length && !extend && !unnamed) return toast(tr("No new hint right now. Swap a few words and try again."));
   if (!hintWallet().n) return showHintShop();
   if (!spendHint()) return;
   B.hintsUsed++;
-  if (fresh.length) {
+  if (unnamed) {
+    unnamed.named = true;
+    toast(tr("Hint {n}: the theme is {t}", { n: B.hints.indexOf(unnamed) + 1, t: B.groups[unnamed.g].name }));
+  } else if (fresh.length) {
     const g = pick(fresh);
     // Prefer two tiles that are not already sharing a row, so the hint tells you something new.
     const members = shuffle([...g.memberTiles]);
@@ -2177,13 +2389,13 @@ function endBoard(won) {
     </div>
     <div class="actions">
       ${won ? (next != null ? `<button class="btn primary" id="next">${tr("Level {n}", { n: levelNo(next) })}</button>` : "") : `<button class="btn primary" id="again">${tr("Restart level")}</button>`}
-      ${won && !isFR() ? shareBtn() : ""}
+      ${won ? shareBtn() : ""}
       <button class="btn" id="menu">${tr("Home")}</button>
     </div>
   </div>`;
   document.body.appendChild(ov);
   const shareLv = levelNo(B.levelIdx), shareHints = B.hintsUsed, shareGroups = B.groups.length;
-  bindShare(ov, () => `Wordolio Linkology: Level ${shareLv} solved, all ${shareGroups} connections found${shareHints ? ` with ${shareHints} hint${shareHints > 1 ? "s" : ""}` : " with no hints"}.\nCan you link them all?`);
+  bindShare(ov, () => tr("Wordolio Linkology: Level {n} solved, all {g} connections found", { n: shareLv, g: shareGroups }) + (shareHints ? tr(shareHints > 1 ? " with {n} hints" : " with 1 hint", { n: shareHints }) : tr(" with no hints")) + tr(".\nCan you link them all?"));
   const lvl = B.levelIdx;
   if (won && next != null) $("#next", ov).onclick = () => startBoard(next);
   if (!won) $("#again", ov).onclick = () => startBoard(lvl);
@@ -2262,8 +2474,8 @@ function bindDrag(board) {
 let W = null;
 
 // US English players get an American wall wherever the UK one needs British knowledge. Same level numbers either way.
-const wallFor = i => (isUS() && typeof WALLS_US !== "undefined" && WALLS_US[i]) || WALLS[i];
-const wallSig = i => WALLS[i].name + (wallFor(i) === WALLS[i] ? ":uk" : ":us");
+const wallFor = i => isFR() ? WALLS_FR[i] : (isUS() && typeof WALLS_US !== "undefined" && WALLS_US[i]) || WALLS[i];
+const wallSig = i => isFR() ? WALLS_FR[i].name + ":fr" : WALLS[i].name + (wallFor(i) === WALLS[i] ? ":uk" : ":us");
 function startWall(idx) {
   leaveGame();
   markPlayed();
@@ -2273,10 +2485,10 @@ function startWall(idx) {
   W = { idx, wall, clues, order: shuffle(clues.map(c => c.id)), found: [], sel: [], lives: null,
         timeLeft: 180, over: false, busy: false, revealed: new Set(), credited: new Set(), endReason: "" };
   // A half-played wall only resumes in the same version (UK or US); after a language switch it starts fresh.
-  const saved = store.get()["save-wall-" + idx];
+  const saved = store.get()["save-" + gk("wall-") + idx];
   if (saved && saved.order.length === clues.length && (saved.sig || WALLS[idx].name + ":uk") === wallSig(idx)) {
     Object.assign(W, { order: saved.order, found: saved.found, lives: saved.lives, timeLeft: saved.timeLeft });
-    toast("Welcome back. Carrying on where you left off.");
+    toast(tr("Welcome back. Carrying on where you left off."));
   }
   renderWallScreen();
   saveWall();
@@ -2284,7 +2496,7 @@ function startWall(idx) {
 }
 function saveWall() {
   if (!W || W.over) return;
-  store.set("save-wall-" + W.idx, { order: W.order, found: W.found, lives: W.lives, timeLeft: W.timeLeft, sig: wallSig(W.idx) });
+  store.set("save-" + gk("wall-") + W.idx, { order: W.order, found: W.found, lives: W.lives, timeLeft: W.timeLeft, sig: wallSig(W.idx) });
 }
 
 function wallTick(dt) {
@@ -2292,14 +2504,14 @@ function wallTick(dt) {
   W.timeLeft -= dt;
   const t = $("#timer");
   if (t) { t.querySelector(".t").textContent = fmt(Math.ceil(W.timeLeft)); t.classList.toggle("low", W.timeLeft <= 30); }
-  if (W.timeLeft <= 0) return endWall("Time's up");
+  if (W.timeLeft <= 0) return endWall(tr("Time's up"));
   if ((W.saveTick = (W.saveTick || 0) + dt) > 2) { W.saveTick = 0; saveWall(); }
 }
 
 function renderWallScreen() {
   app.innerHTML = `
   <div class="screen">
-    ${gameHeader("wall", `Level ${W.idx + 1}`, `<div class="timer" id="timer" aria-label="Time left">${ICONS.clock}<span class="t">${fmt(W.timeLeft)}</span></div>`)}
+    ${gameHeader("wall", tr("Level {n}", { n: W.idx + 1 }), `<div class="timer" id="timer" aria-label="${tr("Time left")}">${ICONS.clock}<span class="t">${fmt(W.timeLeft)}</span></div>`)}
     <div class="sub"><span class="hint-text" id="wallMsg"></span><span class="lives" id="lives"></span></div>
     <div class="wall-stage"><div class="wall" id="wall"></div></div>
   </div>`;
@@ -2324,9 +2536,9 @@ function renderWall() {
   fitText(el, ".wtile");
   const msg = $("#wallMsg");
   if (W.over) msg.textContent = W.endReason;
-  else if (W.lives == null) msg.textContent = W.found.length ? `Nice! ${W.found.length} group${W.found.length > 1 ? "s" : ""} found. Keep going.` : "Tap four clues that belong together.";
-  else msg.textContent = "Careful now: from here, each wrong guess loses a life.";
-  $("#lives").innerHTML = W.lives == null ? "" : `Lives ${[0, 1, 2].map(i => ICONS.heart.replace('class="heart"', `class="heart ${i < W.lives ? "" : "gone"}"`)).join("")}`;
+  else if (W.lives == null) msg.textContent = W.found.length ? tr(W.found.length > 1 ? "Nice! {n} groups found. Keep going." : "Nice! 1 group found. Keep going.", { n: W.found.length }) : tr("Tap four clues that belong together.");
+  else msg.textContent = tr("Careful now: from here, each wrong guess loses a life.");
+  $("#lives").innerHTML = W.lives == null ? "" : `${tr("Lives")} ${[0, 1, 2].map(i => ICONS.heart.replace('class="heart"', `class="heart ${i < W.lives ? "" : "gone"}"`)).join("")}`;
 }
 
 function tapClue(id) {
@@ -2338,12 +2550,12 @@ function tapClue(id) {
   const g = W.clues[W.sel[0]].group;
   if (W.sel.every(x => W.clues[x].group === g)) {
     W.found.push(g); W.sel = []; W.justFound = g;
-    if (W.found.length === 2 && W.lives == null) { W.lives = 3; toast("Two groups found! Now you have three lives left for the rest."); }
+    if (W.found.length === 2 && W.lives == null) { W.lives = 3; toast(tr("Two groups found! Now you have three lives left for the rest.")); }
     if (W.found.length === 3) {
       const last = [0, 1, 2, 3].find(x => !W.found.includes(x));
       W.found.push(last);
       renderWall();
-      return endWall("Wall solved!");
+      return endWall(tr("Wall solved!"));
     }
     renderWall(); saveWall();
   } else {
@@ -2354,7 +2566,7 @@ function tapClue(id) {
     setTimeout(() => {
       if (W !== cur) return;
       el.classList.remove("shake"); W.sel = []; W.busy = false;
-      if (W.lives === 0) { renderWall(); endWall("Out of lives"); } else { renderWall(); saveWall(); }
+      if (W.lives === 0) { renderWall(); endWall(tr("Out of lives")); } else { renderWall(); saveWall(); }
     }, 480);
   }
 }
@@ -2362,7 +2574,7 @@ function tapClue(id) {
 function endWall(reason) {
   if (W.over) return;
   W.over = true; W.endReason = reason; stopTicking();
-  store.set("save-wall-" + W.idx, undefined);
+  store.set("save-" + gk("wall-") + W.idx, undefined);
   W.groupsScored = W.found.length;
   W.sel = [];
   renderWall();
@@ -2374,15 +2586,15 @@ function endWall(reason) {
     ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("wall")}>
       ${sheetBadge("wall")}
       <h2>${esc(reason)}${name ? ", " + name : ""}</h2>
-      <p>You found ${W.found.length} of 4 groups. Have another go: the wall starts again, reshuffled.</p>
-      <div class="actions"><button class="btn primary" id="again">Try again</button><button class="btn" id="menu">Home</button></div>
+      <p>${tr("You found {n} of 4 groups. Have another go: the wall starts again, reshuffled.", { n: W.found.length })}</p>
+      <div class="actions"><button class="btn primary" id="again">${tr("Try again")}</button><button class="btn" id="menu">${tr("Home")}</button></div>
     </div>`;
     setTimeout(() => { if (W !== cur) return; document.body.appendChild(ov); }, 700);
     $("#again", ov).onclick = () => startWall(cur.idx);
     $("#menu", ov).onclick = () => showHome();
     return;
   }
-  store.set("done-wall-" + W.idx, true);
+  store.set("done-" + gk("wall-") + W.idx, true);
   confetti();
   setTimeout(() => { if (W === cur) showWallResults(); }, 900);
 }
@@ -2394,33 +2606,33 @@ function wallScore() {
 
 function showWallResults() {
   const ov = document.createElement("div"); ov.className = "overlay";
-  const save = () => { const k = "best-wall-" + W.idx, prev = store.get()[k]; if (prev == null || wallScore() > prev) store.set(k, wallScore()); };
+  const save = () => { const k = "best-" + gk("wall-") + W.idx, prev = store.get()[k]; if (prev == null || wallScore() > prev) store.set(k, wallScore()); };
   const next = nextWall();
   const draw = () => {
     ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("wall")}>
       ${sheetBadge("trophy")}
       <h2>${esc(W.endReason)}</h2>
-      <p>You get a point for every group you found. Now, did you know what links each group? Tap Reveal to see the answer, and give yourself a point if you got it. Get all eight points and you earn 2 bonus points.</p>
+      <p>${tr("You get a point for every group you found. Now, did you know what links each group? Tap Reveal to see the answer, and give yourself a point if you got it. Get all eight points and you earn 2 bonus points.")}</p>
       ${W.found.map((g, k) => {
         const words = W.clues.filter(c => c.group === g).map(c => c.text).join(", ");
         const shown = W.revealed.has(g);
         return `<div class="conn" style="--c:${WALL_COLOURS[k]}"><span class="sw"></span>
-          <span class="name ${shown ? "" : "hidden"}">${shown ? esc(locWall(W.wall.groups[g].name)) : "Connection hidden"}</span>
-          <span class="ctl">${shown ? `<button class="pill-btn ${W.credited.has(g) ? "on" : ""}" data-credit="${g}">${W.credited.has(g) ? "Got it ✓" : "I had it"}</button>` : `<button class="pill-btn" data-reveal="${g}">Reveal</button>`}</span>
+          <span class="name ${shown ? "" : "hidden"}">${shown ? esc(locWall(W.wall.groups[g].name)) : tr("Connection hidden")}</span>
+          <span class="ctl">${shown ? `<button class="pill-btn ${W.credited.has(g) ? "on" : ""}" data-credit="${g}">${W.credited.has(g) ? tr("Got it ✓") : tr("I had it")}</button>` : `<button class="pill-btn" data-reveal="${g}">${tr("Reveal")}</button>`}</span>
           <span class="words">${esc(words)}</span></div>`;
       }).join("")}
       <div class="stats">
-        <div class="stat"><b>${W.groupsScored}</b><span>Groups</span></div>
-        <div class="stat"><b>${W.credited.size}</b><span>Connections</span></div>
-        <div class="stat"><b>${wallScore()}</b><span>Total / 10</span></div>
+        <div class="stat"><b>${W.groupsScored}</b><span>${tr("Groups")}</span></div>
+        <div class="stat"><b>${W.credited.size}</b><span>${tr("Connections")}</span></div>
+        <div class="stat"><b>${wallScore()}</b><span>${tr("Total / 10")}</span></div>
       </div>
       <div class="actions">
-        ${next != null ? `<button class="btn primary" id="next">Level ${next + 1}</button>` : ""}
+        ${next != null ? `<button class="btn primary" id="next">${tr("Level {n}", { n: next + 1 })}</button>` : ""}
         ${shareBtn()}
-        <button class="btn" id="menu">Home</button>
+        <button class="btn" id="menu">${tr("Home")}</button>
       </div>
     </div>`;
-    bindShare(ov, () => `Wordolio The Wall, level ${W.idx + 1}: ${W.groupsScored}/4 groups, ${W.credited.size}/4 connections. ${wallScore()}/10\n${[0, 1, 2, 3].map(k => k < W.groupsScored ? ["🟦", "🟩", "🟨", "🟪"][k] : "⬜").join("")}\nCan you crack the wall?`);
+    bindShare(ov, () => `${tr("Wordolio The Wall, level {n}: {g}/4 groups, {c}/4 connections.", { n: W.idx + 1, g: W.groupsScored, c: W.credited.size })} ${wallScore()}/10\n${[0, 1, 2, 3].map(k => k < W.groupsScored ? ["🟦", "🟩", "🟨", "🟪"][k] : "⬜").join("")}\n${tr("Can you crack the wall?")}`);
     ov.querySelectorAll("[data-reveal]").forEach(b => b.onclick = () => { W.revealed.add(+b.dataset.reveal); draw(); });
     ov.querySelectorAll("[data-credit]").forEach(b => b.onclick = () => { const g = +b.dataset.credit; W.credited.has(g) ? W.credited.delete(g) : W.credited.add(g); save(); draw(); });
     if (next != null) $("#next", ov).onclick = () => { save(); startWall(next); };
@@ -2443,9 +2655,10 @@ const todayKey = () => dateKey(new Date());
 const dayNumber = () => { const d = new Date(); return Math.round((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(2026, 9, 1)) / 864e5); };
 const ofToday = list => ofDay(list, dayNumber());
 const todayLabel = () => new Date().toLocaleDateString(isUS() ? "en-US" : isFR() ? "fr-FR" : "en-GB", { weekday: "long", day: "numeric", month: "long" });
+const keyRows = () => isFR() ? ["azertyuiop", "qsdfghjklm", "+wxcvbn-"] : ["qwertyuiop", "asdfghjkl+", "zxcvbnm-"];
 function dailyKeys(onKey) {
-  return k => `<div class="keys">${["qwertyuiop", "asdfghjkl+", "zxcvbnm-"].map(row => `<div class="krow">${[...row].map(c =>
-    c === "+" ? `<button class="key wide" data-k="Enter">Enter</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="Delete">${ic("del")}</button>` :
+  return k => `<div class="keys">${keyRows().map(row => `<div class="krow">${[...row].map(c =>
+    c === "+" ? `<button class="key wide" data-k="Enter">${tr("Enter")}</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="${tr("Delete")}">${ic("del")}</button>` :
     `<button class="key ${k[c] || ""}" data-k="${c}">${c}</button>`).join("")}</div>`).join("")}</div>`;
 }
 document.addEventListener("keydown", e => {
@@ -2464,8 +2677,11 @@ document.addEventListener("keydown", e => {
    Hard mode: a six-letter word in seven tries, with its own daily word and streak.
    Saved as five-<date> / fiveStats (classic) and six-<date> / sixStats (hard). */
 let D = null;
-const FIVE_MODES = { classic: { len: 5, tries: 6, key: "five", stats: "fiveStats", answers: () => FIVE_ANSWERS, guesses: () => FIVE_GUESSES },
-  hard: { len: 6, tries: 7, key: "six", stats: "sixStats", answers: () => SIX_ANSWERS, guesses: () => SIX_GUESSES } };
+// French players have their own words, days and streaks (fr-five-<date>, frFiveStats and so on).
+const FIVE_MODES = { classic: { len: 5, tries: 6, get key() { return gk("five"); }, get stats() { return isFR() ? "frFiveStats" : "fiveStats"; },
+    answers: () => isFR() ? FIVE_ANSWERS_FR : FIVE_ANSWERS, guesses: () => isFR() ? FIVE_GUESSES_FR : FIVE_GUESSES },
+  hard: { len: 6, tries: 7, get key() { return gk("six"); }, get stats() { return isFR() ? "frSixStats" : "sixStats"; },
+    answers: () => isFR() ? SIX_ANSWERS_FR : SIX_ANSWERS, guesses: () => isFR() ? SIX_GUESSES_FR : SIX_GUESSES } };
 const fiveAnswer = (m = "classic") => ofToday(FIVE_MODES[m].answers());
 const fiveState = (m = "classic") => store.get()[FIVE_MODES[m].key + "-" + todayKey()] || { guesses: [], over: false, won: false };
 function fiveStats(m = "classic") {
@@ -2482,8 +2698,8 @@ function fiveScore(guess, answer) {
 // One status line per mode for the home card, e.g. "Classic ✓ 4/6" or "Hard: not played".
 function fiveLine(m) {
   const st = fiveState(m), M = FIVE_MODES[m], label = m === "hard" ? "Hard" : "Classic";
-  const txt = st.over ? (st.won ? `${st.guesses.length}/${M.tries}` : `X/${M.tries}`) : st.guesses.length ? "in progress" : "to play";
-  return `<span class="fm-line ${st.over ? "done" : ""}">${st.over ? ic("check") : `<i class="fm-dot"></i>`}<b>${label}</b> ${txt}</span>`;
+  const txt = st.over ? (st.won ? `${st.guesses.length}/${M.tries}` : `X/${M.tries}`) : tr(st.guesses.length ? "in progress" : "to play");
+  return `<span class="fm-line ${st.over ? "done" : ""}">${st.over ? ic("check") : `<i class="fm-dot"></i>`}<b>${tr(label)}</b> ${txt}</span>`;
 }
 // Opening Sussed from home: go to the mode that still needs playing; otherwise the one played last.
 function openFive() {
@@ -2499,13 +2715,13 @@ function startFive(mode = store.get().fiveMode || "classic") {
   D = { mode, len: M.len, tries: M.tries, answer: fiveAnswer(mode), ...fiveState(mode), typed: "", busy: false };
   app.innerHTML = `
   <div class="screen daily five-screen">
-    ${gameHeader("five", esc(todayLabel()), `<span class="gpill" aria-label="${mode === "hard" ? "Hard mode" : "Sussed"} streak">${ic("flame")}${fiveStats(mode).streak}</span>`)}
+    ${gameHeader("five", esc(todayLabel()), `<span class="gpill" aria-label="${tr(mode === "hard" ? "Hard mode streak" : "Sussed streak")}">${ic("flame")}${fiveStats(mode).streak}</span>`)}
     <div class="fmode" role="tablist" aria-label="Mode">
-      ${["classic", "hard"].map(m => `<button role="tab" aria-selected="${mode === m}" data-mode="${m}">${m === "hard" ? "Hard" : "Classic"}<small>${m === "hard" ? "6 letters" : "5 letters"}</small>${fiveState(m).over ? `<span class="fm-tick" aria-label="done">${ic("check")}</span>` : ""}</button>`).join("")}
+      ${["classic", "hard"].map(m => `<button role="tab" aria-selected="${mode === m}" data-mode="${m}">${tr(m === "hard" ? "Hard" : "Classic")}<small>${tr(m === "hard" ? "6 letters" : "5 letters")}</small>${fiveState(m).over ? `<span class="fm-tick" aria-label="done">${ic("check")}</span>` : ""}</button>`).join("")}
     </div>
-    <p class="daily-msg" id="msg">${mode === "hard" ? "Guess today's six-letter word in seven tries." : "Guess today's five-letter word in six tries."}</p>
+    <p class="daily-msg" id="msg">${tr(mode === "hard" ? "Guess today's six-letter word in seven tries." : "Guess today's five-letter word in six tries.")}</p>
     <div class="fgrid ${mode === "hard" ? "six" : ""}" id="fgrid" style="--n:${M.len}"></div>
-    <div class="legend" aria-hidden="true"><span><i class="c"></i>Right place</span><span><i class="p"></i>In the word</span><span><i class="a"></i>Not in it</span></div>
+    <div class="legend" aria-hidden="true"><span><i class="c"></i>${tr("Right place")}</span><span><i class="p"></i>${tr("In the word")}</span><span><i class="a"></i>${tr("Not in it")}</span></div>
     <div id="keys"></div>
   </div>`;
   $("#back").onclick = () => showHome();
@@ -2517,10 +2733,10 @@ function startFive(mode = store.get().fiveMode || "classic") {
 // Shown in place of the keyboard once a mode is finished: the result, and a way into the other mode.
 function fiveEndPanel() {
   const other = D.mode === "hard" ? "classic" : "hard", os = fiveState(other), oname = other === "hard" ? "Hard" : "Classic";
-  const head = D.won ? `Solved in ${D.guesses.length} of ${D.tries}` : `Today's word was ${D.answer.toUpperCase()}`;
-  return `<div class="fend"><b>${head}</b><span>${D.mode === "hard" ? "A new six-letter word arrives at midnight." : "A new word arrives at midnight."}</span>
-    <div class="actions"><button class="btn primary" id="fSee">See result</button>
-    <button class="btn" id="fOther">${os.over ? `See ${oname} result` : os.guesses.length ? `Continue ${oname}` : `Play ${oname}`}</button></div></div>`;
+  const head = D.won ? tr("Solved in {a} of {b}", { a: D.guesses.length, b: D.tries }) : tr("Today's word was {w}", { w: D.answer.toUpperCase() });
+  return `<div class="fend"><b>${head}</b><span>${tr(D.mode === "hard" ? "A new six-letter word arrives at midnight." : "A new word arrives at midnight.")}</span>
+    <div class="actions"><button class="btn primary" id="fSee">${tr("See result")}</button>
+    <button class="btn" id="fOther">${tr(os.over ? `See ${oname} result` : os.guesses.length ? `Continue ${oname}` : `Play ${oname}`)}</button></div></div>`;
 }
 function renderFive(revealRow = -1) {
   const rows = [];
@@ -2552,8 +2768,8 @@ function fiveKey(k) {
 function fiveSubmit() {
   const msg = $("#msg");
   const M = FIVE_MODES[D.mode];
-  if (D.typed.length < D.len) { msg.textContent = D.len === 6 ? "Six letters, please." : "Five letters, please."; D.shake = true; return renderFive(); }
-  if (!M.guesses().has(D.typed)) { msg.textContent = `"${D.typed.toUpperCase()}" isn't in our word list.`; D.shake = true; return renderFive(); }
+  if (D.typed.length < D.len) { msg.textContent = tr(D.len === 6 ? "Six letters, please." : "Five letters, please."); D.shake = true; return renderFive(); }
+  if (!M.guesses().has(D.typed)) { msg.textContent = tr("\"{w}\" isn't in our word list.", { w: D.typed.toUpperCase() }); D.shake = true; return renderFive(); }
   D.guesses.push(D.typed); D.typed = "";
   const won = D.guesses[D.guesses.length - 1] === D.answer;
   D.over = won || D.guesses.length === D.tries; D.won = won;
@@ -2567,7 +2783,7 @@ function fiveSubmit() {
   }
   D.busy = true;
   renderFive(D.guesses.length - 1);
-  msg.textContent = won ? pick(["Brilliant!", "Spot on!", "Lovely!", "Got it!"]) : D.over ? "So close. Better luck tomorrow!" : `${D.tries - D.guesses.length} ${D.tries - D.guesses.length === 1 ? "try" : "tries"} left.`;
+  msg.textContent = won ? tr(pick(["Brilliant!", "Spot on!", "Lovely!", "Got it!"])) : D.over ? tr("So close. Better luck tomorrow!") : tr(D.tries - D.guesses.length === 1 ? "1 try left." : "{n} tries left.", { n: D.tries - D.guesses.length });
   const cur = D;
   setTimeout(() => { if (D !== cur) return; D.busy = false; if (D.over) { renderFive(); if (won) confetti(); setTimeout(() => D === cur && fiveResult(), 700); } }, 1500);
 }
@@ -2578,23 +2794,23 @@ function fiveResult() {
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" ${sheetStyle("five")}>
     ${sheetBadge(D.won ? "trophy" : "cal")}
-    <h2>${D.won ? `${D.guesses.length === 1 ? "First go" : "Got it in " + D.guesses.length}${name ? ", " + name : ""}!` : "Not today"}</h2>
-    <p>${D.won ? "" : `Today's word was <b>${D.answer.toUpperCase()}</b>. `}${hard ? "A new six-letter word arrives at midnight." : "A new word arrives at midnight."}${!hard && !fiveState("hard").over && !fiveState("hard").guesses.length ? " Fancy a harder one? Try Hard mode: six letters, seven tries." : ""}</p>
+    <h2>${D.won ? `${D.guesses.length === 1 ? tr("First go") : tr("Got it in {n}", { n: D.guesses.length })}${name ? ", " + name : ""}${isFR() ? " " : ""}!` : tr("Not today")}</h2>
+    <p>${D.won ? "" : tr("Today's word was <b>{w}</b>. ", { w: D.answer.toUpperCase() })}${tr(hard ? "A new six-letter word arrives at midnight." : "A new word arrives at midnight.")}${!hard && !fiveState("hard").over && !fiveState("hard").guesses.length ? tr(" Fancy a harder one? Try Hard mode: six letters, seven tries.") : ""}</p>
     <div class="stats">
-      <div class="stat"><b>${s.played}</b><span>Played</span></div>
-      <div class="stat"><b>${s.played ? Math.round(100 * s.won / s.played) : 0}%</b><span>Won</span></div>
-      <div class="stat"><b>${s.streak}</b><span>Streak</span></div>
-      <div class="stat"><b>${s.best}</b><span>Best streak</span></div>
+      <div class="stat"><b>${s.played}</b><span>${tr("Played")}</span></div>
+      <div class="stat"><b>${s.played ? Math.round(100 * s.won / s.played) : 0}%</b><span>${tr("Won")}</span></div>
+      <div class="stat"><b>${s.streak}</b><span>${tr("Streak")}</span></div>
+      <div class="stat"><b>${s.best}</b><span>${tr("Best streak")}</span></div>
     </div>
     <div class="dist">${s.dist.map((n, i) => `<div><span>${i + 1}</span><i style="width:${8 + 92 * n / maxD}%" class="${D.won && D.guesses.length === i + 1 ? "on" : ""}">${n}</i></div>`).join("")}</div>
-    <div class="actions"><button class="btn primary" id="share">${ic("share")}Share result</button>${(() => { const o = hard ? "classic" : "hard", os = fiveState(o), n = hard ? "Classic" : "Hard"; return `<button class="btn" id="tryHard">${os.over ? `See ${n} result` : os.guesses.length ? `Continue ${n}` : hard ? "Play Classic" : "Try Hard mode"}</button>`; })()}<button class="btn" id="fClose">See board</button><button class="btn" id="menu">Home</button></div>
+    <div class="actions"><button class="btn primary" id="share">${ic("share")}${tr("Share result")}</button>${(() => { const o = hard ? "classic" : "hard", os = fiveState(o), n = hard ? "Classic" : "Hard"; return `<button class="btn" id="tryHard">${tr(os.over ? `See ${n} result` : os.guesses.length ? `Continue ${n}` : hard ? "Play Classic" : "Try Hard mode")}</button>`; })()}<button class="btn" id="fClose">${tr("See board")}</button><button class="btn" id="menu">${tr("Home")}</button></div>
   </div>`;
   document.body.appendChild(ov);
   $("#menu", ov).onclick = () => showHome();
   const th = $("#tryHard", ov); if (th) th.onclick = () => { ov.remove(); startFive(hard ? "classic" : "hard"); if (D && D.over) fiveResult(); };
   $("#fClose", ov).onclick = () => ov.remove();
   $("#share", ov).onclick = async () => {
-    shareText(`Wordolio Sussed${hard ? " Hard" : ""}, ${shareDate()}: ${D.won ? D.guesses.length : "X"}/${D.tries}\n${grid}\n${D.won ? "Can you beat me?" : "This one got me. Can you get it?"}`);
+    shareText(`Wordolio Sussed${hard ? " " + tr("Hard") : ""}, ${shareDate()}: ${D.won ? D.guesses.length : "X"}/${D.tries}\n${grid}\n${tr(D.won ? "Can you beat me?" : "This one got me. Can you get it?")}`);
   };
 }
 
@@ -2602,11 +2818,12 @@ function fiveResult() {
    Every finished game can share a spoiler-free result plus a link. SHARE_URL is the address friends land on:
    set it to the game's own web address (it can point at the beta now and the app stores later). */
 const SHARE_URL = "https://wordolio.app/";
-const shareBtn = (label = "Share") => `<button class="btn share-btn" id="shareRes">${ic("share")}${label}</button>`;
+const shareBtn = (label = tr("Share")) => `<button class="btn share-btn" id="shareRes">${ic("share")}${label}</button>`;
 const stars3 = n => "★".repeat(n) + "☆".repeat(3 - n);
-const shareDate = () => new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+const shareDate = () => new Date().toLocaleDateString(isFR() ? "fr-FR" : "en-GB", { day: "numeric", month: "short" });
 // A share sheet with the common places, plus the phone's own share menu (which covers Instagram, Messenger and the rest).
 const INVITE_TEXT = "I've been playing Wordolio, free word games with fresh puzzles every day. Come and play with me!";
+const inviteText = () => tr(INVITE_TEXT);
 const SHARE_SVG = {
   wa: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.8 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.2.5.1.6-.1l.9-1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3Z"/></svg>',
   sms: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4Z"/></svg>',
@@ -2617,18 +2834,18 @@ const SHARE_SVG = {
   more: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m8 7 4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>',
 };
 const mobileShare = () => !!navigator.share && (matchMedia("(pointer: coarse)").matches || /iPad|iPhone|Android/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
-async function shareText(text, title = "Share your result") {
+async function shareText(text, title = tr("Share your result")) {
   const full = `${text}\n${SHARE_URL}`, enc = encodeURIComponent;
   const opts = [
     ["wa", "WhatsApp", "#25D366", `https://wa.me/?text=${enc(full)}`],
-    ["sms", "Messages", "#34C759", `sms:?&body=${enc(full)}`],
-    ["mail", "Email", "#477EF0", `mailto:?subject=${enc("Come and play Wordolio")}&body=${enc(full)}`],
+    ["sms", tr("Messages"), "#34C759", `sms:?&body=${enc(full)}`],
+    ["mail", tr("Email"), "#477EF0", `mailto:?subject=${enc(tr("Come and play Wordolio"))}&body=${enc(full)}`],
     // Phones and tablets: the system share sheet reaches the Facebook app (the web link can only open in the browser).
     ["fb", "Facebook", "#1877F2", mobileShare() ? null : `https://www.facebook.com/sharer/sharer.php?u=${enc(SHARE_URL)}&quote=${enc(text)}`],
     ["x", "X", "#14171A", `https://x.com/intent/post?text=${enc(full)}`],
-    ["copy", "Copy", "#6B6470", null],
+    ["copy", tr("Copy"), "#6B6470", null],
   ];
-  if (navigator.share) opts.push(["more", "More", "#A552E8", null]);
+  if (navigator.share) opts.push(["more", tr("More"), "#A552E8", null]);
   const ov = document.createElement("div"); ov.className = "overlay share-ov";
   ov.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="${title}">
     <h2>${title}</h2>
@@ -2636,33 +2853,33 @@ async function shareText(text, title = "Share your result") {
     <div class="share-grid">${opts.map(([k, label, col, href]) => href
       ? `<a class="share-opt" data-k="${k}" href="${href}" target="_blank" rel="noopener"><span style="background:${col}">${SHARE_SVG[k]}</span>${label}</a>`
       : `<button class="share-opt" data-k="${k}"><span style="background:${col}">${SHARE_SVG[k]}</span>${label}</button>`).join("")}</div>
-    <div class="actions"><button class="btn" id="shareClose">Close</button></div>
+    <div class="actions"><button class="btn" id="shareClose">${tr("Close")}</button></div>
   </div>`;
   document.body.appendChild(ov);
   const close = () => ov.remove();
   $("#shareClose", ov).onclick = close;
   ov.addEventListener("click", e => { if (e.target === ov) close(); });
   ov.querySelectorAll("a.share-opt").forEach(a => a.addEventListener("click", () => setTimeout(close, 300)));
-  $('[data-k="copy"]', ov).onclick = async () => { try { await navigator.clipboard.writeText(full); toast("Copied. Paste it anywhere."); close(); } catch { prompt("Copy this", full); } };
+  $('[data-k="copy"]', ov).onclick = async () => { try { await navigator.clipboard.writeText(full); toast(tr("Copied. Paste it anywhere.")); close(); } catch { prompt(tr("Copy this"), full); } };
   const fb = $('button[data-k="fb"]', ov);
   // Facebook's app ignores ready-made text, so the result is copied first for the player to paste in.
   if (fb) fb.onclick = async () => {
     try { navigator.clipboard.writeText(full).catch(() => {}); } catch {}
-    toast("Result copied. Choose Facebook, then paste it into your post.");
-    try { await navigator.share({ text: full, url: SHARE_URL }); close(); } catch (e) { if (!e || e.name !== "AbortError") toast("Sharing isn't available here."); }
+    toast(tr("Result copied. Choose Facebook, then paste it into your post."));
+    try { await navigator.share({ text: full, url: SHARE_URL }); close(); } catch (e) { if (!e || e.name !== "AbortError") toast(tr("Sharing isn't available here.")); }
   };
   const more = $('[data-k="more"]', ov);
-  if (more) more.onclick = async () => { try { await navigator.share({ text: full }); close(); } catch (e) { if (!e || e.name !== "AbortError") toast("Sharing isn't available here."); } };
+  if (more) more.onclick = async () => { try { await navigator.share({ text: full }); close(); } catch (e) { if (!e || e.name !== "AbortError") toast(tr("Sharing isn't available here.")); } };
 }
 // Beta feedback by email: opens the tester's own mail app with prompts and the device details filled in.
 const FEEDBACK_EMAIL = "feedback@wordolio.app", APP_VERSION = "beta 3 Nov 2026";
 function feedbackLink() {
   const ua = navigator.userAgent, dev = isApple() ? (/iPhone/.test(ua) ? "iPhone" : "iPad") : /Android/.test(ua) ? "Android" : /Mac/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : "Other";
-  const body = `What did you enjoy?\n\n\nWhat went wrong or felt confusing?\n\n\nAny ideas or wishes?\n\n\n---\nWordolio ${APP_VERSION} · ${dev} · ${innerWidth}x${innerHeight} · ${LANG_SHORT[lang()]}${isStandalone() ? " · home screen" : ""}`;
-  return `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent("Wordolio feedback" + (playerName() ? " from " + playerName() : ""))}&body=${encodeURIComponent(body)}`;
+  const body = `${tr("What did you enjoy?")}\n\n\n${tr("What went wrong or felt confusing?")}\n\n\n${tr("Any ideas or wishes?")}\n\n\n---\nWordolio ${APP_VERSION} · ${dev} · ${innerWidth}x${innerHeight} · ${LANG_SHORT[lang()]}${isStandalone() ? " · home screen" : ""}`;
+  return `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(tr("Wordolio feedback") + (playerName() ? tr(" from {name}", { name: playerName() }) : ""))}&body=${encodeURIComponent(body)}`;
 }
 function sendFeedback() { stat("feedback", "Opened feedback email"); location.href = feedbackLink(); }
-const inviteFriends = () => shareText(`${playerName() ? `Hi, it's ${playerName()}! ` : ""}${INVITE_TEXT}`, "Invite friends");
+const inviteFriends = () => shareText(`${playerName() ? tr("Hi, it's {name}! ", { name: playerName() }) : ""}${inviteText()}`, tr("Invite friends"));
 const bindShare = (ov, make) => { const b = $("#shareRes", ov); if (b) b.onclick = () => shareText(make()); };
 
 /* ---------- Letter Wheel: make words from seven letters, always using the middle one ---------- */
@@ -2672,36 +2889,41 @@ const WHEEL_RANKS = [["Just starting", 0], ["Warming up", 5], ["Good", 15], ["Gr
 const WHEEL_CLUES = 3;
 let wheelCache = null;
 function wheelDay(n) {
+  if (isFR()) {
+    const f = ofDay(WHEEL_FR, n), puzzle = { centre: f.p[0], letters: f.p.slice(1) };
+    return { puzzle, fits: () => true, words: f.w.split(" "), bonus: f.b ? f.b.split(" ") : [] };
+  }
   const p = ofDay(WHEEL_PUZZLES, n), puzzle = { centre: p[0], letters: p.slice(1) };
   const fits = w => w.includes(puzzle.centre) && [...w].every(c => puzzle.letters.includes(c));
   return { puzzle, fits, words: WHEEL_WORDS.concat(isUS() ? WHEEL_US : WHEEL_UK).filter(fits) };
 }
+const wheelKeyFor = date => gk("wheel-") + date;
 function wheelState() {
   const key = todayKey() + lang();
   if (!wheelCache || wheelCache.key !== key) {
-    const { puzzle, fits, words } = wheelDay(dayNumber());
+    const { puzzle, fits, words, bonus } = wheelDay(dayNumber());
     // Rarer words still count, as bonus words: they score points but aren't in the list of blanks.
-    wheelCache = { key, puzzle, words: new Set(words), bonusWords: new Set(WHEEL_BONUS.filter(fits)), max: words.reduce((t, w) => t + wheelPoints(w, puzzle), 0) };
+    wheelCache = { key, puzzle, words: new Set(words), bonusWords: new Set(bonus || WHEEL_BONUS.filter(fits)), max: words.reduce((t, w) => t + wheelPoints(w, puzzle), 0) };
   }
-  const saved = store.get()["wheel-" + todayKey()] || { found: [], clues: 0 };
+  const saved = store.get()[wheelKeyFor(todayKey())] || { found: [], clues: 0 };
   const found = saved.found.filter(w => wheelCache.words.has(w)), bonus = saved.found.filter(w => wheelCache.bonusWords.has(w));
   return { ...wheelCache, found, bonus, clues: saved.clues || 0, score: found.concat(bonus).reduce((t, w) => t + wheelPoints(w, wheelCache.puzzle), 0) };
 }
 const wheelDone = st => st.found.length === st.words.size;
 function wheelComplete() {
   const st = wheelState(), name = esc(playerName());
-  store.set("wheelCelebrated", todayKey());
+  store.set("wheelCelebrated", todayKey() + lang());
   confetti();
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet done-sheet" role="dialog" aria-modal="true" ${sheetStyle("wheel")}>
     <div class="done-art">${wheelArt(st.puzzle)}<span>🏆</span></div>
-    <h2>Wheel complete${name ? ", " + name : ""}!</h2>
-    <p>You found all ${st.words.size} words${st.bonus.length ? `, plus ${st.bonus.length} bonus word${st.bonus.length > 1 ? "s" : ""}` : ""}, for ${st.score} points. That's every answer on today's wheel.</p>
-    <p>New letters arrive at midnight.</p>
-    <div class="actions"><button class="btn primary" id="doneHome">Home</button>${shareBtn()}<button class="btn" id="doneStay">Look for bonus words</button></div>
+    <h2>${tr("Wheel complete")}${name ? ", " + name : ""}${isFR() ? " " : ""}!</h2>
+    <p>${tr("You found all {n} words", { n: st.words.size })}${st.bonus.length ? tr(st.bonus.length > 1 ? ", plus {n} bonus words" : ", plus 1 bonus word", { n: st.bonus.length }) : ""}${tr(", for {s} points. That's every answer on today's wheel.", { s: st.score })}</p>
+    <p>${tr("New letters arrive at midnight.")}</p>
+    <div class="actions"><button class="btn primary" id="doneHome">${tr("Home")}</button>${shareBtn()}<button class="btn" id="doneStay">${tr("Look for bonus words")}</button></div>
   </div>`;
   document.body.appendChild(ov);
-  bindShare(ov, () => `Wordolio Letter Wheel, ${shareDate()}: all ${st.words.size} words found, ${st.score} points. Word wizard!\nCan you find them all?`);
+  bindShare(ov, () => tr("Wordolio Letter Wheel, {d}: all {n} words found, {s} points. Word wizard!\nCan you find them all?", { d: shareDate(), n: st.words.size, s: st.score }));
   ov.querySelector("#doneHome").onclick = () => { ov.remove(); showHome(); };
   ov.querySelector("#doneStay").onclick = () => ov.remove();
 }
@@ -2723,16 +2945,16 @@ function startWheel() {
   H = { puzzle: st.puzzle, outer: shuffle([...st.puzzle.letters].filter(c => c !== st.puzzle.centre)), typed: "" };
   app.innerHTML = `
   <div class="screen daily wheel-screen">
-    ${gameHeader("wheel", esc(todayLabel()), `<span class="gpill" aria-label="Words found">${ic("check")}<span id="wcount"></span></span>`)}
+    ${gameHeader("wheel", esc(todayLabel()), `<span class="gpill" aria-label="${tr("Words found")}">${ic("check")}<span id="wcount"></span></span>`)}
     <div class="wheel-top"><div class="rank" id="rank"></div></div>
     <div class="wheel-body">
       <div class="wheel-play">
-        <button class="wboard" id="wboard" aria-label="See all the words"></button>
+        <button class="wboard" id="wboard" aria-label="${tr("See all the words")}"></button>
         <div class="typed" id="typed"></div>
-        <p class="daily-msg" id="msg">Make words of 4 or more letters. The purple middle letter must be in every word, anywhere you like. Letters can be used more than once.</p>
+        <p class="daily-msg" id="msg">${tr("Make words of 4 or more letters. The purple middle letter must be in every word, anywhere you like. Letters can be used more than once.")}</p>
         <div class="wheel" id="wheel"></div>
-        <div class="wheel-btns"><button class="btn" id="del">Delete</button><button class="btn" id="mix">Shuffle</button><button class="btn primary" id="enter">Enter</button></div>
-        <div class="wheel-btns extra"><button class="btn clue-btn" id="clue">${ic("bulb")}Clue <span id="clueN"></span></button><button class="btn" id="yday">Yesterday's answers</button>${shareBtn()}</div>
+        <div class="wheel-btns"><button class="btn" id="del">${tr("Delete")}</button><button class="btn" id="mix">${tr("Shuffle")}</button><button class="btn primary" id="enter">${tr("Enter")}</button></div>
+        <div class="wheel-btns extra"><button class="btn clue-btn" id="clue">${ic("bulb")}${tr("Clue")} <span id="clueN"></span></button><button class="btn" id="yday">${tr("Yesterday's answers")}</button>${shareBtn()}</div>
       </div>
       <div class="found" id="found"></div>
     </div>
@@ -2745,45 +2967,45 @@ function startWheel() {
   $("#mix").onclick = () => { shuffle(H.outer); renderWheel(); };
   $("#clue").onclick = wheelClue;
   $("#yday").onclick = wheelYesterday;
-  $("#shareRes").onclick = () => { const st = wheelState(); shareText(`Wordolio Letter Wheel, ${shareDate()}: ${st.found.length} of ${st.words.size} words, ${st.score} points. Rank: ${wheelRank(st).name}.\nHow many can you find?`); };
+  $("#shareRes").onclick = () => { const st = wheelState(); shareText(tr("Wordolio Letter Wheel, {d}: {a} of {b} words, {s} points. Rank: {r}.\nHow many can you find?", { d: shareDate(), a: st.found.length, b: st.words.size, s: st.score, r: tr(wheelRank(st).name) })); };
   $("#wboard").onclick = wheelList;
   renderWheel();
-  if (wheelDone(st) && store.get().wheelCelebrated !== todayKey()) setTimeout(() => H && wheelComplete(), 500);
+  if (wheelDone(st) && store.get().wheelCelebrated !== todayKey() + lang()) setTimeout(() => H && wheelComplete(), 500);
 }
 function renderWheel() {
   const st = wheelState(), pz = H.puzzle, r = wheelRank(st);
   $("#wheel").innerHTML = `<button class="wl centre" data-c="${pz.centre}">${pz.centre}</button>` +
     H.outer.map((c, i) => `<button class="wl" data-c="${c}" style="--a:${i * 60}deg">${c}</button>`).join("");
-  $("#typed").innerHTML = H.typed ? [...H.typed].map(c => `<span class="${c === pz.centre ? "mid" : ""}">${c}</span>`).join("") : `<span class="ph">Tap letters to spell a word</span>`;
-  $("#rank").innerHTML = `<div class="rank-head"><b>${r.name}</b><span>${st.score} points${r.next ? ` · ${r.next} to the next rank` : ""}</span></div>
+  $("#typed").innerHTML = H.typed ? [...H.typed].map(c => `<span class="${c === pz.centre ? "mid" : ""}">${c}</span>`).join("") : `<span class="ph">${tr("Tap letters to spell a word")}</span>`;
+  $("#rank").innerHTML = `<div class="rank-head"><b>${tr(r.name)}</b><span>${tr("{n} points", { n: st.score })}${r.next ? tr(" · {n} to the next rank", { n: r.next }) : ""}</span></div>
     <div class="rank-bar">${WHEEL_RANKS.map((_, k) => `<i class="${k <= r.i ? "on" : ""}"></i>`).join("")}</div>`;
   // Every answer is listed as blanks, grouped by length and in alphabetical order. Clues fill in letters from the front.
   const all = [...st.words], lengths = [...new Set(all.map(w => w.length))].sort((a, b) => a - b), got = new Set(st.found);
-  $("#found").innerHTML = `<p class="section-label">You've found ${st.found.length} of ${all.length} words, from ${lengths[0]} to ${lengths[lengths.length - 1]} letters</p>` + lengths.map(n => {
+  $("#found").innerHTML = `<p class="section-label">${tr("You've found {a} of {b} words, from {x} to {y} letters", { a: st.found.length, b: all.length, x: lengths[0], y: lengths[lengths.length - 1] })}</p>` + lengths.map(n => {
     const list = all.filter(w => w.length === n).sort();
-    return `<div class="wgroup"><h4>${n} letters <span>${list.filter(w => got.has(w)).length} of ${list.length}</span></h4>
+    return `<div class="wgroup"><h4>${tr("{n} letters", { n })} <span>${tr("{a} of {b}", { a: list.filter(w => got.has(w)).length, b: list.length })}</span></h4>
       ${list.map(w => `<div class="ans ${got.has(w) ? "got" : ""} ${isPangram(w, pz) ? "pg" : ""}">${[...w].map((c, i) => `<i>${got.has(w) || i < st.clues ? c : ""}</i>`).join("")}</div>`).join("")}</div>`;
-  }).join("") + `<div class="bonus"><h4>Bonus words <span>${st.bonus.length}</span></h4>${st.bonus.length
+  }).join("") + `<div class="bonus"><h4>${tr("Bonus words")} <span>${st.bonus.length}</span></h4>${st.bonus.length
     ? `<div class="words">${st.bonus.sort().map(w => `<span class="${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("")}</div>`
-    : `<p>Rarer words that aren't in the list above still score points here.</p>`}</div>`;
+    : `<p>${tr("Rarer words that aren't in the list above still score points here.")}</p>`}</div>`;
   // Phones: a compact board of every answer above the wheel, so it's always clear how many are left.
   const left = all.length - st.found.length, order = lengths.flatMap(n => all.filter(w => w.length === n).sort());
-  $("#wboard").innerHTML = `<span class="wb-head"><b>${left ? `${left} word${left === 1 ? "" : "s"} left` : "Every word found!"}</b><span>${st.found.length} of ${all.length} found${st.bonus.length ? ` · ${st.bonus.length} bonus` : ""}</span></span>
+  $("#wboard").innerHTML = `<span class="wb-head"><b>${left ? tr(left === 1 ? "1 word left" : "{n} words left", { n: left }) : tr("Every word found!")}</b><span>${tr("{a} of {b} found", { a: st.found.length, b: all.length })}${st.bonus.length ? tr(" · {n} bonus", { n: st.bonus.length }) : ""}</span></span>
     <span class="wb-words">${order.map(w => `<span class="wb ${got.has(w) ? "got" : ""} ${isPangram(w, pz) ? "pg" : ""}">${[...w].map((c, i) => `<i>${got.has(w) || i < st.clues ? c : ""}</i>`).join("")}</span>`).join("")}</span>
     <span class="wb-more">${tr("Tap to see the list")}</span>`;
   $("#clue").className = "btn clue-btn";
   const cluesOut = st.clues >= WHEEL_CLUES;
-  $("#clue").innerHTML = wheelDone(st) ? `${ic("check")}All found` : cluesOut ? `${ic("bulb")}All ${WHEEL_CLUES} clues used` : `${ic("bulb")}Clue ${st.clues + 1} of ${WHEEL_CLUES} <span id="clueN">(${hintNote("wheel")})</span>`;
+  $("#clue").innerHTML = wheelDone(st) ? `${ic("check")}${tr("All found")}` : cluesOut ? `${ic("bulb")}${tr("All {n} clues used", { n: WHEEL_CLUES })}` : `${ic("bulb")}${tr("Clue {a} of {b}", { a: st.clues + 1, b: WHEEL_CLUES })} <span id="clueN">(${hintNote("wheel")})</span>`;
   $("#clue").disabled = !wheelDone(st) && cluesOut;
   $("#wcount").textContent = `${st.found.length}/${st.words.size}`;
-  if (wheelDone(st) && !$("#msg").textContent.includes("+")) $("#msg").textContent = "You've found every word! Bonus words still score points.";
+  if (wheelDone(st) && !$("#msg").textContent.includes("+")) $("#msg").textContent = tr("You've found every word! Bonus words still score points.");
 }
 // Phones: the full list (with bonus words) in a sheet.
 function wheelList() {
   if (getComputedStyle($("#found")).display !== "none") return;
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet yday" role="dialog" aria-modal="true" ${sheetStyle("wheel")}><div class="yday-list">${$("#found").innerHTML}</div>
-    <div class="actions"><button class="btn primary" id="listClose">Back to the wheel</button></div></div>`;
+    <div class="actions"><button class="btn primary" id="listClose">${tr("Back to the wheel")}</button></div></div>`;
   document.body.appendChild(ov);
   const close = () => ov.remove();
   ov.querySelector("#listClose").onclick = close;
@@ -2791,14 +3013,14 @@ function wheelList() {
 }
 // Yesterday's full answer list, so players can see what they missed.
 function wheelYesterday() {
-  const { puzzle: pz, words } = wheelDay(dayNumber() - 1), got = new Set((store.get()["wheel-" + yesterdayKey()] || { found: [] }).found);
+  const { puzzle: pz, words } = wheelDay(dayNumber() - 1), got = new Set((store.get()[wheelKeyFor(yesterdayKey())] || { found: [] }).found);
   const lengths = [...new Set(words.map(w => w.length))].sort((a, b) => a - b), mine = words.filter(w => got.has(w)).length;
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet yday" role="dialog" aria-modal="true" ${sheetStyle("wheel")}>
-    <div class="yday-head">${wheelArt(pz)}<div><h2>Yesterday's answers</h2><p>${mine ? `You found ${mine} of ${words.length}. The ones you missed are in purple.` : `There were ${words.length} words to find.`}</p></div></div>
-    <div class="yday-list">${lengths.map(n => `<div class="wgroup"><h4>${n} letters</h4><div class="words">${words.filter(w => w.length === n).sort()
+    <div class="yday-head">${wheelArt(pz)}<div><h2>${tr("Yesterday's answers")}</h2><p>${mine ? tr("You found {a} of {b}. The ones you missed are in purple.", { a: mine, b: words.length }) : tr("There were {n} words to find.", { n: words.length })}</p></div></div>
+    <div class="yday-list">${lengths.map(n => `<div class="wgroup"><h4>${tr("{n} letters", { n })}</h4><div class="words">${words.filter(w => w.length === n).sort()
       .map(w => `<span class="${got.has(w) ? "" : "miss"} ${isPangram(w, pz) ? "pg" : ""}">${w}</span>`).join("")}</div></div>`).join("")}</div>
-    <div class="actions"><button class="btn primary" id="ydayClose">Back to today</button></div>
+    <div class="actions"><button class="btn primary" id="ydayClose">${tr("Back to today")}</button></div>
   </div>`;
   document.body.appendChild(ov);
   const close = () => ov.remove();
@@ -2809,11 +3031,11 @@ function wheelYesterday() {
 function wheelClue() { wheelClueUse(); }
 function wheelClueUse() {
   const st = wheelState(), missing = [...st.words].filter(w => !st.found.includes(w));
-  if (!missing.length) return toast("You've found every word!");
-  if (st.clues >= Math.min(WHEEL_CLUES, Math.max(...missing.map(w => w.length)) - 1)) return toast(`That's all ${WHEEL_CLUES} clues for today.`);
+  if (!missing.length) return toast(tr("You've found every word!"));
+  if (st.clues >= Math.min(WHEEL_CLUES, Math.max(...missing.map(w => w.length)) - 1)) return toast(tr("That's all {n} clues for today.", { n: WHEEL_CLUES }));
   if (!takeHint("wheel")) return;
-  store.set("wheel-" + todayKey(), { found: st.found.concat(st.bonus), clues: st.clues + 1 });
-  $("#msg").textContent = st.clues === 0 ? "Clue: the first letter of every word is filled in." : `Clue: letter ${st.clues + 1} of every word is filled in.`;
+  store.set(wheelKeyFor(todayKey()), { found: st.found.concat(st.bonus), clues: st.clues + 1 });
+  $("#msg").textContent = st.clues === 0 ? tr("Clue: the first letter of every word is filled in.") : tr("Clue: letter {n} of every word is filled in.", { n: st.clues + 1 });
   renderWheel();
 }
 function wheelKey(k) {
@@ -2824,16 +3046,17 @@ function wheelKey(k) {
     const w = H.typed, st = wheelState();
     let say;
     if (!w) return;
-    if (w.length < 4) say = "Words need at least 4 letters.";
-    else if (!w.includes(pz.centre)) say = `Every word must use the middle letter, ${pz.centre.toUpperCase()}.`;
-    else if (st.found.includes(w) || st.bonus.includes(w)) say = "You've already found that one.";
-    else if (!st.words.has(w) && !st.bonusWords.has(w)) say = `"${w.toUpperCase()}" isn't in our word list.`;
+    if (w.length < 4) say = tr("Words need at least 4 letters.");
+    else if (!w.includes(pz.centre)) say = tr("Every word must use the middle letter, {c}.", { c: pz.centre.toUpperCase() });
+    else if (st.found.includes(w) || st.bonus.includes(w)) say = tr("You've already found that one.");
+    else if (!st.words.has(w) && !st.bonusWords.has(w)) say = tr("\"{w}\" isn't in our word list.", { w: w.toUpperCase() });
     else {
       const pts = wheelPoints(w, pz), before = wheelRank(st).i;
-      store.set("wheel-" + todayKey(), { found: [...st.found, ...st.bonus, w], clues: st.clues });
-      say = isPangram(w, pz) ? `All seven letters! +${pts} points` : !st.words.has(w) ? `Bonus word! +${pts} point${pts > 1 ? "s" : ""}` : `${pick(["Nice", "Good one", "Lovely", "Yes"])}! +${pts} point${pts > 1 ? "s" : ""}`;
+      store.set(wheelKeyFor(todayKey()), { found: [...st.found, ...st.bonus, w], clues: st.clues });
+      const plus = tr(pts > 1 ? "+{n} points" : "+1 point", { n: pts });
+      say = isPangram(w, pz) ? `${tr("All seven letters!")} ${plus}` : !st.words.has(w) ? `${tr("Bonus word!")} ${plus}` : `${tr(pick(["Nice", "Good one", "Lovely", "Yes"]))}${isFR() ? " " : ""}! ${plus}`;
       const after = wheelRank(wheelState());
-      if (after.i > before) { say += `. You're now ${after.name}!`; confetti(); }
+      if (after.i > before) { say += tr(". You're now {r}!", { r: tr(after.name) }); confetti(); }
       if (st.words.has(w) && wheelDone(wheelState())) setTimeout(() => H && wheelComplete(), 600);
     }
     msg.textContent = say; H.typed = "";
@@ -2849,30 +3072,30 @@ function wheelKey(k) {
    best-steps-N / best-lock-N   best result { stars, ..., date }
    ===================================================================== */
 const LEVELLED = {
-  steps: { levels: () => STEPS_LEVELS, start: (i, daily) => startSteps(i, daily) },
-  lock: { levels: () => LOCK_LEVELS, start: (i, daily) => startLock(i, daily) },
+  steps: { levels: () => isFR() ? STEPS_LEVELS_FR : STEPS_LEVELS, start: (i, daily) => startSteps(i, daily) },
+  lock: { levels: () => isFR() ? LOCK_LEVELS_FR : LOCK_LEVELS, start: (i, daily) => startLock(i, daily) },
 };
-const lvDone = (g, i) => isDone(g + "-" + i);
+const lvDone = (g, i) => isDone(gk(g) + "-" + i);
 const lvNext = g => { const n = LEVELLED[g].levels().findIndex((_, i) => !lvDone(g, i)); return n < 0 ? null : n; };
 const lvSolved = g => LEVELLED[g].levels().filter((_, i) => lvDone(g, i)).length;
 const lvOpen = (g, i) => i === 0 || lvDone(g, i) || lvDone(g, i - 1);
-const lvBest = (g, i) => store.get()["best-" + g + "-" + i] || null;
-const starRow = (n, of = 3) => `<span class="stars" aria-label="${n} of ${of} stars">${[0, 1, 2].map(k => `<i class="${k < n ? "on" : ""}">★</i>`).join("")}</span>`;
+const lvBest = (g, i) => store.get()["best-" + gk(g) + "-" + i] || null;
+const starRow = (n, of = 3) => `<span class="stars" aria-label="${tr("{n} of {of} stars", { n, of })}">${[0, 1, 2].map(k => `<i class="${k < n ? "on" : ""}">★</i>`).join("")}</span>`;
 function saveBest(g, i, res) {
   const prev = lvBest(g, i);
-  if (!prev || res.stars > prev.stars || (res.stars === prev.stars && (res.moves ?? 0) < (prev.moves ?? 0))) store.set("best-" + g + "-" + i, { ...res, date: todayKey() });
-  store.set("done-" + g + "-" + i, true);
+  if (!prev || res.stars > prev.stars || (res.stars === prev.stars && (res.moves ?? 0) < (prev.moves ?? 0))) store.set("best-" + gk(g) + "-" + i, { ...res, date: todayKey() });
+  store.set("done-" + gk(g) + "-" + i, true);
 }
 // A small on-screen keyboard. The Enter key is labelled for the game ("Submit" or "Check").
 function gameKeys(enter, marks = {}) {
-  return `<div class="keys">${["qwertyuiop", "asdfghjkl+", "zxcvbnm-"].map(row => `<div class="krow">${[...row].map(c =>
-    c === "+" ? `<button class="key wide" data-k="Enter">${enter}</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="Delete">${ic("del")}</button>` :
+  return `<div class="keys">${keyRows().map(row => `<div class="krow">${[...row].map(c =>
+    c === "+" ? `<button class="key wide" data-k="Enter">${enter}</button>` : c === "-" ? `<button class="key wide" data-k="Backspace" aria-label="${tr("Delete")}">${ic("del")}</button>` :
     `<button class="key ${marks[c] || ""}" data-k="${c}">${c}</button>`).join("")}</div>`).join("")}</div>`;
 }
 function confirmSheet(g, title, text, yes, onYes) {
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet lvsheet" role="dialog" aria-modal="true" style="--c:${GAMES[g].c};--ci:${GAMES[g].ci}"><h2>${title}</h2><p>${text}</p>
-    <div class="actions"><button class="btn primary" id="cYes">${yes}</button><button class="btn" id="cNo">Cancel</button></div></div>`;
+    <div class="actions"><button class="btn primary" id="cYes">${yes}</button><button class="btn" id="cNo">${tr("Cancel")}</button></div></div>`;
   document.body.appendChild(ov);
   $("#cYes", ov).onclick = () => { ov.remove(); onYes(); };
   $("#cNo", ov).onclick = () => ov.remove();
@@ -2884,12 +3107,12 @@ function levelResult(g, i, title, text, stars, nums, extra = "") {
   ov.innerHTML = `<div class="sheet done-sheet lvsheet" role="dialog" aria-modal="true" style="--c:${GAMES[g].c};--ci:${GAMES[g].ci}">
     ${sheetBadge("trophy")}<h2>${title}</h2>${starRow(stars)}<p>${text}</p>${extra}
     <div class="stats" style="justify-content:center">${nums.map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("")}</div>
-    <div class="actions" style="justify-content:center">${next != null ? `<button class="btn primary" id="rNext">Level ${next + 1}${ic("chevr")}</button>` : ""}<button class="btn" id="rAgain">Replay</button>${shareBtn()}<button class="btn" id="rHome">Home</button></div>
+    <div class="actions" style="justify-content:center">${next != null ? `<button class="btn primary" id="rNext">${tr("Level {n}", { n: next + 1 })}${ic("chevr")}</button>` : ""}<button class="btn" id="rAgain">${tr("Replay")}</button>${shareBtn()}<button class="btn" id="rHome">${tr("Home")}</button></div>
   </div>`;
   document.body.appendChild(ov);
-  bindShare(ov, () => `Wordolio ${GAMES[g].name}, level ${i + 1} (${LEVELLED[g].levels()[i].difficulty}): ${stars3(stars)}\n${nums.map(([b, s]) => `${s}: ${b}`).join(" · ")}\nCan you beat me?`);
+  bindShare(ov, () => `${tr("Wordolio {g}, level {n} ({d}):", { g: GAMES[g].name, n: i + 1, d: tr(LEVELLED[g].levels()[i].difficulty) })} ${stars3(stars)}\n${nums.map(([b, s]) => `${s}: ${b}`).join(" · ")}\n${tr("Can you beat me?")}`);
   if (next != null) $("#rNext", ov).onclick = () => LEVELLED[g].start(next);
-  $("#rAgain", ov).onclick = () => { store.set("save-" + g + "-" + i, undefined); LEVELLED[g].start(i); };
+  $("#rAgain", ov).onclick = () => { store.set("save-" + gk(g) + "-" + i, undefined); LEVELLED[g].start(i); };
   $("#rHome", ov).onclick = () => showHome();
 }
 // Level picker: every level with its difficulty, lock state and best stars.
@@ -2898,11 +3121,11 @@ function showLevels(g) {
   const lv = LEVELLED[g].levels(), G = GAMES[g];
   app.innerHTML = `
   <div class="screen scroll home levels-screen">
-    ${gameHeader(g, `${lvSolved(g)} of ${lv.length} solved`)}
+    ${gameHeader(g, tr("{a} of {b} solved", { a: lvSolved(g), b: lv.length }))}
     <div class="lvgrid" style="--c:${G.c};--ci:${G.ci}">${lv.map((l, i) => {
-      const open = lvOpen(g, i), done = lvDone(g, i), best = lvBest(g, i), saved = store.get()["save-" + g + "-" + i];
-      return `<button class="lv ${done ? "done" : ""} ${open ? "" : "locked"} ${i === lvNext(g) ? "next" : ""} ${saved && !done ? "saved" : ""}" data-i="${i}" ${open ? "" : 'aria-disabled="true"'} aria-label="Level ${i + 1}, ${l.difficulty}${done ? ", solved" : open ? "" : ", locked"}">
-        <b>${open ? i + 1 : ic("lock")}</b><small>${l.difficulty}</small>${done && best ? starRow(best.stars) : saved && !done ? `<em>In progress</em>` : ""}</button>`;
+      const open = lvOpen(g, i), done = lvDone(g, i), best = lvBest(g, i), saved = store.get()["save-" + gk(g) + "-" + i];
+      return `<button class="lv ${done ? "done" : ""} ${open ? "" : "locked"} ${i === lvNext(g) ? "next" : ""} ${saved && !done ? "saved" : ""}" data-i="${i}" ${open ? "" : 'aria-disabled="true"'} aria-label="${tr("Level {n}", { n: i + 1 })}, ${tr(l.difficulty)}${done ? tr(", solved") : open ? "" : tr(", locked")}">
+        <b>${open ? i + 1 : ic("lock")}</b><small>${tr(l.difficulty)}</small>${done && best ? starRow(best.stars) : saved && !done ? `<em>${tr("In progress")}</em>` : ""}</button>`;
     }).join("")}</div>
   </div>`;
   $("#back").onclick = () => showHome();
@@ -2913,14 +3136,14 @@ function showLevels(g) {
    Hints come from one pot of 3 per game per day, shared by the daily puzzles and the levels.
    Saved as steps-day-YYYY-MM-DD / lock-day-YYYY-MM-DD: { v, stage (0 to 3), hints, res: [results], cur: puzzle in progress }. */
 const DAY_DIFFS = ["Easy", "Medium", "Hard"], HINT_POT = 3;
-const dayKey = g => g + "-day-" + todayKey();
+const dayKey = g => gk(g) + "-day-" + todayKey();
 const dayState = g => ({ v: 1, stage: 0, hints: 0, res: [], cur: null, ...(store.get()[dayKey(g)] || {}) });
 const daySet = (g, st) => store.set(dayKey(g), st);
 const potLeft = g => hintsAvail(g);
 const usePot = () => {};
 const dayDone = g => dayState(g).stage >= 3;
 function dailyPuzzle(g, k) {
-  const list = g === "steps" ? STEPS_DAILY : LOCK_DAILY, p = list[(dayNumber() * 3 + k) % list.length];
+  const list = g === "steps" ? (isFR() ? STEPS_DAILY_FR : STEPS_DAILY) : (isFR() ? LOCK_DAILY_FR : LOCK_DAILY), p = list[(dayNumber() * 3 + k) % list.length];
   return { ...p, difficulty: DAY_DIFFS[k] };
 }
 const startDaily = g => { const st = dayState(g); st.stage >= 3 ? dailySummary(g) : LEVELLED[g].start(st.stage, true); };
@@ -2931,10 +3154,10 @@ function dailyResult(g, k, title, text, stars, nums, extra = "") {
   ov.innerHTML = `<div class="sheet done-sheet lvsheet" role="dialog" aria-modal="true" style="--c:${GAMES[g].c};--ci:${GAMES[g].ci}">
     ${sheetBadge("check")}<h2>${title}</h2>${starRow(stars)}<p>${text}</p>${extra}
     <div class="stats" style="justify-content:center">${nums.map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("")}</div>
-    <div class="actions" style="justify-content:center"><button class="btn primary" id="rNext">Next: ${DAY_DIFFS[k + 1]}${ic("chevr")}</button>${shareBtn()}<button class="btn" id="rHome">Home</button></div>
+    <div class="actions" style="justify-content:center"><button class="btn primary" id="rNext">${tr("Next: {d}", { d: tr(DAY_DIFFS[k + 1]) })}${ic("chevr")}</button>${shareBtn()}<button class="btn" id="rHome">${tr("Home")}</button></div>
   </div>`;
   document.body.appendChild(ov);
-  bindShare(ov, () => `Wordolio ${GAMES[g].name}, ${shareDate()}: ${DAY_DIFFS[k]} ${stars3(stars)}\nOn to the ${DAY_DIFFS[k + 1]}. Fancy a go?`);
+  bindShare(ov, () => `Wordolio ${GAMES[g].name}, ${shareDate()}: ${tr(DAY_DIFFS[k])} ${stars3(stars)}\n${tr("On to the {d}. Fancy a go?", { d: tr(DAY_DIFFS[k + 1]) })}`);
   $("#rNext", ov).onclick = () => LEVELLED[g].start(k + 1, true);
   $("#rHome", ov).onclick = () => showHome();
 }
@@ -2943,17 +3166,17 @@ function dailySummary(g, extra = "") {
   document.querySelectorAll(".overlay").forEach(o => o.remove());
   const ov = document.createElement("div"); ov.className = "overlay";
   ov.innerHTML = `<div class="sheet done-sheet lvsheet" role="dialog" aria-modal="true" style="--c:${GAMES[g].c};--ci:${GAMES[g].ci}">
-    ${sheetBadge("trophy")}<h2>Today's challenge complete!</h2>
-    <p>You finished the Easy, Medium and Hard ${GAMES[g].name} puzzles, with ${total} of 9 stars. A new set arrives tomorrow.</p>${extra}
-    <div class="dayres">${DAY_DIFFS.map((d, k) => `<div><span>${d}</span>${starRow((st.res[k] || {}).stars || 0)}</div>`).join("")}</div>
-    <div class="actions" style="justify-content:center"><button class="btn primary" id="rLevels">Play more levels${ic("chevr")}</button>${shareBtn()}<button class="btn" id="rHome">Home</button></div>
+    ${sheetBadge("trophy")}<h2>${tr("Today's challenge complete!")}</h2>
+    <p>${tr("You finished the Easy, Medium and Hard {g} puzzles, with {n} of 9 stars. A new set arrives tomorrow.", { g: GAMES[g].name, n: total })}</p>${extra}
+    <div class="dayres">${DAY_DIFFS.map((d, k) => `<div><span>${tr(d)}</span>${starRow((st.res[k] || {}).stars || 0)}</div>`).join("")}</div>
+    <div class="actions" style="justify-content:center"><button class="btn primary" id="rLevels">${tr("Play more levels")}${ic("chevr")}</button>${shareBtn()}<button class="btn" id="rHome">${tr("Home")}</button></div>
   </div>`;
   document.body.appendChild(ov);
-  bindShare(ov, () => `Wordolio ${GAMES[g].name}, ${shareDate()}: today's challenge complete!\n${DAY_DIFFS.map((d, k) => `${d} ${stars3((st.res[k] || {}).stars || 0)}`).join("\n")}\nCan you beat ${total}/9?`);
+  bindShare(ov, () => `Wordolio ${GAMES[g].name}, ${shareDate()}: ${tr("today's challenge complete!")}\n${DAY_DIFFS.map((d, k) => `${tr(d)} ${stars3((st.res[k] || {}).stars || 0)}`).join("\n")}\n${tr("Can you beat {n}/9?", { n: total })}`);
   $("#rLevels", ov).onclick = () => { const n = lvNext(g); n == null ? showLevels(g) : LEVELLED[g].start(n); };
   $("#rHome", ov).onclick = () => showHome();
 }
-const levelsPill = () => `<button class="gpill" id="levels" aria-label="All levels">${ic("grid")}<span class="pill-txt">Levels</span></button>`;
+const levelsPill = () => `<button class="gpill" id="levels" aria-label="${tr("All levels")}">${ic("grid")}<span class="pill-txt">${tr("Levels")}</span></button>`;
 
 /* =====================================================================
    WORD STEPS
@@ -2962,21 +3185,24 @@ const levelsPill = () => `<button class="gpill" id="levels" aria-label="All leve
    breadth-first search over the word list (steps.js).
    ===================================================================== */
 let S = null;
+const stepsDistCache = new Map();
 let stepsDict = null;
 function stepsWords() {
-  if (!stepsDict) {
-    const common = new Set(STEPS_COMMON), all = new Set(STEPS_COMMON.concat(STEPS_EXTRA)), buckets = new Map();
+  if (!stepsDict || stepsDict.fr !== isFR()) {
+    stepsDistCache.clear();
+    const C = isFR() ? STEPS_COMMON_FR : STEPS_COMMON, E = isFR() ? STEPS_EXTRA_FR : STEPS_EXTRA;
+    const common = new Set(C), all = new Set(C.concat(E)), buckets = new Map();
     all.forEach(w => { for (let i = 0; i < w.length; i++) { const k = w.slice(0, i) + "_" + w.slice(i + 1); if (!buckets.has(k)) buckets.set(k, []); buckets.get(k).push(w); } });
     const near = w => { const out = []; for (let i = 0; i < w.length; i++) for (const n of buckets.get(w.slice(0, i) + "_" + w.slice(i + 1)) || []) if (n !== w) out.push(n); return out; };
-    stepsDict = { common, all, near };
+    stepsDict = { common, all, near, fr: isFR() };
   }
   return stepsDict;
 }
-// Distance from every word to the target (cached per target).
-const stepsDistCache = new Map();
+// Distance from every word to the target (cached per target, and cleared when the language changes).
 function stepsDist(target) {
+  const { near } = stepsWords();
   if (!stepsDistCache.has(target)) {
-    const { near } = stepsWords(), d = new Map([[target, 0]]), q = [target];
+    const d = new Map([[target, 0]]), q = [target];
     for (let i = 0; i < q.length; i++) for (const n of near(q[i])) if (!d.has(n)) { d.set(n, d.get(q[i]) + 1); q.push(n); }
     stepsDistCache.set(target, d);
   }
@@ -2988,22 +3214,22 @@ const stepsCur = () => S.words[S.words.length - 1];
 function startSteps(idx, daily = false) {
   leaveGame();
   markPlayed();
-  const level = daily ? dailyPuzzle("steps", idx) : STEPS_LEVELS[idx];
+  const level = daily ? dailyPuzzle("steps", idx) : LEVELLED.steps.levels()[idx];
   S = { idx, daily, level, words: [level.start], hints: 0, edit: [...level.start], sel: 0, hintPos: null, msg: "", over: false };
   const cur = dayState("steps").cur;
-  const saved = daily ? (cur && cur.k === idx ? cur : null) : store.get()["save-steps-" + idx];
-  if (saved && saved.v === 1 && saved.words && saved.words[0] === level.start) { S.words = saved.words; S.hints = saved.hints || 0; S.edit = [...stepsCur()]; S.msg = "Welcome back. Carrying on where you left off."; }
+  const saved = daily ? (cur && cur.k === idx ? cur : null) : store.get()["save-" + gk("steps-") + idx];
+  if (saved && saved.v === 1 && saved.words && saved.words[0] === level.start) { S.words = saved.words; S.hints = saved.hints || 0; S.edit = [...stepsCur()]; S.msg = tr("Welcome back. Carrying on where you left off."); }
   app.innerHTML = `
   <div class="screen daily steps-screen" style="--c:${GAMES.steps.c}">
-    ${gameHeader("steps", daily ? `Today · ${level.difficulty} · ${idx + 1} of 3` : `Level ${idx + 1} · ${level.difficulty}`, levelsPill())}
+    ${gameHeader("steps", daily ? tr("Today · {d} · {n} of 3", { d: tr(level.difficulty), n: idx + 1 }) : tr("Level {n} · {d}", { n: idx + 1, d: tr(level.difficulty) }), levelsPill())}
     <div class="steps-body">
       <div class="ladder" id="ladder" aria-live="polite"></div>
       <p class="daily-msg" id="msg"></p>
       <div class="steps-btns">
-        <button class="btn" id="sUndo">${ic("back")}Undo</button>
-        <button class="btn clue-btn" id="sHint">${ic("bulb")}Hint <span id="sHintN"></span></button>
-        <button class="btn" id="sRestart">Restart</button>
-        <button class="btn primary" id="sSubmit">Submit step</button>
+        <button class="btn" id="sUndo">${ic("back")}${tr("Undo")}</button>
+        <button class="btn clue-btn" id="sHint">${ic("bulb")}${tr("Hint")} <span id="sHintN"></span></button>
+        <button class="btn" id="sRestart">${tr("Restart")}</button>
+        <button class="btn primary" id="sSubmit">${tr("Submit step")}</button>
       </div>
     </div>
     <div id="keys"></div>
@@ -3016,84 +3242,85 @@ function startSteps(idx, daily = false) {
   $("#sUndo").onclick = stepsUndo;
   $("#sHint").onclick = stepsHint;
   $("#sSubmit").onclick = stepsSubmit;
-  $("#sRestart").onclick = () => confirmSheet("steps", "Restart this level?", "Your steps so far will be cleared and you'll start again from the first word.", "Restart", () => {
-    S.words = [S.level.start]; S.edit = [...S.level.start]; S.sel = 0; S.hintPos = null; S.msg = "Back to the start."; saveSteps(); renderSteps();
+  $("#sRestart").onclick = () => confirmSheet("steps", tr("Restart this level?"), tr("Your steps so far will be cleared and you'll start again from the first word."), tr("Restart"), () => {
+    S.words = [S.level.start]; S.edit = [...S.level.start]; S.sel = 0; S.hintPos = null; S.msg = tr("Back to the start."); saveSteps(); renderSteps();
   });
-  if (!S.msg) S.msg = `Change one letter at a time to turn ${level.start.toUpperCase()} into ${level.target.toUpperCase()}.`;
+  if (!S.msg) S.msg = tr("Change one letter at a time to turn {a} into {b}.", { a: level.start.toUpperCase(), b: level.target.toUpperCase() });
   renderSteps();
-  if (!daily && lvDone("steps", idx) && !saved) S.msg = "You've solved this one before. Can you find a shorter route?";
+  if (!daily && lvDone("steps", idx) && !saved) S.msg = tr("You've solved this one before. Can you find a shorter route?");
   $("#msg").textContent = S.msg;
 }
 function saveSteps() {
   if (!S || S.over) return;
   const rec = { v: 1, words: S.words, hints: S.hints };
-  if (S.daily) { const st = dayState("steps"); st.cur = { k: S.idx, ...rec }; daySet("steps", st); } else store.set("save-steps-" + S.idx, rec);
+  if (S.daily) { const st = dayState("steps"); st.cur = { k: S.idx, ...rec }; daySet("steps", st); } else store.set("save-" + gk("steps-") + S.idx, rec);
 }
 function renderSteps() {
   const cur = stepsCur(), tgt = S.level.target;
   const tiles = (w, cls = "", mark = false) => [...w].map((c, i) => `<i class="st ${cls} ${mark && c === tgt[i] ? "match" : ""}">${c}</i>`).join("");
   const trail = S.words.slice(1, S.over ? undefined : -1);
-  const editRow = S.edit.map((c, i) => `<button class="st edit ${i === S.sel ? "sel" : ""} ${c !== cur[i] ? "changed" : ""} ${S.hintPos === i ? "hinted" : ""} ${c === tgt[i] ? "match" : ""}" data-p="${i}" aria-label="Letter ${i + 1}: ${c}${i === S.sel ? ", selected" : ""}">${c}</button>`).join("");
+  const editRow = S.edit.map((c, i) => `<button class="st edit ${i === S.sel ? "sel" : ""} ${c !== cur[i] ? "changed" : ""} ${S.hintPos === i ? "hinted" : ""} ${c === tgt[i] ? "match" : ""}" data-p="${i}" aria-label="${tr("Letter {n}: {c}", { n: i + 1, c })}${i === S.sel ? tr(", selected") : ""}">${c}</button>`).join("");
   $("#ladder").innerHTML = `
-    <div class="rung start"><span class="rl">Start</span><span class="tiles">${tiles(S.level.start, "", true)}</span><span class="rn"></span></div>
-    ${trail.map((w, k) => `<div class="rung"><span class="rl">Step ${k + 1}</span><span class="tiles">${tiles(w, "", true)}</span><span class="rn"></span></div>`).join("")}
-    ${S.over ? "" : `<div class="rung current"><span class="rl">Step ${S.words.length}</span><span class="tiles">${editRow}</span><span class="rn"></span></div>`}
-    <div class="rung target"><span class="rl">Target</span><span class="tiles">${tiles(tgt, "tgt")}</span><span class="rn"></span></div>
-    <p class="ladder-note">${S.words.length - 1} step${S.words.length === 2 ? "" : "s"} so far · shortest route ${S.level.min}</p>`;
+    <div class="rung start"><span class="rl">${tr("Start")}</span><span class="tiles">${tiles(S.level.start, "", true)}</span><span class="rn"></span></div>
+    ${trail.map((w, k) => `<div class="rung"><span class="rl">${tr("Step {n}", { n: k + 1 })}</span><span class="tiles">${tiles(w, "", true)}</span><span class="rn"></span></div>`).join("")}
+    ${S.over ? "" : `<div class="rung current"><span class="rl">${tr("Step {n}", { n: S.words.length })}</span><span class="tiles">${editRow}</span><span class="rn"></span></div>`}
+    <div class="rung target"><span class="rl">${tr("Target")}</span><span class="tiles">${tiles(tgt, "tgt")}</span><span class="rn"></span></div>
+    <p class="ladder-note">${tr(S.words.length === 2 ? "1 step so far · shortest route {m}" : "{n} steps so far · shortest route {m}", { n: S.words.length - 1, m: S.level.min })}</p>`;
   const cr = $("#ladder .current"); if (cr) cr.scrollIntoView({ block: "nearest" });
   $("#msg").textContent = S.msg;
   $("#sUndo").disabled = S.words.length < 2 || S.over;
   $("#sHintN").textContent = `(${hintNote("steps")})`;
   $("#sHint").disabled = S.over;
-  $("#keys").innerHTML = gameKeys("Submit");
+  $("#keys").innerHTML = gameKeys(tr("Submit"));
 }
 function stepsKey(k) {
   if (!S || S.over) return;
   const cur = stepsCur();
   if (k === "Enter") return stepsSubmit();
-  if (k === "Backspace") { S.edit = [...cur]; S.msg = "Changes cleared."; return renderSteps(); }
+  if (k === "Backspace") { S.edit = [...cur]; S.msg = tr("Changes cleared."); return renderSteps(); }
   if (k === "ArrowLeft" || k === "ArrowRight") { S.sel = (S.sel + (k === "ArrowLeft" ? -1 : 1) + cur.length) % cur.length; return renderSteps(); }
   if (!/^[a-z]$/.test(k)) return;
   // Only one letter can change per step: changing a different letter puts the earlier change back.
   S.edit = [...cur]; S.edit[S.sel] = k;
-  S.msg = k === cur[S.sel] ? "That's the same letter. Pick a different one." : `${S.edit.join("").toUpperCase()}? Tap Submit step when you're ready.`;
+  S.msg = k === cur[S.sel] ? tr("That's the same letter. Pick a different one.") : tr("{w}? Tap Submit step when you're ready.", { w: S.edit.join("").toUpperCase() });
   renderSteps();
 }
 function stepsSubmit() {
   if (!S || S.over) return;
   const cur = stepsCur(), w = S.edit.join(""), { all } = stepsWords();
   const n = stepsDiff(cur, w);
-  if (w.length !== cur.length) S.msg = "Keep the same number of letters.";
-  else if (n === 0) S.msg = "Change just one letter.";
-  else if (n > 1) S.msg = "Change just one letter.";
-  else if (!all.has(w)) S.msg = `"${w.toUpperCase()}" isn't in our dictionary.`;
-  else if (S.words.includes(w)) S.msg = "You've already used that word. Use Undo to go back instead.";
+  let good = false;
+  if (w.length !== cur.length) S.msg = tr("Keep the same number of letters.");
+  else if (n === 0) S.msg = tr("Change just one letter.");
+  else if (n > 1) S.msg = tr("Change just one letter.");
+  else if (!all.has(w)) S.msg = tr("\"{w}\" isn't in our dictionary.", { w: w.toUpperCase() });
+  else if (S.words.includes(w)) S.msg = tr("You've already used that word. Use Undo to go back instead.");
   else {
     S.words.push(w); S.hintPos = null;
     if (w === S.level.target) return stepsComplete();
-    S.msg = pick(["Nice move.", "Good step.", "Lovely.", "That works."]);
+    S.msg = tr(pick(["Nice move.", "Good step.", "Lovely.", "That works."])); good = true;
     saveSteps();
   }
   renderSteps();
-  if (!/Nice|Good|Lovely|works/.test(S.msg)) { const r = $("#ladder .current"); if (r) { r.classList.add("shake"); setTimeout(() => r.classList.remove("shake"), 450); } }
+  if (!good) { const r = $("#ladder .current"); if (r) { r.classList.add("shake"); setTimeout(() => r.classList.remove("shake"), 450); } }
 }
 function stepsUndo() {
   if (!S || S.over || S.words.length < 2) return;
-  S.words.pop(); S.edit = [...stepsCur()]; S.hintPos = null; S.msg = "Step undone."; saveSteps(); renderSteps();
+  S.words.pop(); S.edit = [...stepsCur()]; S.hintPos = null; S.msg = tr("Step undone."); saveSteps(); renderSteps();
 }
 // Hints come from the current word: the first shows which letter to change, later ones name a next word on a shortest route.
 function stepsHint() {
   if (!S || S.over) return;
   const cur = stepsCur(), dist = stepsDist(S.level.target), d = dist.get(cur), { near, common } = stepsWords();
-  if (d == null) { S.msg = "This word can't reach the target. Use Undo to go back a step."; return renderSteps(); }
+  if (d == null) { S.msg = tr("This word can't reach the target. Use Undo to go back a step."); return renderSteps(); }
   const next = near(cur).filter(n => dist.get(n) === d - 1 && !S.words.includes(n)).sort((a, b) => common.has(b) - common.has(a));
-  if (!next.length) { S.msg = "Try Undo: the way forward goes through a word you've already used."; return renderSteps(); }
+  if (!next.length) { S.msg = tr("Try Undo: the way forward goes through a word you've already used."); return renderSteps(); }
   if (!takeHint("steps")) return;
   S.hints++;
   const w = next[0], pos = [...w].findIndex((c, i) => c !== cur[i]);
-  if (S.hints === 1) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = `Hint: try changing letter ${pos + 1}.`; }
-  else if (S.hints === 2) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = `Hint: ${w.toUpperCase()} is on a shortest route from here.`; }
-  else { S.hintPos = pos; S.sel = pos; S.edit = [...w]; S.msg = `Hint: ${w.toUpperCase()} is filled in for you. Tap Submit step.`; }
+  if (S.hints === 1) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = tr("Hint: try changing letter {n}.", { n: pos + 1 }); }
+  else if (S.hints === 2) { S.hintPos = pos; S.sel = pos; S.edit = [...cur]; S.msg = tr("Hint: {w} is on a shortest route from here.", { w: w.toUpperCase() }); }
+  else { S.hintPos = pos; S.sel = pos; S.edit = [...w]; S.msg = tr("Hint: {w} is filled in for you. Tap Submit step.", { w: w.toUpperCase() }); }
   saveSteps(); renderSteps();
 }
 function stepsComplete() {
@@ -3101,14 +3328,14 @@ function stepsComplete() {
   const moves = S.words.length - 1, min = S.level.min, h = S.hints;
   const stars = moves === min && h === 0 ? 3 : (moves <= min + 2 && h === 0) || (moves === min && h <= 1) ? 2 : 1;
   if (S.daily) { const st = dayState("steps"); st.res[S.idx] = { stars, moves, min, hints: h }; st.stage = Math.max(st.stage, S.idx + 1); st.cur = null; daySet("steps", st); }
-  else { store.set("save-steps-" + S.idx, undefined); saveBest("steps", S.idx, { stars, moves, min, hints: h }); }
-  S.msg = "You reached the target!";
+  else { store.set("save-" + gk("steps-") + S.idx, undefined); saveBest("steps", S.idx, { stars, moves, min, hints: h }); }
+  S.msg = tr("You reached the target!");
   renderSteps(); confetti();
   const tgt = S.level.target.toUpperCase(), i = S.idx;
   const show = S.daily ? dailyResult : levelResult;
-  setTimeout(() => S && S.idx === i && show("steps", i, stars === 3 ? "Perfect route!" : "Well done!",
-    moves === min ? `You reached ${tgt} in ${moves} steps. That's the shortest possible route.` : `Completed in ${moves} steps. The shortest route is ${min}.`,
-    stars, [[moves, "Moves taken"], [min, "Shortest route"], [h, "Hints used"]]), 700);
+  setTimeout(() => S && S.idx === i && show("steps", i, tr(stars === 3 ? "Perfect route!" : "Well done!"),
+    moves === min ? tr("You reached {t} in {n} steps. That's the shortest possible route.", { t: tgt, n: moves }) : tr("Completed in {n} steps. The shortest route is {m}.", { n: moves, m: min }),
+    stars, [[moves, tr("Moves taken")], [min, tr("Shortest route")], [h, tr("Hints used")]]), 700);
 }
 
 /* =====================================================================
@@ -3130,43 +3357,43 @@ const LOCK_US = [[/\bgrey\b/gi, "gray"], [/\bneighbour/gi, "neighbor"], [/\bautu
   [/\bfizzy pop\b/gi, "soda pop"], [/\btorch\b/gi, "flashlight"], [/\bpostbox\b/gi, "mailbox"], [/\bpostwoman\b/gi, "mailwoman"], [/\bmarrow\b/gi, "squash"],
   [/\bfootball match\b/gi, "soccer game"], [/\bwashing up\b/gi, "dishes"], [/\btheatre/gi, "theater"], [/\btravelled\b/gi, "traveled"]];
 function lockText(level) {
-  if (!isUS()) return level.text;
+  if (!isUS()) return level.text;  // French phrases are stored without accents; level.show has them
   return LOCK_US.reduce((t, [re, us]) => t.replace(re, m => m[0] === m[0].toUpperCase() ? us[0].toUpperCase() + us.slice(1) : us), level.text);
 }
 function startLock(idx, daily = false) {
   leaveGame();
   markPlayed();
-  const level = daily ? dailyPuzzle("lock", idx) : LOCK_LEVELS[idx], text = lockText(level).toUpperCase();
+  const level = daily ? dailyPuzzle("lock", idx) : LEVELLED.lock.levels()[idx], text = lockText(level).toUpperCase();
   const nums = [...new Set([...text].filter(c => /[A-Z]/.test(c)).map(c => lockNum(level, c)))];
   const answer = {}; [...text].forEach(c => { if (/[A-Z]/.test(c)) answer[lockNum(level, c)] = c; });
   K = { idx, daily, level, text, nums, answer, guess: {}, revealed: new Set(), hints: 0, checks: 0, clue: false, sel: null, over: false, msg: "" };
   [...level.reveal].forEach(c => { const n = lockNum(level, c); if (!nums.includes(n)) return; K.revealed.add(n); K.guess[n] = c; });
   const dcur = dayState("lock").cur;
-  const saved = daily ? (dcur && dcur.k === idx ? dcur : null) : store.get()["save-lock-" + idx];
+  const saved = daily ? (dcur && dcur.k === idx ? dcur : null) : store.get()["save-" + gk("lock-") + idx];
   // A half-played phrase only resumes if it is the same text (UK and US spellings can differ).
   if (saved && saved.v === 1 && (saved.t || level.text.toUpperCase()) === text) {
     const keep = Object.fromEntries(Object.entries(saved.guess || {}).filter(([n]) => nums.includes(+n)));
     Object.assign(K, { guess: { ...K.guess, ...keep }, hints: saved.hints || 0, checks: saved.checks || 0, clue: !!saved.clue });
     (saved.revealed || []).filter(n => nums.includes(n)).forEach(n => { K.revealed.add(n); K.guess[n] = K.answer[n]; });
-    K.msg = "Welcome back. Carrying on where you left off.";
+    K.msg = tr("Welcome back. Carrying on where you left off.");
   }
   K.sel = K.nums.find(n => !K.guess[n]) ?? null;
   app.innerHTML = `
   <div class="screen daily lock-screen" style="--c:${GAMES.lock.c}">
-    ${gameHeader("lock", daily ? `Today · ${level.difficulty} · ${idx + 1} of 3` : `Level ${idx + 1} · ${level.difficulty}`, levelsPill())}
+    ${gameHeader("lock", daily ? tr("Today · {d} · {n} of 3", { d: tr(level.difficulty), n: idx + 1 }) : tr("Level {n} · {d}", { n: idx + 1, d: tr(level.difficulty) }), levelsPill())}
     <div class="lock-body">
       <div class="lock-main">
-        <div class="phrase" id="phrase" role="group" aria-label="The coded phrase"></div>
+        <div class="phrase" id="phrase" role="group" aria-label="${tr("The coded phrase")}"></div>
         <p class="lock-clue" id="clue" hidden></p>
         <p class="daily-msg" id="msg"></p>
         <div class="steps-btns">
-          <button class="btn" id="kClear">Clear letter</button>
-          <button class="btn clue-btn" id="kHint">${ic("bulb")}Hint <span id="kHintN"></span></button>
-          <button class="btn primary" id="kCheck">Check answer</button>
-          <button class="btn" id="kReset">Reset</button>
+          <button class="btn" id="kClear">${tr("Clear letter")}</button>
+          <button class="btn clue-btn" id="kHint">${ic("bulb")}${tr("Hint")} <span id="kHintN"></span></button>
+          <button class="btn primary" id="kCheck">${tr("Check answer")}</button>
+          <button class="btn" id="kReset">${tr("Reset")}</button>
         </div>
       </div>
-      <aside class="lock-ref" id="ref" aria-label="Your letters so far"></aside>
+      <aside class="lock-ref" id="ref" aria-label="${tr("Your letters so far")}"></aside>
     </div>
     <div id="keys"></div>
   </div>`;
@@ -3179,87 +3406,87 @@ function startLock(idx, daily = false) {
   $("#kClear").onclick = () => lockKey("Backspace");
   $("#kHint").onclick = lockHint;
   $("#kCheck").onclick = lockCheck;
-  $("#kReset").onclick = () => confirmSheet("lock", "Reset this puzzle?", "Your guessed letters will be cleared. Letters revealed by hints stay.", "Reset", () => {
+  $("#kReset").onclick = () => confirmSheet("lock", tr("Reset this puzzle?"), tr("Your guessed letters will be cleared. Letters revealed by hints stay."), tr("Reset"), () => {
     Object.keys(K.guess).forEach(n => { if (!K.revealed.has(+n)) delete K.guess[n]; });
-    K.sel = K.nums.find(n => !K.guess[n]) ?? null; K.msg = "Guesses cleared."; saveLock(); renderLock();
+    K.sel = K.nums.find(n => !K.guess[n]) ?? null; K.msg = tr("Guesses cleared."); saveLock(); renderLock();
   });
-  if (!K.msg) K.msg = "Tap a number, then type the letter you think it stands for.";
+  if (!K.msg) K.msg = tr("Tap a number, then type the letter you think it stands for.");
   renderLock();
 }
 function saveLock() {
   if (!K || K.over) return;
   const rec = { v: 1, t: K.text, guess: K.guess, revealed: [...K.revealed], hints: K.hints, checks: K.checks, clue: K.clue };
-  if (K.daily) { const st = dayState("lock"); st.cur = { k: K.idx, ...rec }; daySet("lock", st); } else store.set("save-lock-" + K.idx, rec);
+  if (K.daily) { const st = dayState("lock"); st.cur = { k: K.idx, ...rec }; daySet("lock", st); } else store.set("save-" + gk("lock-") + K.idx, rec);
 }
 function renderLock() {
   const words = K.text.split(" ");
   $("#phrase").innerHTML = words.map(w => `<span class="pw">${[...w].map(c => {
     if (!/[A-Z]/.test(c)) return `<span class="pc punct" aria-hidden="true"><b>${esc(c)}</b><small></small></span>`;
     const n = lockNum(K.level, c), g = K.guess[n] || "", locked = K.revealed.has(n);
-    return `<button class="pc ${locked ? "locked" : g ? "guessed" : ""} ${K.sel === n ? "sel" : ""}" data-n="${n}" aria-label="Number ${n}${g ? ", " + (locked ? "revealed " : "your guess ") + g : ", blank"}${K.over ? "" : ""}"><b>${g}</b><small>${locked ? ic("lock") : ""}${pad2(n)}</small></button>`;
+    return `<button class="pc ${locked ? "locked" : g ? "guessed" : ""} ${K.sel === n ? "sel" : ""}" data-n="${n}" aria-label="${tr("Number {n}", { n })}${g ? ", " + tr(locked ? "revealed {g}" : "your guess {g}", { g }) : tr(", blank")}"><b>${g}</b><small>${locked ? ic("lock") : ""}${pad2(n)}</small></button>`;
   }).join("")}</span>`).join(" ");
   const used = Object.entries(K.guess).sort((a, b) => a[1].localeCompare(b[1]));
-  $("#ref").innerHTML = `<h4>Your letters <span>${Object.keys(K.guess).length} of ${K.nums.length}</span></h4>
+  $("#ref").innerHTML = `<h4>${tr("Your letters")} <span>${tr("{a} of {b}", { a: Object.keys(K.guess).length, b: K.nums.length })}</span></h4>
     <div class="refs">${K.nums.slice().sort((a, b) => a - b).map(n => `<button class="ref ${K.revealed.has(n) ? "locked" : K.guess[n] ? "guessed" : ""} ${K.sel === n ? "sel" : ""}" data-n="${n}"><small>${pad2(n)}</small><b>${K.guess[n] || "·"}</b></button>`).join("")}</div>`;
-  const clue = $("#clue"); clue.hidden = !K.clue; clue.innerHTML = `${ic("bulb")} Clue: ${esc(K.level.clue)}`;
+  const clue = $("#clue"); clue.hidden = !K.clue; clue.innerHTML = `${ic("bulb")} ${tr("Clue:")} ${esc(K.level.clue)}`;
   $("#msg").textContent = K.msg;
   const full = K.nums.every(n => K.guess[n]);
   $("#kCheck").disabled = !full || K.over;
   $("#kHint").disabled = K.over;
   $("#kHintN").textContent = `(${hintNote("lock")})`;
   const marks = {}; Object.entries(K.guess).forEach(([n, c]) => marks[c.toLowerCase()] = K.revealed.has(+n) ? "a" : "used");
-  $("#keys").innerHTML = gameKeys("Check", marks);
+  $("#keys").innerHTML = gameKeys(tr("Check"), marks);
 }
 function lockKey(k) {
   if (!K || K.over) return;
   if (k === "Enter") return lockCheck();
   if (k === "ArrowLeft" || k === "ArrowRight") { const i = K.nums.indexOf(K.sel); K.sel = K.nums[(i + (k === "ArrowLeft" ? -1 : 1) + K.nums.length) % K.nums.length]; return renderLock(); }
   const n = K.sel;
-  if (n == null) { K.msg = "Tap a number first."; return renderLock(); }
-  if (K.revealed.has(n)) { K.msg = "That letter is locked in."; return renderLock(); }
-  if (k === "Backspace") { delete K.guess[n]; K.msg = "Letter cleared."; saveLock(); return renderLock(); }
+  if (n == null) { K.msg = tr("Tap a number first."); return renderLock(); }
+  if (K.revealed.has(n)) { K.msg = tr("That letter is locked in."); return renderLock(); }
+  if (k === "Backspace") { delete K.guess[n]; K.msg = tr("Letter cleared."); saveLock(); return renderLock(); }
   if (!/^[a-z]$/.test(k)) return;
   const L = k.toUpperCase(), owner = Object.keys(K.guess).find(x => +x !== n && K.guess[x] === L);
-  if (owner) { K.msg = `You've already used ${L} for ${pad2(owner)}. Change that one first.`; return renderLock(); }
+  if (owner) { K.msg = tr("You've already used {l} for {n}. Change that one first.", { l: L, n: pad2(owner) }); return renderLock(); }
   K.guess[n] = L; K.msg = "";
   // Move on to the next blank number, in phrase order.
   const i = K.nums.indexOf(n), rest = K.nums.slice(i + 1).concat(K.nums.slice(0, i));
   K.sel = rest.find(x => !K.guess[x]) ?? n;
-  if (K.nums.every(x => K.guess[x])) K.msg = "Every letter is filled in. Tap Check answer when you're ready.";
+  if (K.nums.every(x => K.guess[x])) K.msg = tr("Every letter is filled in. Tap Check answer when you're ready.");
   saveLock(); renderLock();
 }
 function lockCheck() {
   if (!K || K.over) return;
-  if (!K.nums.every(n => K.guess[n])) { K.msg = "Fill in every letter first."; return renderLock(); }
+  if (!K.nums.every(n => K.guess[n])) { K.msg = tr("Fill in every letter first."); return renderLock(); }
   K.checks++;
   if (K.nums.every(n => K.guess[n] === K.answer[n])) return lockComplete();
-  K.msg = "Not quite. Some letters still need changing."; saveLock(); renderLock();
+  K.msg = tr("Not quite. Some letters still need changing."); saveLock(); renderLock();
   const p = $("#phrase"); p.classList.add("shake"); setTimeout(() => p.classList.remove("shake"), 450);
 }
 // Hints: reveal the most useful letter (the one that appears most), and the third hint gives a clue to the subject.
 function lockHint() {
   if (!K || K.over) return;
-  if (K.hints === 2 && !K.clue) { if (!takeHint("lock")) return; K.hints++; K.clue = true; K.msg = "Here's a clue to the subject."; saveLock(); return renderLock(); }
+  if (K.hints === 2 && !K.clue) { if (!takeHint("lock")) return; K.hints++; K.clue = true; K.msg = tr("Here's a clue to the subject."); saveLock(); return renderLock(); }
   const count = n => [...K.text].filter(c => /[A-Z]/.test(c) && lockNum(K.level, c) === n).length;
   const todo = K.nums.filter(n => !K.revealed.has(n) && K.guess[n] !== K.answer[n]).sort((a, b) => count(b) - count(a));
-  if (!todo.length) { K.msg = "Your letters are all right. Tap Check answer."; return renderLock(); }
+  if (!todo.length) { K.msg = tr("Your letters are all right. Tap Check answer."); return renderLock(); }
   const n = todo[0], L = K.answer[n];
   Object.keys(K.guess).forEach(x => { if (K.guess[x] === L && +x !== n) delete K.guess[x]; });
   if (!takeHint("lock")) return;
   K.hints++; K.revealed.add(n); K.guess[n] = L; K.sel = K.nums.find(x => !K.guess[x]) ?? null;
-  K.msg = `${pad2(n)} is ${L}. It's locked in for you.`;
+  K.msg = tr("{n} is {l}. It's locked in for you.", { n: pad2(n), l: L });
   saveLock(); renderLock();
 }
 function lockComplete() {
   K.over = true;
   const h = K.hints, c = K.checks, stars = h === 0 && c === 1 ? 3 : h <= 2 ? 2 : 1;
   if (K.daily) { const st = dayState("lock"); st.res[K.idx] = { stars, hints: h, checks: c }; st.stage = Math.max(st.stage, K.idx + 1); st.cur = null; daySet("lock", st); }
-  else { store.set("save-lock-" + K.idx, undefined); saveBest("lock", K.idx, { stars, hints: h, checks: c }); }
-  K.sel = null; K.msg = "Code cracked!"; renderLock(); confetti();
+  else { store.set("save-" + gk("lock-") + K.idx, undefined); saveBest("lock", K.idx, { stars, hints: h, checks: c }); }
+  K.sel = null; K.msg = tr("Code cracked!"); renderLock(); confetti();
   const i = K.idx;
   const show = K.daily ? dailyResult : levelResult;
-  setTimeout(() => K && K.idx === i && show("lock", i, "Code cracked!", "Here's the hidden phrase:", stars, [[h, "Hints used"], [c, "Answer checks"]],
-    `<p class="cracked">“${esc(lockText(K.level))}”</p>`), 700);
+  setTimeout(() => K && K.idx === i && show("lock", i, tr("Code cracked!"), tr("Here's the hidden phrase:"), stars, [[h, tr("Hints used")], [c, tr("Answer checks")]],
+    `<p class="cracked">“${esc(K.level.show || lockText(K.level))}”</p>`), 700);
 }
 
 // Save on the way out, so closing the app or switching away never loses progress.

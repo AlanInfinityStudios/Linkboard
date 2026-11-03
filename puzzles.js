@@ -1030,7 +1030,7 @@ const BOARD_LEVELS = [
   ]},
 ];
 
-/* French levels (lang "fr"). Same rules as BOARD_LEVELS. A trial of 3 levels for now. */
+/* French levels (lang "fr"). Same rules as BOARD_LEVELS. Six levels for French testers: three Easy, then three Medium. */
 const BOARD_LEVELS_FR = [
   { name: "À la ferme", difficulty: "Easy", time: null, groups: [
     { name: "À la ferme", tiles: [
@@ -1076,6 +1076,51 @@ const BOARD_LEVELS_FR = [
     { name: "Villes françaises", tiles: ["Paris", "Lyon", "Marseille", "Nice", "Bordeaux"] },
     { name: "Instruments", tiles: ["Piano", "Guitare", "Violon", "Flûte", "Batterie"] },
     { name: "Le corps", tiles: ["Bras", "Jambe", "Tête", "Main", "Pied"] },
+  ]},
+  { name: "En ville", difficulty: "Medium", time: null, groups: [
+    { name: "En ville", tiles: [
+      sub("Boulangerie", "🥖", ["Baguette", "Croissant", "Pain au chocolat", "Brioche", "Chouquette"]),
+      sub("Pharmacie", "💊", ["Pansement", "Sirop", "Ordonnance", "Thermomètre", "Vitamines"]),
+      sub("Gare", "🚉", ["Quai", "Billet", "Horaire", "Wagon", "Contrôleur"]),
+      "🏦|Banque",
+      "Mairie",
+    ]},
+    { name: "Métiers", tiles: ["Médecin", "Pompier", "Facteur", "Boucher", "Plombier"] },
+    { name: "Instruments à vent", tiles: ["Flûte", "Trompette", "Clarinette", "Saxophone", "Hautbois"] },
+    { name: "Jours de la semaine", tiles: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"] },
+    { name: "Mois", tiles: ["Janvier", "Février", "Avril", "Juin", "Octobre"] },
+    { name: "Fleuves", tiles: ["Seine", "Loire", "Rhône", "Garonne", "Dordogne"] },
+    { name: "Desserts", tiles: ["Crème brûlée", "Mousse", "Tarte Tatin", "Île flottante", "Clafoutis"] },
+  ]},
+  { name: "Au restaurant", difficulty: "Medium", time: 14 * 60, groups: [
+    { name: "Au restaurant", tiles: [
+      sub("Entrée", "🥗", ["Salade", "Soupe", "Terrine", "Œuf mayo", "Escargots"]),
+      sub("Plat", "🍲", ["Steak frites", "Pot-au-feu", "Ratatouille", "Cassoulet", "Blanquette"]),
+      sub("Dessert", "🍰", ["Sorbet", "Profiteroles", "Fondant", "Tiramisu", "Crêpe"]),
+      "🍷|Vin",
+      "Addition",
+    ]},
+    { name: "À table", tiles: ["Fourchette", "Couteau", "Cuillère", "Assiette", "Serviette"] },
+    { name: "Épices", tiles: ["Cannelle", "Muscade", "Safran", "Cumin", "Paprika"] },
+    { name: "Herbes", tiles: ["Basilic", "Persil", "Thym", "Romarin", "Ciboulette"] },
+    { name: "Boissons chaudes", tiles: ["Café", "Thé", "Tisane", "Chocolat chaud", "Cappuccino"] },
+    { name: "Pays", tiles: ["Japon", "Brésil", "Canada", "Égypte", "Inde"] },
+    { name: "Planètes", tiles: ["Mars", "Vénus", "Saturne", "Jupiter", "Mercure"] },
+  ]},
+  { name: "Le sport", difficulty: "Medium", time: null, anagrams: true, groups: [
+    { name: "Le sport", tiles: [
+      sub("Football", "⚽", ["Ballon", "But", "Gardien", "Arbitre", "Penalty"]),
+      sub("Tennis", "🎾", ["Raquette", "Filet", "Service", "Balle", "Set"]),
+      sub("Cyclisme", "🚴", ["Pédale", "Guidon", "Selle", "Casque", "Maillot jaune"]),
+      "🏊|Natation",
+      "Judo",
+    ]},
+    { name: "Animaux de la savane", tiles: ["Lion", "Girafe", "Zèbre", "Éléphant", "Hippopotame"] },
+    { name: "Oiseaux de mer", tiles: ["Mouette", "Goéland", "Albatros", "Pélican", "Cormoran"] },
+    { name: "Métaux", tiles: ["Or", "Argent", "Cuivre", "Fer", "Plomb"] },
+    { name: "Contes", tiles: ["Cendrillon", "Blanche-Neige", "Raiponce", "Pinocchio", "Peau d'Âne"] },
+    { name: "Nombres", tiles: ["Trois", "Sept", "Douze", "Vingt", "Cent"] },
+    { name: "Couleurs", tiles: ["Rouge", "Bleu", "Vert", "Jaune", "Violet"] },
   ]},
 ];
 

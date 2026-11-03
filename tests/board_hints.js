@@ -14,9 +14,11 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
     const h1 = await pg.evaluate(() => JSON.parse(JSON.stringify(B.hints)));
     ok(h1.length === 1 && h1[0].tiles.length === 2, tag + ' first hint ' + JSON.stringify(h1));
     await pg.click('#hintBtn'); await pg.waitForTimeout(300);
+    ok(await pg.evaluate(() => B.hints.length === 1 && B.hints[0].named && /\S/.test(document.getElementById('themes').textContent)), tag + ' second hint names the theme');
+    await pg.click('#hintBtn'); await pg.waitForTimeout(300);
     const h2 = await pg.evaluate(() => JSON.parse(JSON.stringify(B.hints)));
     ok(h2.length === 2 && h2[0].g !== h2[1].g && h2[0].tiles.join() === h1[0].tiles.join(), tag + ' second hint is a different group, first kept ' + JSON.stringify(h2));
-    ok(await pg.evaluate(() => w => walletN() + freeLeft('board') === w - 2, w0) !== false, tag + ' two hints spent');
+    ok(await pg.evaluate(() => w => walletN() + freeLeft('board') === w - 3, w0) !== false, tag + ' three hints spent');
     // every hinted tile is visible on screen and every member of hinted groups on board
     const vis = await pg.evaluate(() => B.hints.every(h => B.groups[h.g].memberTiles.every(t => { const el = document.querySelector(`.tile[data-id="${t}"]`); if (!el) return false; const r = el.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth; })));
     ok(vis, tag + ' all words of hinted groups are on screen');

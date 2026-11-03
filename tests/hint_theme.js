@@ -1,0 +1,24 @@
+// Linkology: the second hint on a group names its theme, shown above the board; the rules describe today's hints.
+const { chromium, devices } = require('playwright');
+let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); if (!c) fails++; };
+(async () => { const b = await chromium.launch(); const errs = [];
+  const pg = await (await b.newContext({ ...devices['iPad (gen 7)'] })).newPage(); pg.on('pageerror', e => errs.push(e.message));
+  await pg.addInitScript(() => { if (!localStorage.getItem('linkboard-v3')) localStorage.setItem('linkboard-v3', JSON.stringify({ profile: { name: 'Alan', lang: 'en-GB' }, 'install-asked': true, wallet: 10, updatedAt: 1 })); });
+  await pg.goto('http://localhost:8765/index.html'); await pg.waitForTimeout(900);
+  const i = await pg.evaluate(() => BOARD_LEVELS.findIndex(l => l.name === 'Hidden words' || l.groups.some(g => /Eye/.test(JSON.stringify(g)))));
+  await pg.evaluate(i => startBoard(i), i); await pg.waitForTimeout(600);
+  await pg.evaluate(() => useHint()); await pg.waitForTimeout(200);
+  ok(await pg.evaluate(() => B.hints.length === 1 && !B.hints[0].named), 'first hint lights two tiles');
+  await pg.evaluate(() => useHint()); await pg.waitForTimeout(200);
+  const name = await pg.evaluate(() => B.groups[B.hints[0].g].name);
+  ok(await pg.evaluate(() => B.hints.length === 1 && B.hints[0].named), 'second hint names the theme');
+  ok((await pg.textContent('#themes')).includes(name), 'theme shown above the board: ' + name);
+  await pg.evaluate(() => useHint()); await pg.waitForTimeout(200);
+  ok(await pg.evaluate(() => B.hints.length === 2), 'third hint is a new connection');
+  await pg.screenshot({ path: 'shots/hint-theme.png' });
+  await pg.evaluate(() => { saveBoard(); startBoard(B.levelIdx); }); await pg.waitForTimeout(500);
+  ok((await pg.textContent('#themes')).includes(name), 'named theme survives leaving and coming back');
+  await pg.evaluate(() => showHelp('board'));
+  const rules = await pg.textContent('.rules');
+  ok(!rules.includes('6 hours') && rules.includes('1 free hint a day') && rules.includes('names their theme'), 'rules describe the hints as they are now');
+  console.log(errs.length ? 'ERRORS\n' + errs.join('\n') : 'no page errors'); console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); await b.close(); })();

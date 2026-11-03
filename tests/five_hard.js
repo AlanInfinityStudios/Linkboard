@@ -49,7 +49,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
       ok(s.five && !s.five.over && s.five.guesses.length === 1 && !s.fs, 'classic untouched ' + JSON.stringify(s.five));
       ok((await pg.textContent('#tryHard')).includes('Classic'), 'after hard: offers Classic');
       await pg.screenshot({ path: out + 'f-hard-done.png' });
-      const txt = await pg.evaluate(async () => { let t; navigator.share = async o => { t = o.text; }; document.querySelector('#share').click(); await new Promise(r => setTimeout(r, 50)); return t; });
+      const txt = await pg.evaluate(async () => { document.querySelector('#share').click(); await new Promise(r => setTimeout(r, 50)); const t = document.querySelector('.share-preview').textContent; document.querySelector('.share-ov').remove(); return t; });
       ok(/Sussed Hard, .*: 2\/7\n.*🟢🟢🟢🟢🟢🟢/s.test(txt), 'share text ' + JSON.stringify(txt));
       await pg.click('#menu'); await pg.waitForTimeout(300);
       // finish classic -> Try Hard should not appear (hard done)

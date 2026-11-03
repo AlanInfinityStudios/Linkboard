@@ -16,6 +16,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'PASS ' : 'FAIL ') + m); 
   await pg.screenshot({ path: 'shots/share-sheet.png' });
   await pg.click('#shareClose'); ok(!(await pg.isVisible('.share-ov')), 'closes');
   await pg.evaluate(() => { const p = profile(); p.lang = 'fr'; store.set('profile', p); showHome(); }); await pg.waitForTimeout(300);
-  ok(!(await pg.isVisible('#invite')), 'French players do not see the English invite');
+  await pg.click('#invite'); await pg.waitForTimeout(300);
+  ok((await pg.textContent('.share-preview')).includes('Je joue à Wordolio'), 'French players get the invite in French');
   await pg.evaluate(() => showWelcome && 0);
   console.log(errs.length ? 'ERRORS\n' + errs.join('\n') : 'no page errors'); console.log(fails ? fails + ' FAILED' : 'ALL PASSED'); await b.close(); })();

@@ -33,15 +33,23 @@ for (const p of sh(pang)) {
 }
 console.log("answers",answers.length,"guesses",guessAll.size,"wheel base",B.length,UK.length,US.length,"pangrams",pang.length,"puzzles",puzzles.length);
 console.log(answers.slice(0,60).join(" "));
+// Letter Wheel rule (Alan, 2026-11-06): obscure words (tools/wheel_rare.txt, made by tools/find_rare_wheel.py)
+// are bonus words only. Applied after the puzzles are chosen so the daily letters never change.
+const rareFile=require("path").join(__dirname,"wheel_rare.txt");
+const RARE=new Set(require("fs").existsSync(rareFile)?require("fs").readFileSync(rareFile,"utf8").split("\n").filter(Boolean):[]);
+const notRare=w=>!RARE.has(w);
+const B_OUT=B.filter(notRare), UK_OUT=UK.filter(notRare), US_OUT=US.filter(notRare);
+const BONUS_OUT=[...new Set([...BONUS,...[...B,...UK,...US].filter(w=>RARE.has(w))])];
+console.log("rare words moved to bonus",B.length+UK.length+US.length-B_OUT.length-UK_OUT.length-US_OUT.length);
 const out=`/* Word lists for the daily games. Built from SCOWL (wordlist-english on npm, MIT licence) by tools/build_words.js.
    FIVE_ANSWERS: one answer per day, in a fixed shuffled order. FIVE_GUESSES: every word accepted as a guess.
-   WHEEL_*: words of 4+ letters, no S, at most 7 different letters. WHEEL_BONUS: rarer words accepted as bonus words. WHEEL_PUZZLES: centre letter first, then the 7 letters. */
+   WHEEL_*: words of 4+ letters, no S, at most 7 different letters. WHEEL_BONUS: rarer words accepted as bonus words (including tools/wheel_rare.txt). WHEEL_PUZZLES: centre letter first, then the 7 letters. */
 const FIVE_ANSWERS = "${answers.join(" ")}".split(" ");
 const FIVE_GUESSES = new Set("${[...guessAll].sort().join(" ")}".split(" "));
-const WHEEL_WORDS = "${B.join(" ")}".split(" ");
-const WHEEL_UK = "${UK.join(" ")}".split(" ");
-const WHEEL_US = "${US.join(" ")}".split(" ");
-const WHEEL_BONUS = "${BONUS.join(" ")}".split(" ");
+const WHEEL_WORDS = "${B_OUT.join(" ")}".split(" ");
+const WHEEL_UK = "${UK_OUT.join(" ")}".split(" ");
+const WHEEL_US = "${US_OUT.join(" ")}".split(" ");
+const WHEEL_BONUS = "${BONUS_OUT.join(" ")}".split(" ");
 const WHEEL_PUZZLES = "${puzzles.join(" ")}".split(" ");
 `;
 require("fs").writeFileSync(require("path").join(__dirname, "..", "words.js"),out);

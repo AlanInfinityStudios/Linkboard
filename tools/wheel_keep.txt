@@ -1,0 +1,1 @@
+# Words that always stay in the Letter Wheel main list, even if find_rare_wheel.py calls them rare. One per line.

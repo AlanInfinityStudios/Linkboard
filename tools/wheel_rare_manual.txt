@@ -1,0 +1,1 @@
+# Words that are always bonus-only in Letter Wheel, whatever their frequency. One per line.

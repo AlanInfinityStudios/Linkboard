@@ -11,6 +11,7 @@ An ad-free word connection game, built to play on an iPad.
 - **Daily Five**: guess the day's five-letter word in six tries.
 - **Letter Wheel**: make words of 4+ letters from the day's seven letters, always using the middle one; using all seven scores a bonus.
 - Daily word lists come from SCOWL via `tools/build_words.js`, which writes `words.js`.
+- Letter Wheel rule: obscure words (rare in everyday English, such as VERIER or WATERIER) are bonus words only, never answers you need to finish. `tools/find_rare_wheel.py` lists them in `tools/wheel_rare.txt` by word frequency; add words by hand to `tools/wheel_rare_manual.txt`, or keep one in the main list with `tools/wheel_keep.txt`, then rerun both scripts.
 - **The Wall**: inspired by Only Connect. Sixteen clues, four groups of four, three minutes. Once two groups are found you have three lives. Afterwards, reveal the connections and score yourself out of 10.
 
 ## Install on iPad
